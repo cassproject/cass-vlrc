@@ -1,6 +1,207 @@
-.right {
-    float:right;
+* {
+    margin: 0;
+    padding: 0;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
 }
+
+body {
+    background: #fff;
+    background-image: url("https://images.pexels.com/photos/12598/96917deb7705adcee76b65caf8c652b1.jpg?cs=srgb&dl=toolbox-tools-wrenches-12598.jpg&fm=jpg");
+    background-repeat-y: no-repeat;
+    background-repeat-x: no-repeat;
+    background-size: cover;
+}
+
+pre {
+    overflow: scroll;
+    width: 100%;
+}
+
+
+/*HEADER*/
+
+.key {
+    color: blue;
+}
+
+.string {
+    color: chocolate;
+}
+
+.header {
+    height: 25px;
+    background: rgba(0, 0, 0, 1);
+    color: #fff;
+    text-align: center;
+    font: 10px/25px Helvetica, Verdana, sans-serif;
+}
+
+.header a {
+    color: #999;
+}
+
+.vertical {
+    writing-mode: vertical-rl;
+    font-size: x-large;
+    text-orientation: mixed;
+    margin-left: 5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+/*LIST*/
+
+.accslide li {
+    margin-left: 2rem;
+}
+
+.noDot {
+    margin-left: 0rem;
+    list-style: none;
+}
+
+
+/*FORM*/
+
+form {
+    margin: 50px;
+}
+
+input[type='radio'] {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
+
+#container {
+    padding-left: 20px;
+    background-color: rgba(0, 0, 0, .4);
+    height: calc(100vh - 25px);
+    width: calc(100vw);
+}
+
+label a {
+    padding-top: 30px;
+    display: block;
+}
+
+label {
+    display: block;
+    height: calc(100vh - 25px - 40px);
+    width: 40px;
+    border-left: 1px #ccc solid;
+    color: #fff;
+    background: rgba(0, 0, 0, .7);
+    text-align: center;
+    font: 14px/16px Helvetica, Verdana, sans-serif;
+    margin-bottom: 10px;
+    padding: 5px;
+    float: left;
+    overflow: hidden;
+    -webkit-transition: width 1s ease, background 0.5s ease;
+    -moz-transition: width 1s ease, background 0.5s ease;
+    -o-transition: width 1s ease, background 0.5s ease;
+    -ms-transition: width 1s ease, background 0.5s ease;
+    transition: width 1s ease, background 0.5s ease;
+}
+
+#rad2+label,
+#rad4+label,
+#rad6+label,
+#rad8+label,
+#rad10+label {
+    background: rgba(0, 0, 0, .5);
+    -webkit-transition: width 1s ease, background 0.5s ease;
+    -moz-transition: width 1s ease, background 0.5s ease;
+    -o-transition: width 1s ease, background 0.5s ease;
+    -ms-transition: width 1s ease, background 0.5s ease;
+    transition: width 1s ease, background 0.5s ease;
+}
+
+#rad10+label {
+    border-right: 1px #ccc solid;
+}
+
+label:hover,
+#rad2+label:hover,
+#rad4+label:hover,
+#rad6+label:hover,
+#rad8+label:hover,
+#rad10+label:hover {
+    background: (0, 0, 128, .9);
+    color: #fff;
+    cursor: pointer;
+}
+
+button {
+    padding: 5px;
+}
+
+.descriptors {
+    background-color: yellow;
+}
+
+.gtg {
+    background: rgba(0, 0, 100, .7);
+}
+
+
+/*SLIDES*/
+
+.accslide {
+    color: #333;
+    display: block;
+    height: calc(100vh - 25px - 40px);
+    width: 0px;
+    background: #fff;
+    font: 12px/1.5 Helvetica, Verdana, sans-serif;
+    padding: 10px 0;
+    float: left;
+    overflow: hidden;
+    overflow-y: auto;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    transition: all 1s ease;
+}
+
+.accslide p,
+h2,
+h3,
+h4,
+img {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.accslide input,
+button,
+progress,
+select {
+    margin-left: 10px;
+}
+
+.accslide img {
+    margin-top: 10px;
+}
+
+input[type="radio"]:checked+label~.accslide {
+    width: calc(100vw - 440px);
+}
+
+.right {
+    float: right;
+}
+
 .block {
-    display:block;
+    display: block;
 }

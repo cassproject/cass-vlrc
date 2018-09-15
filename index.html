@@ -1,5 +1,6 @@
 <html>
-    <head>
+
+<head>
     <title>Learnnit</title>
     <script src="https://unpkg.com/jquery"></script>
     <script src="https://cdn.rawgit.com/cassproject/CASS/2f7a71d1/src/main/js/cass.js"></script>
@@ -7,29 +8,106 @@
 </head>
 
 <body>
-    <script src="https://unpkg.com/vue"></script>
-    <script src="js/main.js"></script>
-    <div id="app">
-        <div id="left">
-            <div v-if="login">Hello {{ loginName }}</div>
-            <framework id="leftFramework" :uri="selectedFramework"></framework>
+
+    <body>
+        <script src="https://unpkg.com/vue"></script>
+        <script src="js/main.js"></script>
+        <script src="js/subjectArea.js"></script>
+        <script src="js/topicArea.js"></script>
+        <script src="js/learningResource.js"></script>
+        <div id="app">
+            <div class="header">
+                <h1>Lernnit</h1>
+            </div>
+            <div id="container">
+                <p></p><br>
+                <ul class="noDot">
+                    <li>
+                        <input id="rad1" type="radio" name="rad">
+                        <label for="rad1"><a class="vertical">Select Subject Area</a></label>
+                        <div class="accslide">
+                            <frameworks />
+                        </div>
+                    </li>
+                    <li>
+                        <input id="rad2" type="radio" name="rad">
+                        <label for="rad2"><a class="vertical">Select Topic Area</a></label>
+                        <div class="accslide">
+                            <framework id="leftFramework" :uri="selectedFramework.id"></framework>
+                        </div>
+                    </li>
+                    <li>
+                        <input id="rad3" type="radio" name="rad">
+                        <label for="rad3"><a class="vertical">Select Learning Resource</a></label>
+                        <div class="accslide">
+                            <div v-if="selectedCompetency">The following resources exist for <strong>{{ selectedCompetency.name }}</strong></div>
+                            <div v-else>No topic has been selected.</div>
+                            <resources v-if="selectedCompetency" :uri="selectedCompetency.id"></resources>
+                            <div v-if="selectedCompetency">You have the following history:</div>
+                            <history v-if="login" v-if="selectedCompetency"></history>
+                            <button v-if="selectedCompetency">Search for additional resources on Google.</button>
+                        </div>
+                    </li>
+                    <li>
+                        <input id="rad4" type="radio" name="rad">
+                        <label for="rad4"><a class="vertical">View Resource</a></label>
+                        <div class="accslide">
+                        </div>
+                    </li>
+                    <!--
+                    <li>
+                        <input id="rad5" type="radio" name="rad">
+                        <label for="rad5"><a class="vertical">Step 5: Convert Product Data to CTDL/ASN</a></label>
+                        <div class="accslide">
+                        </div>
+                    </li>
+                    <li>
+                        <input id="rad6" type="radio" name="rad">
+                        <label for="rad6"><a class="vertical">Step 6: View Conversion Process</a></label>
+                        <div class="accslide">
+                        </div>
+                    </li>
+                    <li>
+                        <input id="rad7" type="radio" name="rad">
+                        <label for="rad7"><a class="vertical">Step 7: View AI/NLP Method for writing TLOs/ELOs</a></label>
+                        <div class="accslide">
+                        </div>
+                    </li>
+                    <li>
+                        <input id="rad8" type="radio" name="rad">
+                        <label for="rad8"><a class="vertical">Step 8: View Output Framework</a></label>
+                        <iframe class="accslide" style="margin:0px;padding:0px;border:0px;" id="viewOutputFramework">
+                </iframe>
+                    </li>
+                    <li>
+                        <input id="rad9" type="radio" name="rad">
+                        <label for="rad9"><a class="vertical">Step 9: View CTDL/ASN</a></label>
+                        <div class="accslide">
+                        </div>
+                    </li>
+                    <li>
+                        <input id="rad10" type="radio" name="rad">
+                        <label for="rad10"><a class="vertical">Step 10: Export S1000D</a></label>
+                        <div class="accslide">
+                        </div>
+                    </li>
+-->
+                </ul>
+            </div>
         </div>
-        <div id="top">
-            <div class="right">{{ status }}</div>
-        </div>
-        <div id="right">
-        </div>
-    </div>
-    <script>
-        var app = new Vue({
-            el: '#app',
-            data: {
-                message: 'Hello Vue!',
-                login: false,
-                status: 'loading...',
-                selectedFramework: 'https://dev.cassproject.org/api/data/a2f28878d6d1e19a7c2ebf90f5d93f3a'
-            }
-        });
-    </script>
-</body>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    message: 'Hello Vue!',
+                    login: false,
+                    status: 'loading...',
+                    selectedFramework: EcFramework.getBlocking('https://dev.cassproject.org/api/data/a2f28878d6d1e19a7c2ebf90f5d93f3a'),
+                    selectedCompetency: null
+                }
+            });
+
+        </script>
+    </body>
+
 </html>
