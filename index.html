@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>Learnnit</title>
+        <script src="https://unpkg.com/jquery"></script>
+        <script src="https://cdn.rawgit.com/cassproject/CASS/2f7a71d1/src/main/js/cass.js"></script>
+        <link rel="stylesheet" href="css/main.css">
+    </head>
+
+    <body>
+        <div id="app">
+            <div id="left">
+              <div v-if="login">Hello {{ loginName }}</div>
+              <framework uri="https://dev.cassproject.org/api/data/a2f28878d6d1e19a7c2ebf90f5d93f3a"></framework>
+            </div>
+            <div id="top">
+                <div class="right">{{ status }}</div>
+            </div>
+            <div id="right">
+            </div>
+        </div>
+        <script src="https://unpkg.com/vue"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>
