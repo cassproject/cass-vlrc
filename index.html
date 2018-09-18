@@ -8,53 +8,53 @@
 </head>
 
 <body>
-
-    <body>
-        <script src="https://unpkg.com/vue"></script>
-        <script src="js/main.js"></script>
-        <script src="js/subjectArea.js"></script>
-        <script src="js/topicArea.js"></script>
-        <script src="js/learningResource.js"></script>
-        <div id="app">
-            <div class="header">
-                <h1>Lernnit</h1>
-            </div>
-            <div id="container">
-                <p></p><br>
-                <ul class="noDot">
-                    <li>
-                        <input id="rad1" type="radio" name="rad">
-                        <label for="rad1"><a class="vertical">Select Subject Area</a></label>
-                        <div class="accslide">
-                            <frameworks />
-                        </div>
-                    </li>
-                    <li>
-                        <input id="rad2" type="radio" name="rad">
-                        <label for="rad2"><a class="vertical">Select Topic Area</a></label>
-                        <div class="accslide">
-                            <framework id="leftFramework" :uri="selectedFramework.id"></framework>
-                        </div>
-                    </li>
-                    <li>
-                        <input id="rad3" type="radio" name="rad">
-                        <label for="rad3"><a class="vertical">Select Learning Resource</a></label>
-                        <div class="accslide">
-                            <div v-if="selectedCompetency">The following resources exist for <strong>{{ selectedCompetency.name }}</strong></div>
-                            <div v-else>No topic has been selected.</div>
-                            <resources v-if="selectedCompetency" :uri="selectedCompetency.id"></resources>
-                            <div v-if="selectedCompetency">You have the following history:</div>
-                            <history v-if="login" v-if="selectedCompetency"></history>
-                            <button v-if="selectedCompetency">Search for additional resources on Google.</button>
-                        </div>
-                    </li>
-                    <li>
-                        <input id="rad4" type="radio" name="rad">
-                        <label for="rad4"><a class="vertical">View Resource</a></label>
-                        <div class="accslide">
-                        </div>
-                    </li>
-                    <!--
+    <script src="https://unpkg.com/vue"></script>
+    <script src="js/main.js"></script>
+    <script src="js/subjectArea.js"></script>
+    <script src="js/topicArea.js"></script>
+    <script src="js/learningResource.js"></script>
+    <div id="app">
+        <div class="header">
+            <h1>Lernnit</h1>
+        </div>
+        <div id="container">
+            <p></p><br>
+            <ul class="noDot">
+                <li>
+                    <input id="rad1" type="radio" name="rad">
+                    <label for="rad1"><a class="vertical">Select Subject Area</a></label>
+                    <div class="accslide">
+                        <frameworks />
+                    </div>
+                </li>
+                <li>
+                    <input id="rad2" type="radio" name="rad">
+                    <label for="rad2"><a class="vertical">Select Topic Area</a></label>
+                    <div class="accslide">
+                        <framework id="leftFramework" v-if="selectedFramework" :uri="selectedFramework.id"></framework>
+                        <div v-else>No subject has been selected.</div>
+                    </div>
+                </li>
+                <li>
+                    <input id="rad3" type="radio" name="rad">
+                    <label for="rad3"><a class="vertical">Select Learning Resource</a></label>
+                    <div class="accslide">
+                        <div v-if="selectedCompetency">The following resources exist for <strong>{{ selectedCompetency.name }}</strong></div>
+                        <div v-else>No topic has been selected.</div>
+                        <resources v-if="selectedCompetency"></resources>
+                        <div v-if="selectedCompetency">You have the following history:</div>
+                        <history v-if="selectedCompetency"></history>
+                        <button v-if="selectedCompetency" v-on:click="searchGoogle">Search for additional resources on Google.</button>
+                    </div>
+                </li>
+                <li>
+                    <input id="rad4" type="radio" name="rad">
+                    <label for="rad4"><a class="vertical">View Resource</a></label>
+                    <div class="accslide">
+                        <iframe src="https://duckduckgo.com/search.html?prefill=Search DuckDuckGo" style="overflow:hidden;margin:0;padding:0;width:408px;height:40px;" frameborder="0"></iframe>
+                    </div>
+                </li>
+                <!--
                     <li>
                         <input id="rad5" type="radio" name="rad">
                         <label for="rad5"><a class="vertical">Step 5: Convert Product Data to CTDL/ASN</a></label>
@@ -92,22 +92,49 @@
                         </div>
                     </li>
 -->
-                </ul>
-            </div>
+            </ul>
         </div>
-        <script>
-            var app = new Vue({
-                el: '#app',
-                data: {
-                    message: 'Hello Vue!',
-                    login: false,
-                    status: 'loading...',
-                    selectedFramework: EcFramework.getBlocking('https://dev.cassproject.org/api/data/a2f28878d6d1e19a7c2ebf90f5d93f3a'),
-                    selectedCompetency: null
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            computed: {
+                uri: {
+                    get: function() {
+                        return $("iframe").attr("src");
+                    },
+                    set: function(v) {
+                        return $("iframe").attr("src", v);
+                    }
                 }
-            });
+            },
+            methods: {
+                searchGoogle: function() {
 
-        </script>
-    </body>
+                }
+            },
+            data: {
+                message: 'Hello Vue!',
+                login: false,
+                status: 'loading...',
+                selectedFramework: null,
+                selectedCompetency: null
+            }
+        });
+        if (EcIdentityManager.ids.length == 0) {
+            var i = new EcIdentity();
+            i.displayName = "You";
+            EcPpk.generateKeyAsync(function(ppk) {
+                i.ppk = ppk;
+                EcIdentityManager.addIdentity(i);
+                app.login = true;
+                EcIdentityManager.saveIdentities();
+            });
+        } else
+            app.login = true;
+
+    </script>
+
+</body>
 
 </html>

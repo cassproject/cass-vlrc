@@ -1,101 +1,65 @@
-Vue.component('framework', {
-    props: ['uri'],
+Vue.component('frameworks', {
+    props: [],
     data: function () {
         return {
-            competency: null
-        }
+            frameworksResult: null,
+            search: null,
+            lastSearch: null
+        };
     },
     computed: {
-        competencies: {
+        frameworks: {
             get: function () {
-                if (this.uri == null) return null;
-                if (this.competency != null)
-                    return this.competency;
-                var f = EcFramework.getBlocking(this.uri);
-                var precache = [];
-                if (f.competency != null) precache = precache.concat(f.competency);
-                if (f.relation != null) precache = precache.concat(f.relation);
                 var me = this;
-                repo.precache(precache, function (success) {
-                    var r = {};
-                    var top = {};
-                    if (f == null) return r;
-                    if (f.competency != null)
-                        for (var i = 0; i < f.competency.length; i++) {
-                            var c = EcCompetency.getBlocking(f.competency[i]);
-                            if (c != null)
-                                r[c.shortId()] = top[c.shortId()] = c;
-                        }
-                    if (f.relation != null)
-                        for (var i = 0; i < f.relation.length; i++) {
-                            var a = EcAlignment.getBlocking(f.relation[i]);
-                            if (a != null) {
-                                if (a.relationType == Relation.NARROWS) {
-                                    if (r[a.target] == null) continue;
-                                    if (r[a.target].hasChild == null)
-                                        r[a.target].hasChild = [];
-                                    r[a.target].hasChild.push(r[a.source]);
-                                    delete top[a.source];
-                                }
-                            }
-                        }
-                    me.competency = top;
-                    return top;
+                if (this.lastSearch != this.search)
+                    this.frameworksResult = null;
+                this.lastSearch = this.search;
+                if (this.frameworksResult != null) {
+                    $("#rad1").click();
+                    return this.frameworksResult;
+                }
+                var search = this.search;
+                if (search == null) search = "*";
+                var f = EcFramework.search(repo, search, function (frameworks) {
+                    me.frameworksResult = frameworks;
+                }, console.error, {
+                    size: 50
                 });
                 return null;
-            },
-            set: function (v) {
-                this.competency = v;
             }
-        },
-        name: function () {
-            if (this.uri == null)
-                return "N/A";
-            return EcFramework.getBlocking(this.uri).getName();
-        },
-        description: function () {
-            if (this.uri == null)
-                return null;
-            return EcFramework.getBlocking(this.uri).getDescription();
-        }
-    },
-    watch: {
-        uri: function (newUri, oldUri) {
-            this.competency = null;
-            console.log(this.uri);
         }
     },
     template: '<div>' +
-        '<div>{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
-        '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild"></competency></ul>' +
-        '<div v-else><br>Loading Framework...</div></div>'
+        '<input class="frameworksSearchInput" placeholder="Search..." v-model="search"/>' +
+        '<ul v-if="frameworks"><frameworkSelect v-for="item in frameworks" v-bind:key="item.id" :uri="item.id"></frameworkSelect></ul>' +
+        '<div v-else><br>Loading Frameworks...</div>' +
+        '</div>'
 });
 
-Vue.component('competency', {
-    props: ['uri', 'hasChild'],
+Vue.component('frameworkSelect', {
+    props: ['uri'],
     computed: {
         name: {
             get: function () {
-                if (this.uri == null) return "Invalid Competency";
-                return EcCompetency.getBlocking(this.uri).getName();
+                if (this.uri == null) return "Invalid Framework";
+                return EcFramework.getBlocking(this.uri).getName();
             }
         },
         description: {
             get: function () {
                 if (this.uri == null) return "Could not resolve URI.";
-                return EcCompetency.getBlocking(this.uri).getDescription();
+                return EcFramework.getBlocking(this.uri).getDescription();
             }
         },
     },
     methods: {
-        setCompetency: function () {
-            app.selectedCompetency = EcCompetency.getBlocking(this.uri);
-            $("#rad3").click();
+        setFramework: function () {
+            app.selectedFramework = EcFramework.getBlocking(this.uri);
+            $("#rad2").click();
         }
     },
-    template: '<li v-on:click="setCompetency">' +
+    template: '<li v-on:click="setFramework">' +
         '<span>{{ name }}</span>' +
         '<small v-if="description" class="block">{{ description }}</small>' +
-        '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild"></competency></ul>' +
         '</li>'
 });

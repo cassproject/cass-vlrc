@@ -27,10 +27,10 @@ Vue.component('resources', {
         }
     },
     template: '<div>' +
-        '<div v-if="empty"><br>None found...</div>' +
+        '<div v-if="empty"><br>None found...<br><br></div>' +
         '<div v-else>' +
         '<ul v-if="resources"><resourceSelect v-for="item in resources" v-bind:key="item.id" :uri="item.id"></resourceSelect></ul>' +
-        '<div v-else><br>Loading Resources...</div>' +
+        '<div v-else><br>Loading Resources...<br><br></div>' +
         '</div>' +
         '</div>'
 });
@@ -72,7 +72,7 @@ Vue.component('history', {
         };
     },
     computed: {
-        resources: {
+        assertions: {
             get: function () {
                 var me = this;
                 if (this.assertionResult != null) {
@@ -80,9 +80,9 @@ Vue.component('history', {
                     return this.assertionResult;
                 }
                 var search = "\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\" AND competency:\"" + app.selectedCompetency.shortId() + "\"";
-                EcAssertion.search(search,
+                EcAssertion.search(repo, search,
                     function (assertions) {
-                        me.assertionResult = resources;
+                        me.assertionResult = assertions;
                     }, console.error, {
                         size: 50
                     });
@@ -91,37 +91,31 @@ Vue.component('history', {
         }
     },
     template: '<div>' +
-        '<div v-if="empty"><br>None found...</div>' +
+        '<div v-if="empty"><br>None found...<br><br></div>' +
         '<div v-else>' +
-        '<ul v-if="resources"><assertion v-for="item in assertionResult" v-bind:key="item.id" :uri="item.id"></assertion></ul>' +
+        '<ul v-if="assertions"><assertion v-for="item in assertions" v-bind:key="item.id" :uri="item.id"></assertion></ul>' +
         '<div v-else><br>Loading History...</div>' +
         '</div>' +
         '</div>'
 });
 
-Vue.component('resourceSelect', {
+Vue.component('assertion', {
     props: ['uri'],
     computed: {
         name: {
             get: function () {
                 if (this.uri == null) return "Untitled Resource.";
-                return EcRepository.getBlocking(this.uri).getName();
+                return EcAssertion.getBlocking(this.uri).getName();
             }
         },
         description: {
             get: function () {
                 if (this.uri == null) return null;
-                return EcRepository.getBlocking(this.uri).getDescription();
+                return EcAssertion.getBlocking(this.uri).getDescription();
             }
         },
     },
-    methods: {
-        setResource: function () {
-            app.selectedResource = EcRepository.getBlocking(this.uri);
-            $("#rad4").click();
-        }
-    },
-    template: '<li v-on:click="setResource">' +
+    template: '<li>' +
         '<span>{{ name }}</span>' +
         '<small v-if="description" class="block">{{ description }}</small>' +
         '</li>'
