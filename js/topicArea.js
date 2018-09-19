@@ -48,7 +48,7 @@ Vue.component('framework', {
                         for (var i = 0; i < f.competency.length; i++) {
                             if (r[f.competency[i]].hasChild == null) continue;
                             r[f.competency[i]].hasChild.sort(function (a, b) {
-                                return f.competency.indexOf(a) - f.competency.indexOf(b);
+                                return f.competency.indexOf(a.shortId()) - f.competency.indexOf(b.shortId());
                             });
                         }
                     me.competency = [];
@@ -56,7 +56,7 @@ Vue.component('framework', {
                     for (var i = 0; i < keys.length; i++)
                         me.competency.push(top[keys[i]]);
                     me.competency.sort(function (a, b) {
-                        return f.competency.indexOf(a) - f.competency.indexOf(b);
+                        return f.competency.indexOf(a.shortId()) - f.competency.indexOf(b.shortId());
                     });
                 });
                 return null;
@@ -110,9 +110,9 @@ Vue.component('competency', {
             $("#rad3").click();
         }
     },
-    template: '<li v-on:click="setCompetency">' +
-        '<span>{{ name }}</span>' +
-        '<small v-if="description" class="block">{{ description }}</small>' +
+    template: '<li>' +
+        '<span v-on:click="setCompetency">{{ name }}</span>' +
+        '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
         '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild"></competency></ul>' +
         '</li>'
 });

@@ -51,7 +51,7 @@
                     <input id="rad4" type="radio" name="rad">
                     <label for="rad4"><a class="vertical">View Resource</a></label>
                     <div class="accslide">
-                        <iframe src="https://duckduckgo.com/search.html?prefill=Search DuckDuckGo" style="overflow:hidden;margin:0;padding:0;width:408px;height:40px;" frameborder="0"></iframe>
+                        <iframe v-if="selectedResource" :src="selectedResource.url" frameborder="0"></iframe>
                     </div>
                 </li>
                 <!--
@@ -118,7 +118,8 @@
                 login: false,
                 status: 'loading...',
                 selectedFramework: null,
-                selectedCompetency: null
+                selectedCompetency: null,
+                selectedResource: null
             }
         });
         if (EcIdentityManager.ids.length == 0) {

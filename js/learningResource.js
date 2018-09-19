@@ -14,7 +14,7 @@ Vue.component('resources', {
                     this.empty = this.resourcesResult.length == 0;
                     return this.resourcesResult;
                 }
-                var search = "@type:CreativeWork AND educationalAlignment.url:\"" + app.selectedCompetency.shortId() + "\"";
+                var search = "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + app.selectedCompetency.shortId() + "\"";
                 repo.searchWithParams(search, {
                         size: 50
                     },
@@ -41,19 +41,28 @@ Vue.component('resourceSelect', {
         name: {
             get: function () {
                 if (this.uri == null) return "Untitled Resource.";
-                return EcRepository.getBlocking(this.uri).getName();
+                var resource = EcRepository.getBlocking(this.uri);
+                if (resource != null && resource.name != null)
+                    return resource.getName();
+                else
+                    return "Unknown Resource.";
             }
         },
         description: {
             get: function () {
                 if (this.uri == null) return null;
-                return EcRepository.getBlocking(this.uri).getDescription();
+                var resource = EcRepository.getBlocking(this.uri);
+                if (resource != null && resource.description != null)
+                    return resource.getDescription();
+                else
+                    return "Unknown Resource.";
             }
         },
     },
     methods: {
         setResource: function () {
             app.selectedResource = EcRepository.getBlocking(this.uri);
+            window.open(app.selectedResource.url, "lernnit");
             $("#rad4").click();
         }
     },
