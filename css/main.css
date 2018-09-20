@@ -8,7 +8,7 @@
 
 body {
     background: #fff;
-    background-image: url("/images/background.jpg");
+    background-image: url("../images/background.jpg");
     background-repeat-y: no-repeat;
     background-repeat-x: no-repeat;
     background-size: cover;
@@ -99,7 +99,7 @@ label a {
     display: block;
 }
 
-label {
+li > label {
     display: block;
     height: calc(100vh - 25px - 40px);
     width: 40px;
@@ -118,6 +118,17 @@ label {
     -ms-transition: width 1s ease, background 0.5s ease;
     transition: width 1s ease, background 0.5s ease;
 }
+
+.accslide label {
+    width: 10rem;
+    display: inline-block;
+}
+
+.accslide input,
+.accslide textarea {
+    width: calc(100% - 12rem);
+}
+
 
 #rad2 + label,
 #rad4 + label,
@@ -202,7 +213,7 @@ button {
 }
 
 input[type="radio"]:checked + label ~ .accslide {
-    width: calc(100vw - 200px);
+    width: calc(100vw - 160px);
 }
 
 .right {

@@ -1,36 +1,39 @@
 Vue.component('resources', {
-    props: [],
+    props: ['url'],
     data: function () {
         return {
-            resourcesResult: null,
+            resources: null,
             empty: false
         };
     },
-    computed: {
-        resources: {
-            get: function () {
-                var me = this;
-                if (this.resourcesResult != null) {
-                    this.empty = this.resourcesResult.length == 0;
-                    return this.resourcesResult;
-                }
-                var search = "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + app.selectedCompetency.shortId() + "\"";
-                repo.searchWithParams(search, {
-                        size: 50
-                    },
-                    null,
-                    function (resources) {
-                        me.resourcesResult = resources;
-                    }, console.error);
-                return null;
-            }
+    created: function () {
+        this.getResources();
+    },
+    watch: {
+        url: function (newUrl) {
+            this.getResources();
+        }
+    },
+    methods: {
+        getResources: function () {
+            var me = this;
+            if (this.url == null) return;
+            var search = "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.url) + "\"";
+            repo.searchWithParams(search, {
+                    size: 50
+                },
+                null,
+                function (resources) {
+                    me.resources = resources;
+                    me.empty = resources.length == 0;
+                }, console.error);
         }
     },
     template: '<div>' +
-        '<div v-if="empty"><br>None found...<br><br></div>' +
+        '<div v-if="empty"><br>None found...</div>' +
         '<div v-else>' +
         '<ul v-if="resources"><resourceSelect v-for="item in resources" v-bind:key="item.id" :uri="item.id"></resourceSelect></ul>' +
-        '<div v-else><br>Loading Resources...<br><br></div>' +
+        '<div v-else>Loading Resources...</div>' +
         '</div>' +
         '</div>'
 });
@@ -43,9 +46,19 @@ Vue.component('resourceSelect', {
                 if (this.uri == null) return "Untitled Resource.";
                 var resource = EcRepository.getBlocking(this.uri);
                 if (resource != null && resource.name != null)
-                    return resource.getName();
+                    return resource.name;
                 else
                     return "Unknown Resource.";
+            }
+        },
+        url: {
+            get: function () {
+                if (this.uri == null) return "#";
+                var resource = EcRepository.getBlocking(this.uri);
+                if (resource != null && resource.url != null)
+                    return resource.url;
+                else
+                    return "#";
             }
         },
         description: {
@@ -53,7 +66,7 @@ Vue.component('resourceSelect', {
                 if (this.uri == null) return null;
                 var resource = EcRepository.getBlocking(this.uri);
                 if (resource != null && resource.description != null)
-                    return resource.getDescription();
+                    return resource.description;
                 else
                     return "Unknown Resource.";
             }
@@ -63,11 +76,10 @@ Vue.component('resourceSelect', {
         setResource: function () {
             app.selectedResource = EcRepository.getBlocking(this.uri);
             window.open(app.selectedResource.url, "lernnit");
-            $("#rad4").click();
         }
     },
     template: '<li v-on:click="setResource">' +
-        '<span>{{ name }}</span>' +
+        '<a :href="url" target="_blank">{{ name }}</a>' +
         '<small v-if="description" class="block">{{ description }}</small>' +
         '</li>'
 });
@@ -100,10 +112,10 @@ Vue.component('history', {
         }
     },
     template: '<div>' +
-        '<div v-if="empty"><br>None found...<br><br></div>' +
+        '<div v-if="empty"><br>None found...</div>' +
         '<div v-else>' +
         '<ul v-if="assertions"><assertion v-for="item in assertions" v-bind:key="item.id" :uri="item.id"></assertion></ul>' +
-        '<div v-else><br>Loading History...</div>' +
+        '<div v-else>Loading History...</div>' +
         '</div>' +
         '</div>'
 });

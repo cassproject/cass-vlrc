@@ -90,7 +90,28 @@ Vue.component('framework', {
 
 Vue.component('competency', {
     props: ['uri', 'hasChild'],
+    data: function () {
+        return {
+            counter: 0
+        };
+    },
     computed: {
+        count: {
+            get: function () {
+                var me = this;
+                if (this.uri == null) return 0;
+
+                var search = "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\"";
+                repo.searchWithParams(search, {
+                        size: 50
+                    },
+                    null,
+                    function (resources) {
+                        me.counter = resources.length;
+                    }, console.error);
+                return this.counter;
+            }
+        },
         name: {
             get: function () {
                 if (this.uri == null) return "Invalid Competency";
@@ -107,11 +128,12 @@ Vue.component('competency', {
     methods: {
         setCompetency: function () {
             app.selectedCompetency = EcCompetency.getBlocking(this.uri);
+            app.availableResources = null;
             $("#rad3").click();
         }
     },
     template: '<li>' +
-        '<span v-on:click="setCompetency">{{ name }}</span>' +
+        '<span v-on:click="setCompetency">{{ name }}</span> (<span v-on:click="setCompetency">{{ count }}</span>)' +
         '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
         '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild"></competency></ul>' +
         '</li>'

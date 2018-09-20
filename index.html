@@ -15,7 +15,8 @@
     <script src="js/learningResource.js"></script>
     <div id="app">
         <div class="header">
-            <h1>Lernnit</h1>
+            <a style="float:right;height:35px;margin-top:-5px;margin-right:5px" target="_blank" href="http://cassproject.org"><img style="height:35px;" src="//www.cassproject.org/img/CASS-Logo-website-white.png"></a>
+            <h1>Competency based Virtual Learning Resource Center</h1>
         </div>
         <div id="container">
             <p></p><br>
@@ -39,22 +40,31 @@
                     <input id="rad3" type="radio" name="rad">
                     <label for="rad3"><a class="vertical">Select Learning Resource</a></label>
                     <div class="accslide">
-                        <div v-if="selectedCompetency">The following resources exist for <strong>{{ selectedCompetency.name }}</strong></div>
+                        <div v-if="selectedCompetency">
+                            <div>The following resources exist for <strong>{{ selectedCompetency.name }}</strong></div>
+                            <resources :url="selectedCompetency.id"></resources>
+                            <hr>
+                            <!--<div>You have the following history:</div>
+                            <history></history>
+                            <hr>-->
+                            <button v-on:click="searchGoogle">Search for additional resources on Google.</button>
+                            <hr>
+                            <div><strong>Add a resource</strong></div>
+                            <label for="inputUrl">URL: </label><input id="inputUrl" v-model="inputUrl" placeholder="Url" /><br>
+                            <label for="inputName">Name: </label><input id="inputName" v-model="inputName" placeholder="Name of Resource" /><br>
+                            <label for="inputDescription">Description: </label><textarea id="inputDescription" v-model="inputDescription" placeholder="Description of Resource"></textarea><br>
+                            <button v-on:click="addResource">Add Resource</button>
+                        </div>
                         <div v-else>No topic has been selected.</div>
-                        <resources v-if="selectedCompetency"></resources>
-                        <div v-if="selectedCompetency">You have the following history:</div>
-                        <history v-if="selectedCompetency"></history>
-                        <button v-if="selectedCompetency" v-on:click="searchGoogle">Search for additional resources on Google.</button>
-                    </div>
-                </li>
-                <li>
-                    <input id="rad4" type="radio" name="rad">
-                    <label for="rad4"><a class="vertical">View Resource</a></label>
-                    <div class="accslide">
-                        <iframe v-if="selectedResource" :src="selectedResource.url" frameborder="0"></iframe>
                     </div>
                 </li>
                 <!--
+                    <li>
+                        <input id="rad4" type="radio" name="rad">
+                        <label for="rad4"><a class="vertical">Add Resource</a></label>
+                        <div class="accslide">
+                        </div>
+                    </li>
                     <li>
                         <input id="rad5" type="radio" name="rad">
                         <label for="rad5"><a class="vertical">Step 5: Convert Product Data to CTDL/ASN</a></label>
@@ -95,47 +105,7 @@
             </ul>
         </div>
     </div>
-    <script>
-        var app = new Vue({
-            el: '#app',
-            computed: {
-                uri: {
-                    get: function() {
-                        return $("iframe").attr("src");
-                    },
-                    set: function(v) {
-                        return $("iframe").attr("src", v);
-                    }
-                }
-            },
-            methods: {
-                searchGoogle: function() {
-
-                }
-            },
-            data: {
-                message: 'Hello Vue!',
-                login: false,
-                status: 'loading...',
-                selectedFramework: null,
-                selectedCompetency: null,
-                selectedResource: null
-            }
-        });
-        if (EcIdentityManager.ids.length == 0) {
-            var i = new EcIdentity();
-            i.displayName = "You";
-            EcPpk.generateKeyAsync(function(ppk) {
-                i.ppk = ppk;
-                EcIdentityManager.addIdentity(i);
-                app.login = true;
-                EcIdentityManager.saveIdentities();
-            });
-        } else
-            app.login = true;
-
-    </script>
-
+    <script src="js/vue.js"></script>
 </body>
 
 </html>
