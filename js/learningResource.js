@@ -53,12 +53,34 @@ Vue.component('resourceSelect', {
         },
         url: {
             get: function () {
-                if (this.uri == null) return "#";
+                if (this.uri == null) return null;
                 var resource = EcRepository.getBlocking(this.uri);
                 if (resource != null && resource.url != null)
                     return resource.url;
                 else
-                    return "#";
+                    return null;
+            }
+        },
+        urlTarget: {
+            get: function () {
+                if (this.uri == null) return null;
+                var resource = EcRepository.getBlocking(this.uri);
+                if (resource != null && resource.url != null)
+                    return "_blank";
+                else
+                    return null;
+            }
+        },
+        mine: {
+            get: function () {
+                if (this.uri == null) return null;
+                var resource = EcRepository.getBlocking(this.uri);
+                if (resource != null) {
+                    if (resource.owner == null || resource.owner.length == 0)
+                        return true;
+                    return resource.hasOwner(EcIdentityManager.ids[0].ppk.toPk());
+                } else
+                    return null;
             }
         },
         description: {
@@ -68,7 +90,7 @@ Vue.component('resourceSelect', {
                 if (resource != null && resource.description != null)
                     return resource.description;
                 else
-                    return "Unknown Resource.";
+                    return null;
             }
         },
     },
@@ -76,11 +98,23 @@ Vue.component('resourceSelect', {
         setResource: function () {
             app.selectedResource = EcRepository.getBlocking(this.uri);
             window.open(app.selectedResource.url, "lernnit");
+        },
+        deleteMe: function () {
+            var me = this;
+            var resource = EcRepository.getBlocking(this.uri);
+            EcRepository._delete(resource, function () {
+                var c = app.selectedCompetency;
+                app.selectedCompetency = null;
+                setTimeout(function () {
+                    app.selectedCompetency = c;
+                }, 100);
+            }, console.error);
         }
     },
-    template: '<li v-on:click="setResource">' +
-        '<a :href="url" target="_blank">{{ name }}</a>' +
-        '<small v-if="description" class="block">{{ description }}</small>' +
+    template: '<li>' +
+        '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
+        '<a  v-on:click="setResource" :href="url" :target="urlTarget" style="cursor:pointer;">{{ name }}</a>' +
+        '<small v-on:click="setResource" v-if="description" class="block">{{ description }}</small>' +
         '</li>'
 });
 

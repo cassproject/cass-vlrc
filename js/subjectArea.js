@@ -15,7 +15,7 @@ Vue.component('frameworks', {
                     this.frameworksResult = null;
                 this.lastSearch = this.search;
                 if (this.frameworksResult != null) {
-                    $("#rad1").click();
+                    //$("#rad1").click();
                     return this.frameworksResult;
                 }
                 var search = this.search;
@@ -51,6 +51,15 @@ Vue.component('frameworkSelect', {
                 return EcFramework.getBlocking(this.uri).getDescription();
             }
         },
+        count: {
+            get: function () {
+                if (this.uri == null) return "Could not resolve URI.";
+                var f = EcFramework.getBlocking(this.uri);
+                if (f == null || f.competency == null)
+                    return 0;
+                return f.competency.length;
+            }
+        }
     },
     methods: {
         setFramework: function () {
@@ -59,7 +68,7 @@ Vue.component('frameworkSelect', {
         }
     },
     template: '<li v-on:click="setFramework">' +
-        '<span>{{ name }}</span>' +
+        '<span>{{ name }}</span> ({{ count }} topics)' +
         '<small v-if="description" class="block">{{ description }}</small>' +
         '</li>'
 });

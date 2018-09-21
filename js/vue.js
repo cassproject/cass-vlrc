@@ -1,3 +1,19 @@
+queryParams = function () {
+    if (window.document.location.search == null)
+        return {};
+    var hashSplit = (window.document.location.search.split("?"));
+    if (hashSplit.length > 1) {
+        var o = {};
+        var paramString = hashSplit[1];
+        var parts = (paramString).split("&");
+        for (var i = 0; i < parts.length; i++)
+            o[parts[i].split("=")[0]] = decodeURIComponent(parts[i].replace(parts[i].split("=")[0] + "=", ""));
+        return o;
+    }
+    return {};
+};
+queryParams = queryParams();
+
 var app = new Vue({
     el: '#app',
     computed: {
@@ -8,6 +24,18 @@ var app = new Vue({
             set: function (v) {
                 return $("iframe").attr("src", v);
             }
+        }
+    },
+    created: function () {
+        if (queryParams.frameworkId != null) {
+            setTimeout(function () {
+                app.selectedFramework = EcFramework.getBlocking(queryParams.frameworkId);
+                $("#rad2").click();
+            }, 100);
+        } else {
+            setTimeout(function () {
+                $("#rad1").click();
+            }, 100);
         }
     },
     methods: {
@@ -23,12 +51,22 @@ var app = new Vue({
             c.educationalAlignment = new AlignmentObject();
             c.educationalAlignment.targetUrl = app.selectedCompetency.shortId();
             c.educationalAlignment.alignmentType = "teaches";
+            c.addOwner(EcIdentityManager.ids[0].ppk.toPk());
             EcRepository.save(c, console.log, console.error);
             var c = this.selectedCompetency;
             this.selectedCompetency = null;
             setTimeout(function () {
                 app.selectedCompetency = c;
             }, 100);
+        }
+    },
+    watch: {
+        inputUrl: function (newUrl) {
+            var me = this;
+            EcRemote.getExpectingObject("https://api.urlmeta.org/", "?url=" + newUrl, function (success) {
+                app.inputName = success.meta.title;
+                app.inputDescription = success.meta.description;
+            }, console.error);
         }
     },
     data: {
