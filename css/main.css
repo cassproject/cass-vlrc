@@ -213,7 +213,7 @@ button {
 }
 
 input[type="radio"]:checked + label ~ .accslide {
-    width: calc(100vw - 160px);
+    width: calc(100vw - 200px);
 }
 
 .right {
