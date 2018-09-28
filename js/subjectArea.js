@@ -15,7 +15,6 @@ Vue.component('frameworks', {
                     this.frameworksResult = null;
                 this.lastSearch = this.search;
                 if (this.frameworksResult != null) {
-                    //$("#rad1").click();
                     return this.frameworksResult;
                 }
                 var search = this.search;
@@ -31,8 +30,11 @@ Vue.component('frameworks', {
     },
     template: '<div>' +
         '<input class="frameworksSearchInput" placeholder="Search..." v-model="search"/>' +
-        '<ul v-if="frameworks"><frameworkSelect v-for="item in frameworks" v-bind:key="item.id" :uri="item.id"></frameworkSelect></ul>' +
+        '<ul v-if="search">' +
+        '<frameworkSelect v-if="frameworks" v-for="item in frameworks" v-bind:key="item.id" :uri="item.id"></frameworkSelect>' +
         '<div v-else><br>Loading Frameworks...</div>' +
+        '</ul>' +
+        '<div v-else><br>Enter a search term to find some subjects.</div>' +
         '</div>'
 });
 
