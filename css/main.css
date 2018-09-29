@@ -9,8 +9,7 @@
 body {
     background: #fff;
     background-image: url("../images/background.jpg");
-    background-repeat-y: no-repeat;
-    background-repeat-x: no-repeat;
+    background-repeat: no-repeat;
     background-size: cover;
 }
 
@@ -21,14 +20,6 @@ pre {
 
 
 /*HEADER*/
-
-.key {
-    color: blue;
-}
-
-.string {
-    color: chocolate;
-}
 
 .header {
     height: 25px;
@@ -51,17 +42,8 @@ pre {
     text-overflow: ellipsis;
 }
 
-hr {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
 
 /*LIST*/
-
-.accslide li {
-    margin-left: 2rem;
-}
 
 .noDot {
     margin-left: 0rem;
@@ -71,27 +53,10 @@ hr {
 
 /*FORM*/
 
-form {
-    margin: 50px;
-}
-
-iframe {
-    border: 0px;
-    width: 600px;
-    height: 600px;
-}
-
 input[type='radio'] {
     position: absolute;
     top: -9999px;
     left: -9999px;
-}
-
-#container {
-    padding-left: 20px;
-    background-color: rgba(0, 0, 0, .0);
-    height: calc(100vh - 25px);
-    width: calc(100vw);
 }
 
 label a {
@@ -99,7 +64,7 @@ label a {
     display: block;
 }
 
-li > label {
+li>label {
     display: block;
     height: calc(100vh - 25px - 40px);
     width: 40px;
@@ -129,12 +94,11 @@ li > label {
     width: calc(100% - 12rem);
 }
 
-
-#rad2 + label,
-#rad4 + label,
-#rad6 + label,
-#rad8 + label,
-#rad10 + label {
+#rad2+label,
+#rad4+label,
+#rad6+label,
+#rad8+label,
+#rad10+label {
     background: rgba(0, 0, 0, .5);
     -webkit-transition: width 1s ease, background 0.5s ease;
     -moz-transition: width 1s ease, background 0.5s ease;
@@ -143,31 +107,19 @@ li > label {
     transition: width 1s ease, background 0.5s ease;
 }
 
-#rad1 + label {
+#rad1+label {
     border-left: 1px #ccc solid;
 }
 
 label:hover,
-#rad2 + label:hover,
-#rad4 + label:hover,
-#rad6 + label:hover,
-#rad8 + label:hover,
-#rad10 + label:hover {
+#rad2+label:hover,
+#rad4+label:hover,
+#rad6+label:hover,
+#rad8+label:hover,
+#rad10+label:hover {
     background: (0, 0, 128, .9);
     color: #fff;
     cursor: pointer;
-}
-
-button {
-    padding: 5px;
-}
-
-.descriptors {
-    background-color: yellow;
-}
-
-.gtg {
-    background: rgba(0, 0, 0, .7);
 }
 
 
@@ -191,35 +143,27 @@ button {
     transition: all 1s ease;
 }
 
-.accslide > p,
-.accslide > div,
-.accslide > h2,
-.accslide > h3,
-.accslide > h4,
-.accslide > img {
+.accslide>p,
+.accslide>div,
+.accslide>h2,
+.accslide>h3,
+.accslide>h4,
+.accslide>img {
     margin-left: 10px;
     margin-right: 10px;
 }
 
-.accslide > input,
-.accslide > button,
-.accslide > progress,
-.accslide > select {
+.accslide>input,
+.accslide>button,
+.accslide>progress,
+.accslide>select {
     margin-left: 10px;
 }
 
-.accslide > img {
+.accslide>img {
     margin-top: 10px;
 }
 
-input[type="radio"]:checked + label ~ .accslide {
+input[type="radio"]:checked+label~.accslide {
     width: calc(100vw - 200px);
-}
-
-.right {
-    float: right;
-}
-
-.block {
-    display: block;
 }

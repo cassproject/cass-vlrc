@@ -40,6 +40,14 @@ Vue.component('resources', {
 
 Vue.component('resourceSelect', {
     props: ['uri'],
+    data: function () {
+        return {
+            upvotes: 0,
+            downvotes: 0,
+            upvoted: false,
+            downvoted: false
+        };
+    },
     computed: {
         name: {
             get: function () {
@@ -94,6 +102,9 @@ Vue.component('resourceSelect', {
             }
         },
     },
+    created: function () {
+        this.getVotes();
+    },
     methods: {
         setResource: function () {
             app.selectedResource = EcRepository.getBlocking(this.uri);
@@ -109,11 +120,100 @@ Vue.component('resourceSelect', {
                     app.selectedCompetency = c;
                 }, 100);
             }, console.error);
+        },
+        getVotes: function (evt) {
+            var me = this;
+            repo.searchWithParams(
+                "(@type:LikeAction OR @type:DislikeAction) AND object:\"" + this.uri + "\"", {
+                    size: 10000
+                },
+                function (action) {},
+                function (actions) {
+                    var addresses = {};
+                    for (var i = 0; i < actions.length; i++) {
+                        var action = actions[i];
+                        if (addresses[action.owner[0]] == null)
+                            addresses[action.owner[0]] = 0;
+                        if (action.type == "LikeAction")
+                            addresses[action.owner[0]] = addresses[action.owner[0]] + 1;
+                        if (action.type == "DislikeAction")
+                            addresses[action.owner[0]] = addresses[action.owner[0]] - 1;
+                    }
+                    var upvotes = 0;
+                    var downvotes = 0;
+                    me.upvoted = false;
+                    me.downvoted = false;
+                    for (var address in addresses) {
+                        var value = addresses[address];
+                        if (value < 0) {
+                            downvotes++;
+                            if (address == EcIdentityManager.ids[0].ppk.toPk().toPem())
+                                me.downvoted = true;
+                        } else if (value > 0) {
+                            upvotes++;
+                            if (address == EcIdentityManager.ids[0].ppk.toPk().toPem())
+                                me.upvoted = true;
+                        }
+                    }
+                    me.upvotes = upvotes;
+                    me.downvotes = downvotes;
+                }, console.error);
+        },
+        upvote: function (evt, after) {
+            var me = this;
+            this.undownvote(evt, function () {
+                var likeAction = new LikeAction();
+                likeAction.generateId(repo.selectedServer);
+                likeAction.addOwner(EcIdentityManager.ids[0].ppk.toPk());
+                likeAction.object = me.uri;
+                EcRepository.save(likeAction, me.getVotes, console.error);
+            });
+        },
+        unupvote: function (evt, after) {
+            var me = this;
+            var a = after;
+            repo.search(
+                "@type:LikeAction AND object:\"" + this.uri + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                function (like) {
+                    EcRepository._delete(like, me.getVotes, console.error);
+                },
+                function (likes) {
+                    if (a != null) a();
+                }, console.error);
+        },
+        downvote: function (evt, after) {
+            var me = this;
+            this.unupvote(evt, function () {
+                var dislikeAction = new DislikeAction();
+                dislikeAction.generateId(repo.selectedServer);
+                dislikeAction.addOwner(EcIdentityManager.ids[0].ppk.toPk());
+                dislikeAction.object = me.uri;
+                EcRepository.save(dislikeAction, me.getVotes, console.error);
+            });
+        },
+        undownvote: function (evt, after) {
+            var me = this;
+            var a = after;
+            repo.search(
+                "@type:DislikeAction AND object:\"" + this.uri + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                function (dislike) {
+                    EcRepository._delete(dislike, me.getVotes, console.error);
+                },
+                function (dislikes) {
+                    if (a != null) a();
+                }, console.error);
         }
     },
     template: '<li>' +
         '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
-        '<a  v-on:click="setResource" :href="url" :target="urlTarget" style="cursor:pointer;">{{ name }}</a>' +
+        '<button v-if="upvoted" v-on:click="unupvote"><i class="mdi mdi-thumb-up-outline" aria-hidden="true">{{upvotes}}</i></button>' +
+        '<button v-else v-on:click="upvote"><i class="mdi mdi-thumb-up" aria-hidden="true">{{upvotes}}</i></button> ' +
+        '<button v-if="downvoted" v-on:click="undownvote"><i class="mdi mdi-thumb-down-outline" aria-hidden="true">{{downvotes}}</i></button> ' +
+        '<button v-else v-on:click="downvote"><i class="mdi mdi-thumb-down" aria-hidden="true">{{downvotes}}</i></button> ' +
+        '<a v-on:click="setResource" :href="url" :target="urlTarget" style="cursor:pointer;">' +
+        '<i class="mdi mdi-link-variant" aria-hidden="true"></i>' +
+        '{{ name }}' +
+        '</a> ' +
         '<small v-on:click="setResource" v-if="description" class="block">{{ description }}</small>' +
         '</li>'
 });

@@ -1,0 +1,32 @@
+hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#container {
+    padding-left: 20px;
+    background-color: rgba(0, 0, 0, .0);
+    height: calc(100vh - 25px);
+    width: calc(100vw);
+}
+
+button {
+    padding: 2px;
+}
+
+button.pressed {
+    background-color: gray;
+}
+
+.right {
+    float: right;
+}
+
+.block {
+    display: block;
+}
+
+.accslide li {
+    margin-left: 2rem;
+    list-style: none;
+}
