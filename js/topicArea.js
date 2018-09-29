@@ -94,10 +94,11 @@ Vue.component('framework', {
 });
 
 Vue.component('competency', {
-    props: ['uri', 'hasChild'],
+    props: ['uri', 'hasChild', 'parentCompetent'],
     data: function () {
         return {
-            counter: 0
+            counter: 0,
+            competent: false
         };
     },
     computed: {
@@ -129,17 +130,79 @@ Vue.component('competency', {
                 return EcCompetency.getBlocking(this.uri).getDescription();
             }
         },
+        isCompetent: {
+            get: function () {
+                return this.competent || this.parentCompetent;
+            }
+        }
+    },
+    created: function () {
+        this.getCompetence();
     },
     methods: {
         setCompetency: function () {
             app.selectedCompetency = EcCompetency.getBlocking(this.uri);
             app.availableResources = null;
             $("#rad3").click();
+        },
+        getCompetence: function (evt) {
+            var me = this;
+            repo.search(
+                "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                function (assertion) {},
+                function (assertions) {
+                    me.competent = false;
+                    var addresses = {};
+                    for (var i = 0; i < assertions.length; i++) {
+                        var obj = assertions[i];
+                        var assertion = new EcAssertion();
+                        assertion.copyFrom(obj);
+                        assertion.getSubjectAsync(function (subject) {
+                            if (EcIdentityManager.ids[0].ppk.toPk().toPem() == subject.toPem())
+                                me.competent = true;
+                        }, console.error);
+                    }
+                }, console.error);
+        },
+        claimCompetence: function (evt, after) {
+            var a = new EcAssertion();
+            a.generateId(repo.selectedServer);
+            a.addOwner(EcIdentityManager.ids[0].ppk.toPk());
+            a.setSubject(EcIdentityManager.ids[0].ppk.toPk());
+            a.setAgent(EcIdentityManager.ids[0].ppk.toPk());
+            a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(this.uri));
+            a.setAssertionDate(Date.now()); //UTC Milliseconds
+            a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
+            EcRepository.save(a, this.getCompetence, console.error);
+        },
+        unclaimCompetence: function (evt, after) {
+            var me = this;
+            var a = after;
+            EcAssertion.search(repo,
+                "competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                function (assertions) {
+                    for (var i = 0; i < assertions.length; i++) {
+                        var obj = assertions[i];
+                        var assertion = new EcAssertion();
+                        assertion.copyFrom(obj);
+                        assertion.getSubjectAsync(function (subject) {
+                            if (EcIdentityManager.ids[0].ppk.toPk().toPem() == subject.toPem())
+                                EcRepository._delete(assertion, me.getCompetence, console.error);
+                        }, console.error);
+                    }
+                    if (a != null) a();
+                }, console.error);
         }
     },
     template: '<li>' +
+        '<span v-if="parentCompetent"></span>' +
+        '<span v-else>' +
+        '<a v-if="competent" v-on:click="unclaimCompetence" title="By clicking this, I no longer think I can demonstrate this."><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></a> ' +
+        '<a v-else v-on:click="claimCompetence" title="By clicking this, I think I can demonstrate this."><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></a> ' +
+        '</span> ' +
         '<span v-on:click="setCompetency">{{ name }}</span> (<span v-on:click="setCompetency">{{ count }} resource{{ count == 1 ? "" : "s" }}</span>)' +
         '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
-        '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild"></competency></ul>' +
+        '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent"></competency></ul>' +
         '</li>'
+
 });
