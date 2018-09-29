@@ -138,7 +138,7 @@ Vue.component('competency', {
         }
     },
     template: '<li>' +
-        '<span v-on:click="setCompetency">{{ name }}</span> (<span v-on:click="setCompetency">{{ count }} resources</span>)' +
+        '<span v-on:click="setCompetency">{{ name }}</span> (<span v-on:click="setCompetency">{{ count }} resource{{ count == 1 ? "" : "s" }}</span>)' +
         '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
         '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild"></competency></ul>' +
         '</li>'
