@@ -98,7 +98,8 @@ Vue.component('competency', {
     data: function () {
         return {
             counter: 0,
-            competent: false
+            competent: false,
+            incompetent: false
         };
     },
     computed: {
@@ -153,28 +154,45 @@ Vue.component('competency', {
                 function (assertion) {},
                 function (assertions) {
                     me.competent = false;
+                    me.incompetent = false;
                     var addresses = {};
                     for (var i = 0; i < assertions.length; i++) {
                         var obj = assertions[i];
-                        var assertion = new EcAssertion();
-                        assertion.copyFrom(obj);
-                        assertion.getSubjectAsync(function (subject) {
-                            if (EcIdentityManager.ids[0].ppk.toPk().toPem() == subject.toPem())
-                                me.competent = true;
-                        }, console.error);
+                        (function (obj) {
+                            var assertion = new EcAssertion();
+                            assertion.copyFrom(obj);
+                            assertion.getSubjectAsync(function (subject) {
+                                if (EcIdentityManager.ids[0].ppk.toPk().toPem() == subject.toPem()) {
+                                    if (assertion.negative != null)
+                                        assertion.getNegativeAsync(function (negative) {
+                                            if (negative)
+                                                me.incompetent = true;
+                                            else
+                                                me.competent = true;
+                                        });
+                                    else
+                                        me.competent = true;
+                                }
+
+                            }, console.error);
+                        })(obj);
                     }
                 }, console.error);
         },
         claimCompetence: function (evt, after) {
-            var a = new EcAssertion();
-            a.generateId(repo.selectedServer);
-            a.addOwner(EcIdentityManager.ids[0].ppk.toPk());
-            a.setSubject(EcIdentityManager.ids[0].ppk.toPk());
-            a.setAgent(EcIdentityManager.ids[0].ppk.toPk());
-            a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(this.uri));
-            a.setAssertionDate(Date.now()); //UTC Milliseconds
-            a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
-            EcRepository.save(a, this.getCompetence, console.error);
+            var me = this;
+            this.unclaimIncompetence(evt, function () {
+                var a = new EcAssertion();
+                a.generateId(repo.selectedServer);
+                a.addOwner(EcIdentityManager.ids[0].ppk.toPk());
+                a.setSubject(EcIdentityManager.ids[0].ppk.toPk());
+                a.setAgent(EcIdentityManager.ids[0].ppk.toPk());
+                a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
+                a.setAssertionDate(Date.now()); //UTC Milliseconds
+                a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
+                a.setNegative(false); //This is an assertion that an individual *can* do something, not that they *cannot*.
+                EcRepository.save(a, me.getCompetence, console.error);
+            });
         },
         unclaimCompetence: function (evt, after) {
             var me = this;
@@ -184,12 +202,60 @@ Vue.component('competency', {
                 function (assertions) {
                     for (var i = 0; i < assertions.length; i++) {
                         var obj = assertions[i];
-                        var assertion = new EcAssertion();
-                        assertion.copyFrom(obj);
-                        assertion.getSubjectAsync(function (subject) {
-                            if (EcIdentityManager.ids[0].ppk.toPk().toPem() == subject.toPem())
-                                EcRepository._delete(assertion, me.getCompetence, console.error);
-                        }, console.error);
+                        (function (obj) {
+                            var assertion = new EcAssertion();
+                            assertion.copyFrom(obj);
+                            assertion.getSubjectAsync(function (subject) {
+                                if (EcIdentityManager.ids[0].ppk.toPk().toPem() == subject.toPem()) {
+                                    if (assertion.negative == null)
+                                        EcRepository._delete(assertion, me.getCompetence, console.error);
+                                    else
+                                        assertion.getNegativeAsync(function (negative) {
+                                            if (!negative)
+                                                EcRepository._delete(assertion, me.getCompetence, console.error);
+                                        });
+                                }
+                            }, console.error);
+                        })(obj);
+                    }
+                    if (a != null) a();
+                }, console.error);
+        },
+        claimIncompetence: function (evt, after) {
+            var me = this;
+            this.unclaimCompetence(evt, function () {
+                var a = new EcAssertion();
+                a.generateId(repo.selectedServer);
+                a.addOwner(EcIdentityManager.ids[0].ppk.toPk());
+                a.setSubject(EcIdentityManager.ids[0].ppk.toPk());
+                a.setAgent(EcIdentityManager.ids[0].ppk.toPk());
+                a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
+                a.setAssertionDate(Date.now()); //UTC Milliseconds
+                a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
+                a.setNegative(true); //This is an assertion that an individual *can* do something, not that they *cannot*.
+                EcRepository.save(a, me.getCompetence, console.error);
+            });
+        },
+        unclaimIncompetence: function (evt, after) {
+            var me = this;
+            var a = after;
+            EcAssertion.search(repo,
+                "competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                function (assertions) {
+                    for (var i = 0; i < assertions.length; i++) {
+                        var obj = assertions[i];
+                        (function (obj) {
+                            var assertion = new EcAssertion();
+                            assertion.copyFrom(obj);
+                            assertion.getSubjectAsync(function (subject) {
+                                if (EcIdentityManager.ids[0].ppk.toPk().toPem() == subject.toPem())
+                                    if (assertion.negative != null)
+                                        assertion.getNegativeAsync(function (negative) {
+                                            if (negative)
+                                                EcRepository._delete(assertion, me.getCompetence, console.error);
+                                        });
+                            }, console.error);
+                        })(obj);
                     }
                     if (a != null) a();
                 }, console.error);
@@ -198,10 +264,12 @@ Vue.component('competency', {
     template: '<li>' +
         '<span v-if="parentCompetent"></span>' +
         '<span v-else>' +
-        '<a v-if="competent" v-on:click="unclaimCompetence" title="By clicking this, I no longer think I can demonstrate this."><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></a> ' +
-        '<a v-else v-on:click="claimCompetence" title="By clicking this, I think I can demonstrate this."><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></a> ' +
-        '</span> ' +
-        '<span v-on:click="setCompetency">{{ name }}</span> (<span v-on:click="setCompetency">{{ count }} resource{{ count == 1 ? "" : "s" }}</span>)' +
+        '<button v-if="competent" v-on:click="unclaimCompetence" title="By clicking this, I no longer think I can demonstrate this."><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
+        '<button v-else v-on:click="claimCompetence" title="By clicking this, I think I can demonstrate this."><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
+        '<button v-if="incompetent" v-on:click="unclaimIncompetence" title="By clicking this, I no longer think I cannot demonstrate this."><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
+        '<button v-else v-on:click="claimIncompetence" title="By clicking this, I think I would demonstrate that I cannot do this."><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
+        ' </span> ' +
+        '<a v-on:click="setCompetency">{{ name }}</a> (<span v-on:click="setCompetency">{{ count }} resource{{ count == 1 ? "" : "s" }}</span>)' +
         '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
         '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent"></competency></ul>' +
         '</li>'

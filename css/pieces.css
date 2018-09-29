@@ -12,6 +12,15 @@ hr {
 
 button {
     padding: 2px;
+    border: 0px;
+    background-color: transparent;
+}
+
+button:hover {
+    padding: 1px;
+    border: 1px black solid;
+    background-color: rgba(0, 0, 0, .15);
+    cursor: pointer;
 }
 
 button.pressed {
@@ -29,4 +38,9 @@ button.pressed {
 .accslide li {
     margin-left: 2rem;
     list-style: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
