@@ -43,9 +43,11 @@ Vue.component('resourceSelect', {
     data: function () {
         return {
             upvotes: 0,
-            downvotes: 0,
             upvoted: false,
-            downvoted: false
+            downvotes: 0,
+            downvoted: false,
+            views: 0,
+            viewed: false
         };
     },
     computed: {
@@ -104,11 +106,13 @@ Vue.component('resourceSelect', {
     },
     created: function () {
         this.getVotes();
+        this.getViews();
     },
     methods: {
         setResource: function () {
             app.selectedResource = EcRepository.getBlocking(this.uri);
             window.open(app.selectedResource.url, "lernnit");
+            this.view();
         },
         deleteMe: function () {
             var me = this;
@@ -159,6 +163,54 @@ Vue.component('resourceSelect', {
                     me.downvotes = downvotes;
                 }, console.error);
         },
+        getViews: function (evt) {
+            var me = this;
+            repo.searchWithParams(
+                "@type:ChooseAction AND object:\"" + this.uri + "\"", {
+                    size: 10000
+                },
+                function (action) {},
+                function (actions) {
+                    var addresses = {};
+                    for (var i = 0; i < actions.length; i++) {
+                        var action = actions[i];
+                        if (addresses[action.owner[0]] == null)
+                            addresses[action.owner[0]] = 0;
+                        if (action.type == "ChooseAction")
+                            addresses[action.owner[0]] = addresses[action.owner[0]] + 1;
+                    }
+                    var views = 0;
+                    me.viewed = false;
+                    for (var address in addresses) {
+                        var value = addresses[address];
+                        if (value > 0) {
+                            views += value;
+                            if (address == EcIdentityManager.ids[0].ppk.toPk().toPem())
+                                me.viewed = true;
+                        }
+                    }
+                    me.views = views;
+                }, console.error);
+        },
+        view: function (evt, after) {
+            var chooseAction = new ChooseAction();
+            chooseAction.generateId(repo.selectedServer);
+            chooseAction.addOwner(EcIdentityManager.ids[0].ppk.toPk());
+            chooseAction.object = this.uri;
+            EcRepository.save(chooseAction, this.getViews, console.error);
+        },
+        unview: function (evt, after) {
+            var me = this;
+            var a = after;
+            repo.search(
+                "@type:ChooseAction AND object:\"" + this.uri + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                function (view) {
+                    EcRepository._delete(view, me.getViews, console.error);
+                },
+                function (views) {
+                    if (a != null) a();
+                }, console.error);
+        },
         upvote: function (evt, after) {
             var me = this;
             this.undownvote(evt, function () {
@@ -206,10 +258,12 @@ Vue.component('resourceSelect', {
     },
     template: '<li>' +
         '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
-        '<button v-if="upvoted" v-on:click="unupvote"><i class="mdi mdi-thumb-up-outline" aria-hidden="true">{{upvotes}}</i></button>' +
-        '<button v-else v-on:click="upvote"><i class="mdi mdi-thumb-up" aria-hidden="true">{{upvotes}}</i></button> ' +
-        '<button v-if="downvoted" v-on:click="undownvote"><i class="mdi mdi-thumb-down-outline" aria-hidden="true">{{downvotes}}</i></button> ' +
-        '<button v-else v-on:click="downvote"><i class="mdi mdi-thumb-down" aria-hidden="true">{{downvotes}}</i></button> ' +
+        '<button v-if="upvoted" v-on:click="unupvote" title="Remove Upvote"><i class="mdi mdi-thumb-up-outline" aria-hidden="true">{{upvotes}}</i></button>' +
+        '<button v-else v-on:click="upvote" title="Upvote"><i class="mdi mdi-thumb-up" aria-hidden="true">{{upvotes}}</i></button> ' +
+        '<button v-if="downvoted" v-on:click="undownvote" title="Remove Downvote"><i class="mdi mdi-thumb-down-outline" aria-hidden="true">{{downvotes}}</i></button> ' +
+        '<button v-else v-on:click="downvote" title="Remove Downvote"><i class="mdi mdi-thumb-down" aria-hidden="true">{{downvotes}}</i></button> ' +
+        '<button v-if="viewed" v-on:click="unview" title="I viewed this already."><i class="mdi mdi-eye-off-outline" aria-hidden="true">{{views}}</i></button> ' +
+        '<button v-else v-on:click="view" title="I did not really view this."><i class="mdi mdi-eye-outline" aria-hidden="true">{{views}}</i></button> ' +
         '<a v-on:click="setResource" :href="url" :target="urlTarget" style="cursor:pointer;">' +
         '<i class="mdi mdi-link-variant" aria-hidden="true"></i>' +
         '{{ name }}' +
