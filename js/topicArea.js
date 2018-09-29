@@ -146,6 +146,7 @@ Vue.component('competency', {
             $("#rad3").click();
         },
         getCompetence: function (evt) {
+            if (this.parentCompetent) return;
             var me = this;
             repo.search(
                 "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
