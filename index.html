@@ -55,7 +55,9 @@
                     <label for="rad3"><a class="vertical">Select Learning Resource</a></label>
                     <div class="accslide">
                         <div v-if="selectedCompetency">
-                            <div>The following resources exist for <strong><competency :uri="selectedCompetency.id" /></strong></div>
+                            <div>The following resources exist for:
+                                <competency :uri="selectedCompetency.id" />
+                            </div>
 
                             <hr>
                             <resources :url="selectedCompetency.id"></resources>
