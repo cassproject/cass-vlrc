@@ -55,7 +55,9 @@
                     <label for="rad3"><a class="vertical">Select Learning Resource</a></label>
                     <div class="accslide">
                         <div v-if="selectedCompetency">
-                            <div>The following resources exist for <strong>{{ selectedCompetency.name }}</strong></div>
+                            <div>The following resources exist for <strong><competency :uri="selectedCompetency.id" /></strong></div>
+
+                            <hr>
                             <resources :url="selectedCompetency.id"></resources>
                             <hr>
                             <!--<div>You have the following history:</div>
@@ -67,7 +69,7 @@
                             <label for="inputUrl">URL: </label><input id="inputUrl" v-model="inputUrl" placeholder="Url" /><br>
                             <label for="inputName">Name: </label><input id="inputName" v-model="inputName" placeholder="Name of Resource" /><br>
                             <label for="inputDescription">Description: </label><textarea id="inputDescription" v-model="inputDescription" placeholder="Description of Resource"></textarea><br>
-                            <button v-on:click="addResource">Add Resource</button>
+                            <button style="float:right;" v-on:click="addResource">Add Resource</button>
                         </div>
                         <div v-else>No topic has been selected.</div>
                     </div>

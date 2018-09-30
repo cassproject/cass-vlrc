@@ -16,6 +16,7 @@ Vue.component('framework', {
                     var precache = [];
                     if (f.competency != null) precache = precache.concat(f.competency);
                     if (f.relation != null) precache = precache.concat(f.relation);
+                    topicCompetencies = {};
                     repo.precache(precache, function (success) {
                         var r = {};
                         var top = {};
@@ -93,8 +94,9 @@ Vue.component('framework', {
         '<div v-else><br>Loading Framework...</div></div>'
 });
 
+var topicCompetencies = {};
 Vue.component('competency', {
-    props: ['uri', 'hasChild', 'parentCompetent'],
+    props: ['uri', 'hasChild', 'parentCompetent', 'dontRegister'],
     data: function () {
         return {
             counter: 0,
@@ -107,15 +109,7 @@ Vue.component('competency', {
             get: function () {
                 var me = this;
                 if (this.uri == null) return 0;
-
-                var search = "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\"";
-                repo.searchWithParams(search, {
-                        size: 50
-                    },
-                    null,
-                    function (resources) {
-                        me.counter = resources.length;
-                    }, console.error);
+                this.getResourceCount();
                 return this.counter;
             }
         },
@@ -128,27 +122,55 @@ Vue.component('competency', {
         description: {
             get: function () {
                 if (this.uri == null) return "Could not resolve URI.";
-                return EcCompetency.getBlocking(this.uri).getDescription();
+                var descriptionArray = EcCompetency.getBlocking(this.uri).getDescription();
+                if (descriptionArray == null) return null;
+                return descriptionArray[0];
             }
         },
         isCompetent: {
             get: function () {
                 return this.competent || this.parentCompetent;
             }
+        },
+        countPhrase: {
+            get: function () {
+                if (this.count == 0)
+                    return "";
+                return "(" + this.count + " resource" + (this.count == 1 ? "" : "s") + ")";
+            }
         }
     },
     created: function () {
+        if (topicCompetencies[this.uri] == null)
+            topicCompetencies[this.uri] = [this];
+        else
+            topicCompetencies[this.uri].push(this);
         this.getCompetence();
     },
     methods: {
+        getResourceCount: function () {
+            var me = this;
+            var search = "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\"";
+            repo.searchWithParams(search, {
+                    size: 50
+                },
+                null,
+                function (resources) {
+                    me.counter = resources.length;
+                }, console.error);
+        },
         setCompetency: function () {
             app.selectedCompetency = EcCompetency.getBlocking(this.uri);
             app.availableResources = null;
             $("#rad3").click();
         },
-        getCompetence: function (evt) {
+        getCompetence: function (evt, dontPropegate) {
             if (this.parentCompetent) return;
             var me = this;
+            if (dontPropegate != true && topicCompetencies[this.uri] != null)
+                for (var i = 0; i < topicCompetencies[this.uri].length; i++)
+                    if (this != topicCompetencies[this.uri][i])
+                        topicCompetencies[this.uri][i].getCompetence(evt, true);
             repo.search(
                 "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function (assertion) {},
@@ -264,12 +286,12 @@ Vue.component('competency', {
     template: '<li>' +
         '<span v-if="parentCompetent"></span>' +
         '<span v-else>' +
-        '<button v-if="competent" v-on:click="unclaimCompetence" title="By clicking this, I no longer think I can demonstrate this."><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
-        '<button v-else v-on:click="claimCompetence" title="By clicking this, I think I can demonstrate this."><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
-        '<button v-if="incompetent" v-on:click="unclaimIncompetence" title="By clicking this, I no longer think I cannot demonstrate this."><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
-        '<button v-else v-on:click="claimIncompetence" title="By clicking this, I think I would demonstrate that I cannot do this."><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="competent" v-on:click="unclaimCompetence" title="By clicking this, I no longer think I can demonstrate this."><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-else v-on:click="claimCompetence" title="By clicking this, I think I can demonstrate this."><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="incompetent" v-on:click="unclaimIncompetence" title="By clicking this, I no longer think I cannot demonstrate this."><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-else v-on:click="claimIncompetence" title="By clicking this, I think I would demonstrate that I cannot do this."><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
         ' </span> ' +
-        '<a v-on:click="setCompetency">{{ name }}</a> (<span v-on:click="setCompetency">{{ count }} resource{{ count == 1 ? "" : "s" }}</span>)' +
+        '<a v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span>' +
         '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
         '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent"></competency></ul>' +
         '</li>'

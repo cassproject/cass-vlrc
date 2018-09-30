@@ -30,9 +30,9 @@ Vue.component('resources', {
         }
     },
     template: '<div>' +
-        '<div v-if="empty"><br>None found...</div>' +
+        '<div v-if="empty">None found...</div>' +
         '<div v-else>' +
-        '<ul v-if="resources"><resourceSelect v-for="item in resources" v-bind:key="item.id" :uri="item.id"></resourceSelect></ul>' +
+        '<ul class="noIndent" v-if="resources"><resourceSelect v-for="item in resources" v-bind:key="item.id" :uri="item.id"></resourceSelect></ul>' +
         '<div v-else>Loading Resources...</div>' +
         '</div>' +
         '</div>'
@@ -120,9 +120,12 @@ Vue.component('resourceSelect', {
             EcRepository._delete(resource, function () {
                 var c = app.selectedCompetency;
                 app.selectedCompetency = null;
-                setTimeout(function () {
+                me.$nextTick(function () {
                     app.selectedCompetency = c;
-                }, 100);
+                    if (topicCompetencies[app.selectedCompetency.id] != null)
+                        for (var i = 0; i < topicCompetencies[app.selectedCompetency.id].length; i++)
+                            topicCompetencies[app.selectedCompetency.id][i].getResourceCount();
+                });
             }, console.error);
         },
         getVotes: function (evt) {
@@ -258,12 +261,12 @@ Vue.component('resourceSelect', {
     },
     template: '<li>' +
         '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
-        '<button v-if="upvoted" v-on:click="unupvote" title="Remove Upvote"><i class="mdi mdi-thumb-up-outline" aria-hidden="true"> {{upvotes}}</i></button>' +
-        '<button v-else v-on:click="upvote" title="Upvote"><i class="mdi mdi-thumb-up" aria-hidden="true"> {{upvotes}}</i></button> ' +
-        '<button v-if="downvoted" v-on:click="undownvote" title="Remove Downvote"><i class="mdi mdi-thumb-down-outline" aria-hidden="true"> {{downvotes}}</i></button> ' +
-        '<button v-else v-on:click="downvote" title="Remove Downvote"><i class="mdi mdi-thumb-down" aria-hidden="true"> {{downvotes}}</i></button> ' +
-        '<button v-if="viewed" v-on:click="unview" title="By clicking this, I did not really view this."><i class="mdi mdi-eye-off-outline" aria-hidden="true"> {{views}}</i></button> ' +
-        '<button v-else v-on:click="view" title="By clicking this, I viewed this already."><i class="mdi mdi-eye-outline" aria-hidden="true"> {{views}}</i></button> ' +
+        '<button class="inline" v-if="upvoted" v-on:click="unupvote" title="Remove Upvote"><i class="mdi mdi-thumb-up-outline" aria-hidden="true"> {{upvotes}}</i></button>' +
+        '<button class="inline" v-else v-on:click="upvote" title="Upvote"><i class="mdi mdi-thumb-up" aria-hidden="true"> {{upvotes}}</i></button> ' +
+        '<button class="inline" v-if="downvoted" v-on:click="undownvote" title="Remove Downvote"><i class="mdi mdi-thumb-down-outline" aria-hidden="true"> {{downvotes}}</i></button> ' +
+        '<button class="inline" v-else v-on:click="downvote" title="Remove Downvote"><i class="mdi mdi-thumb-down" aria-hidden="true"> {{downvotes}}</i></button> ' +
+        '<button class="inline" v-if="viewed" v-on:click="unview" title="By clicking this, I did not really view this."><i class="mdi mdi-eye-off-outline" aria-hidden="true"> {{views}}</i></button> ' +
+        '<button class="inline" v-else v-on:click="view" title="By clicking this, I viewed this already."><i class="mdi mdi-eye-outline" aria-hidden="true"> {{views}}</i></button> ' +
         '<a v-on:click="setResource" :href="url" :target="urlTarget" style="cursor:pointer;">' +
         '<i class="mdi mdi-link-variant" aria-hidden="true"></i>' +
         '{{ name }}' +

@@ -55,9 +55,12 @@ var app = new Vue({
             EcRepository.save(c, console.log, console.error);
             var c = this.selectedCompetency;
             this.selectedCompetency = null;
-            setTimeout(function () {
+            this.$nextTick(function () {
                 app.selectedCompetency = c;
-            }, 100);
+                if (topicCompetencies[app.selectedCompetency.shortId()] != null)
+                    for (var i = 0; i < topicCompetencies[app.selectedCompetency.shortId()].length; i++)
+                        topicCompetencies[app.selectedCompetency.shortId()][i].getResourceCount();
+            });
         }
     },
     watch: {

@@ -11,12 +11,16 @@ hr {
 }
 
 button {
+    padding: 5px;
+}
+
+button.inline {
     padding: 2px;
     border: 0px;
     background-color: transparent;
 }
 
-button:hover {
+button.inline:hover {
     padding: 1px;
     border: 1px black solid;
     background-color: rgba(0, 0, 0, .15);
@@ -40,7 +44,11 @@ button.pressed {
     list-style: none;
 }
 
-a:hover {
+.accslide a:hover {
     text-decoration: underline;
     cursor: pointer;
+}
+
+ul.noIndent li {
+    margin-left: .5rem;
 }
