@@ -50,11 +50,21 @@ Vue.component('resourceSelect', {
             viewed: false
         };
     },
+    created: function () {},
     computed: {
+        resource: {
+            get: function () {
+                var resource = EcRepository.getBlocking(this.uri);
+                var count = 0;
+                while (count++ < 50 && resource.url != null && resource.url.indexOf(repo.selectedServer) != -1)
+                    resource = EcRepository.getBlocking(resource.url);
+                return resource;
+            }
+        },
         name: {
             get: function () {
                 if (this.uri == null) return "Untitled Resource.";
-                var resource = EcRepository.getBlocking(this.uri);
+                var resource = this.resource;
                 if (resource != null && resource.name != null)
                     return resource.name;
                 else
@@ -64,7 +74,7 @@ Vue.component('resourceSelect', {
         url: {
             get: function () {
                 if (this.uri == null) return null;
-                var resource = EcRepository.getBlocking(this.uri);
+                var resource = this.resource;
                 if (resource != null && resource.url != null)
                     return resource.url;
                 else
@@ -74,7 +84,7 @@ Vue.component('resourceSelect', {
         urlTarget: {
             get: function () {
                 if (this.uri == null) return null;
-                var resource = EcRepository.getBlocking(this.uri);
+                var resource = this.resource;
                 if (resource != null && resource.url != null)
                     return "_blank";
                 else
@@ -84,7 +94,7 @@ Vue.component('resourceSelect', {
         mine: {
             get: function () {
                 if (this.uri == null) return null;
-                var resource = EcRepository.getBlocking(this.uri);
+                var resource = this.resource;
                 if (resource != null) {
                     if (resource.owner == null || resource.owner.length == 0)
                         return true;
@@ -96,7 +106,7 @@ Vue.component('resourceSelect', {
         description: {
             get: function () {
                 if (this.uri == null) return null;
-                var resource = EcRepository.getBlocking(this.uri);
+                var resource = this.resource;
                 if (resource != null && resource.description != null)
                     return resource.description;
                 else
