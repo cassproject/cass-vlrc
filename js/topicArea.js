@@ -124,7 +124,9 @@ Vue.component('competency', {
                 if (this.uri == null) return "Could not resolve URI.";
                 var descriptionArray = EcCompetency.getBlocking(this.uri).getDescription();
                 if (descriptionArray == null) return null;
-                return descriptionArray[0];
+                if (EcArray.isArray(descriptionArray))
+                    return descriptionArray[0];
+                return descriptionArray;
             }
         },
         isCompetent: {
