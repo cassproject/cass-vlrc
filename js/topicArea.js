@@ -149,6 +149,11 @@ Vue.component('competency', {
             topicCompetencies[this.uri].push(this);
         this.getCompetence();
     },
+    watch: {
+        uri: function (newUri, oldUri) {
+            this.getCompetence(null, true);
+        }
+    },
     methods: {
         getResourceCount: function () {
             var me = this;
