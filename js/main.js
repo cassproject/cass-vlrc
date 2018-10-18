@@ -1,7 +1,8 @@
 var repo = new EcRepository();
-repo.selectedServer = "https://dev.cassproject.org/api/";
+repo.autoDetectRepository();
+if (repo.selectedServer == null)
+    repo.selectedServer = "https://dev.cassproject.org/api/";
 EcRepository.caching = true;
-EcIdentityManager.readIdentities();
 
 $(document).ready(function () {
 
@@ -24,4 +25,118 @@ $(document).ready(function () {
             $("#viewOutputFramework").attr("src", "");
     });
 
+    if (queryParams.user == "wait") {
+        console.log("Sending waiting message");
+        sendWaitingMessage();
+    }
+    else {
+        EcIdentityManager.readIdentities();
+        if (EcIdentityManager.ids.length == 0) {
+            var i = new EcIdentity();
+            i.displayName = "You";
+            EcPpk.generateKeyAsync(function (ppk) {
+                i.ppk = ppk;
+                EcIdentityManager.addIdentity(i);
+                app.login = true;
+                EcIdentityManager.saveIdentities();
+            });
+        } else
+            app.login = true;
+
+        if (queryParams.frameworkId != null) {
+            setTimeout(function () {
+                app.selectedFramework = EcFramework.getBlocking(queryParams.frameworkId);
+                $("#rad2").click();
+            }, 100);
+        } else {
+            setTimeout(function () {
+                $("#rad1").click();
+            }, 100);
+        }
+    }
 });
+
+//**************************************************************************************************
+// CASS UI VLRC iFrame Communication Functions
+//**************************************************************************************************
+
+//**************************************************************************************************
+// Constants
+
+const ALIGN_MESSAGE = "gotoAlign";
+const WAITING_MESSAGE = "waiting";
+
+const FWK_TO_FWK_ALIGN_TYPE = "fwkToFwk";
+
+const INIT_IDENTITY_ACTION = "initIdentity";
+
+//**************************************************************************************************
+// Action Executions
+//**************************************************************************************************
+
+function performInitIdentityAction(data) {
+    repo.selectedServer=data.serverParm;
+    var ident = new EcIdentity();
+    ident.ppk = EcPpk.fromPem(data.pemParm);
+    ident.displayName = data.nameParm;
+    EcIdentityManager.addIdentity(ident);
+
+    if (queryParams.frameworkId != null) {
+        setTimeout(function () {
+            app.selectedFramework = EcFramework.getBlocking(queryParams.frameworkId);
+            $("#rad2").click();
+        }, 100);
+    } else {
+        setTimeout(function () {
+            $("#rad1").click();
+        }, 100);
+    }
+}
+
+//**************************************************************************************************
+// Message Sender
+//**************************************************************************************************
+
+function sendWaitingMessage() {
+    var message = {
+        message: WAITING_MESSAGE
+    };
+    parent.postMessage(message, queryParams.origin);
+}
+
+//**************************************************************************************************
+// Message Listener
+//**************************************************************************************************
+
+function performAction(action,data) {
+    switch (action) {
+        case INIT_IDENTITY_ACTION:
+            performInitIdentityAction(data);
+            break;
+        default:
+            break;
+    }
+}
+
+var messageListener = function (evt) {
+    var data = evt.data;
+    if (data != null && data != "") {
+        data = JSON.parse(data);
+        if (data != null && data != "") {
+            if (data.action == null || data.action == "") {
+            }
+            else performAction(data.action,data);
+        }
+        else {
+        }
+    }
+    else {
+    }
+}
+
+if (window.addEventListener) {
+    window.addEventListener("message", messageListener, false);
+}
+else {
+    window.attachEvent("onmessage", messageListener);
+}

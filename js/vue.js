@@ -27,16 +27,6 @@ var app = new Vue({
         }
     },
     created: function () {
-        if (queryParams.frameworkId != null) {
-            setTimeout(function () {
-                app.selectedFramework = EcFramework.getBlocking(queryParams.frameworkId);
-                $("#rad2").click();
-            }, 100);
-        } else {
-            setTimeout(function () {
-                $("#rad1").click();
-            }, 100);
-        }
     },
     methods: {
         searchGoogle: function () {
@@ -84,14 +74,3 @@ var app = new Vue({
         inputDescription: ""
     }
 });
-if (EcIdentityManager.ids.length == 0) {
-    var i = new EcIdentity();
-    i.displayName = "You";
-    EcPpk.generateKeyAsync(function (ppk) {
-        i.ppk = ppk;
-        EcIdentityManager.addIdentity(i);
-        app.login = true;
-        EcIdentityManager.saveIdentities();
-    });
-} else
-    app.login = true;
