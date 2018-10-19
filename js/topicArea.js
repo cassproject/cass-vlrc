@@ -26,7 +26,7 @@ Vue.component('framework', {
                             for (var i = 0; i < f.competency.length; i++) {
                                 var c = EcCompetency.getBlocking(f.competency[i]);
                                 if (c != null)
-                                    r[c.shortId()] = top[c.shortId()] = c;
+                                    r[f.competency[i]] = r[c.shortId()] = top[c.shortId()] = c;
                             }
                         if (f.relation != null)
                             for (var i = 0; i < f.relation.length; i++) {
@@ -109,7 +109,6 @@ Vue.component('competency', {
             get: function () {
                 var me = this;
                 if (this.uri == null) return 0;
-                this.getResourceCount();
                 return this.counter;
             }
         },
@@ -147,7 +146,6 @@ Vue.component('competency', {
             topicCompetencies[this.uri] = [this];
         else
             topicCompetencies[this.uri].push(this);
-        this.getCompetence();
     },
     watch: {
         uri: function (newUri, oldUri) {
@@ -155,6 +153,13 @@ Vue.component('competency', {
         }
     },
     methods: {
+        initialize: function(isVisible, entry) {
+            if (isVisible) {
+                this.getCompetence();
+                this.getResourceCount();
+                console.log(entry);
+            }
+        },
         getResourceCount: function () {
             var me = this;
             var search = "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\"";
@@ -300,7 +305,7 @@ Vue.component('competency', {
         '<button class="inline" v-if="incompetent" v-on:click="unclaimIncompetence" title="By clicking this, I no longer think I cannot demonstrate this."><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
         '<button class="inline" v-else v-on:click="claimIncompetence" title="By clicking this, I think I would demonstrate that I cannot do this."><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
         ' </span> ' +
-        '<a v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span>' +
+        '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span>' +
         '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
         '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent"></competency></ul>' +
         '</li>'
