@@ -153,11 +153,10 @@ Vue.component('competency', {
         }
     },
     methods: {
-        initialize: function(isVisible, entry) {
+        initialize: function (isVisible, entry) {
             if (isVisible) {
                 this.getCompetence();
                 this.getResourceCount();
-                console.log(entry);
             }
         },
         getResourceCount: function () {
