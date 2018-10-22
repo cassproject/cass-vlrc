@@ -17,7 +17,7 @@ Vue.component('framework', {
                     if (f.competency != null) precache = precache.concat(f.competency);
                     if (f.relation != null) precache = precache.concat(f.relation);
                     topicCompetencies = {};
-                    repo.precache(precache, function (success) {
+                    repo.multiget(precache, function (success) {
                         var r = {};
                         var top = {};
                         if (f == null)
@@ -59,7 +59,7 @@ Vue.component('framework', {
                         me.competency.sort(function (a, b) {
                             return f.competency.indexOf(a.shortId()) - f.competency.indexOf(b.shortId());
                         });
-                    });
+                    },console.error,console.log);
                 }, console.error);
                 return null;
             },
