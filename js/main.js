@@ -6,18 +6,6 @@ if (repo.selectedServer == null)
 EcRepository.caching = true;
 
 $(document).ready(function () {
-    $("iframe").ready(function () {
-        $(window).on("message", function (event) {
-            if (event.originalEvent.data.message == "waiting") {
-                //Identity
-                $("iframe")[0].contentWindow.postMessage(JSON.stringify({
-                    action: "identity",
-                    identity: EcIdentityManager.ids[0].ppk.toPem()
-                }), window.location.origin);
-            };
-        });
-    });
-
     $("#rad4").change(function (evt) {
         if ($("#rad4:checked").length > 0)
             $("#viewOutputFramework").attr("src", "cass-editor/index.html?server=" + repo.selectedServer + "&user=wait&origin=" + window.location.origin);
@@ -37,13 +25,11 @@ $(document).ready(function () {
                 EcPpk.generateKeyAsync(function (ppk) {
                     i.ppk = ppk;
                     EcIdentityManager.addIdentity(i);
-                    app.login = true;
-                    app.me = EcIdentityManager.ids[0].ppk.toPk().toPem();
+                    ready2();
                     EcIdentityManager.saveIdentities();
                 });
             } else {
-                app.login = true;
-                app.me = EcIdentityManager.ids[0].ppk.toPk().toPem();
+                ready2();
             }
         }, 100);
         if (queryParams.frameworkId != null) {
@@ -58,6 +44,23 @@ $(document).ready(function () {
         }
     }
 });
+
+function ready2() {
+    $("iframe").ready(function () {
+        $(window).on("message", function (event) {
+            if (event.originalEvent.data.message == "waiting") {
+                //Identity
+                $("iframe")[0].contentWindow.postMessage(JSON.stringify({
+                    action: "identity",
+                    identity: EcIdentityManager.ids[0].ppk.toPem()
+                }), window.location.origin);
+            };
+        });
+    });
+
+    app.login = true;
+    app.me = EcIdentityManager.ids[0].ppk.toPk().toPem();
+}
 
 //**************************************************************************************************
 // CASS UI VLRC iFrame Communication Functions

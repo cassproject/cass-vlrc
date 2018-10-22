@@ -24,6 +24,7 @@
 <body>
     <script src="https://unpkg.com/vue"></script>
     <script src="https://unpkg.com/vue-observe-visibility"></script>
+    <script src="https://unpkg.com/moment"></script>
     <script src="js/main.js"></script>
     <script src="js/subjectArea.js"></script>
     <script src="js/topicArea.js"></script>
@@ -80,11 +81,14 @@
                 </li>
                 <li>
                     <input id="rad4" type="radio" name="rad">
-                    <label for="rad4"><a class="vertical">Me</a></label>
+                    <label for="rad4"><a class="vertical">About Me</a></label>
                     <div class="accslide">
                         <profile :pk="me"></profile>
+                        <assertionHistory :pk="me"></assertionHistory>
+                        <viewHistory :pk="me"></viewHistory>
                     </div>
                 </li>
+                <!--
                 <li>
                     <input id="rad5" type="radio" name="rad">
                     <label for="rad5"><a class="vertical">My Peers</a></label>
@@ -97,6 +101,7 @@
                     <div class="accslide">
                     </div>
                 </li>
+                -->
                 <li>
                     <input id="rad7" type="radio" name="rad">
                     <label for="rad7"><a class="vertical">Advanced: Create and Edit my own Areas</a></label>
