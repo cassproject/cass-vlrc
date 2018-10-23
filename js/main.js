@@ -1,23 +1,11 @@
 var repo = new EcRepository();
-repo.autoDetectRepository();
+if (window.location.origin.indexOf("127.0.0.1") == -1 && window.location.origin.indexOf("localhost") == -1 && window.location.origin.indexOf("vlrc.cassproject.org") == -1)
+    repo.autoDetectRepository();
 if (repo.selectedServer == null)
     repo.selectedServer = "https://dev.cassproject.org/api/";
 EcRepository.caching = true;
 
 $(document).ready(function () {
-
-    $("iframe").ready(function () {
-        $(window).on("message", function (event) {
-            if (event.originalEvent.data.message == "waiting") {
-                //Identity
-                $("iframe")[0].contentWindow.postMessage(JSON.stringify({
-                    action: "identity",
-                    identity: EcIdentityManager.ids[0].ppk.toPem()
-                }), window.location.origin);
-            };
-        });
-    });
-
     $("#rad4").change(function (evt) {
         if ($("#rad4:checked").length > 0)
             $("#viewOutputFramework").attr("src", "cass-editor/index.html?server=" + repo.selectedServer + "&user=wait&origin=" + window.location.origin);
@@ -28,21 +16,22 @@ $(document).ready(function () {
     if (queryParams.user == "wait") {
         console.log("Sending waiting message");
         sendWaitingMessage();
-    }
-    else {
-        EcIdentityManager.readIdentities();
-        if (EcIdentityManager.ids.length == 0) {
-            var i = new EcIdentity();
-            i.displayName = "You";
-            EcPpk.generateKeyAsync(function (ppk) {
-                i.ppk = ppk;
-                EcIdentityManager.addIdentity(i);
-                app.login = true;
-                EcIdentityManager.saveIdentities();
-            });
-        } else
-            app.login = true;
-
+    } else {
+        setTimeout(function () {
+            EcIdentityManager.readIdentities();
+            if (EcIdentityManager.ids.length == 0) {
+                var i = new EcIdentity();
+                i.displayName = "You";
+                EcPpk.generateKeyAsync(function (ppk) {
+                    i.ppk = ppk;
+                    EcIdentityManager.addIdentity(i);
+                    ready2();
+                    EcIdentityManager.saveIdentities();
+                });
+            } else {
+                ready2();
+            }
+        }, 100);
         if (queryParams.frameworkId != null) {
             setTimeout(function () {
                 app.selectedFramework = EcFramework.getBlocking(queryParams.frameworkId);
@@ -55,6 +44,23 @@ $(document).ready(function () {
         }
     }
 });
+
+function ready2() {
+    $("iframe").ready(function () {
+        $(window).on("message", function (event) {
+            if (event.originalEvent.data.message == "waiting") {
+                //Identity
+                $("iframe")[0].contentWindow.postMessage(JSON.stringify({
+                    action: "identity",
+                    identity: EcIdentityManager.ids[0].ppk.toPem()
+                }), window.location.origin);
+            };
+        });
+    });
+
+    app.login = true;
+    app.me = EcIdentityManager.ids[0].ppk.toPk().toPem();
+}
 
 //**************************************************************************************************
 // CASS UI VLRC iFrame Communication Functions
@@ -75,7 +81,7 @@ const INIT_IDENTITY_ACTION = "initIdentity";
 //**************************************************************************************************
 
 function performInitIdentityAction(data) {
-    repo.selectedServer=data.serverParm;
+    repo.selectedServer = data.serverParm;
     var ident = new EcIdentity();
     ident.ppk = EcPpk.fromPem(data.pemParm);
     ident.displayName = data.nameParm;
@@ -108,7 +114,7 @@ function sendWaitingMessage() {
 // Message Listener
 //**************************************************************************************************
 
-function performAction(action,data) {
+function performAction(action, data) {
     switch (action) {
         case INIT_IDENTITY_ACTION:
             performInitIdentityAction(data);
@@ -121,22 +127,18 @@ function performAction(action,data) {
 var messageListener = function (evt) {
     var data = evt.data;
     if (data != null && data != "") {
-        data = JSON.parse(data);
-        if (data != null && data != "") {
-            if (data.action == null || data.action == "") {
-            }
-            else performAction(data.action,data);
+        if (EcObject.isObject(data) || data.startsWith("{")) {
+            if (!EcObject.isObject(data))
+                data = JSON.parse(data);
+            if (data != null && data != "") {
+                if (data.action == null || data.action == "") {} else performAction(data.action, data);
+            } else {}
         }
-        else {
-        }
-    }
-    else {
-    }
+    } else {}
 }
 
 if (window.addEventListener) {
     window.addEventListener("message", messageListener, false);
-}
-else {
+} else {
     window.attachEvent("onmessage", messageListener);
 }

@@ -153,11 +153,10 @@ Vue.component('competency', {
         }
     },
     methods: {
-        initialize: function(isVisible, entry) {
+        initialize: function (isVisible, entry) {
             if (isVisible) {
                 this.getCompetence();
                 this.getResourceCount();
-                console.log(entry);
             }
         },
         getResourceCount: function () {
@@ -227,6 +226,7 @@ Vue.component('competency', {
                 a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
                 a.setNegative(false); //This is an assertion that an individual *can* do something, not that they *cannot*.
                 EcRepository.save(a, me.getCompetence, console.error);
+                assertionHistory.addAssertion(a);
             });
         },
         unclaimCompetence: function (evt, after) {
@@ -242,12 +242,17 @@ Vue.component('competency', {
                             assertion.copyFrom(obj);
                             assertion.getSubjectAsync(function (subject) {
                                 if (EcIdentityManager.ids[0].ppk.toPk().toPem() == subject.toPem()) {
-                                    if (assertion.negative == null)
+                                    if (assertion.negative == null) {
                                         EcRepository._delete(assertion, me.getCompetence, console.error);
-                                    else
+
+                                        assertionHistory.removeAssertion(assertion);
+                                    } else
                                         assertion.getNegativeAsync(function (negative) {
-                                            if (!negative)
+                                            if (!negative) {
                                                 EcRepository._delete(assertion, me.getCompetence, console.error);
+
+                                                assertionHistory.removeAssertion(assertion);
+                                            }
                                         });
                                 }
                             }, console.error);
@@ -270,6 +275,7 @@ Vue.component('competency', {
                 a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
                 a.setNegative(true); //This is an assertion that an individual *can* do something, not that they *cannot*.
                 EcRepository.save(a, me.getCompetence, console.error);
+                assertionHistory.addAssertion(a);
             });
         },
         unclaimIncompetence: function (evt, after) {
@@ -287,8 +293,10 @@ Vue.component('competency', {
                                 if (EcIdentityManager.ids[0].ppk.toPk().toPem() == subject.toPem())
                                     if (assertion.negative != null)
                                         assertion.getNegativeAsync(function (negative) {
-                                            if (negative)
+                                            if (negative) {
                                                 EcRepository._delete(assertion, me.getCompetence, console.error);
+                                                assertionHistory.removeAssertion(assertion);
+                                            }
                                         });
                             }, console.error);
                         })(obj);

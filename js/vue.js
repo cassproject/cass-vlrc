@@ -26,8 +26,7 @@ var app = new Vue({
             }
         }
     },
-    created: function () {
-    },
+    created: function () {},
     methods: {
         searchGoogle: function () {
             window.open("https://google.com/search?q=" + app.selectedCompetency.getName(), "lernnit");
@@ -65,6 +64,7 @@ var app = new Vue({
     data: {
         message: 'Hello Vue!',
         login: false,
+        me: null,
         status: 'loading...',
         selectedFramework: null,
         selectedCompetency: null,

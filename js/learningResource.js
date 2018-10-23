@@ -211,6 +211,7 @@ Vue.component('resourceSelect', {
             chooseAction.addOwner(EcIdentityManager.ids[0].ppk.toPk());
             chooseAction.object = this.uri;
             EcRepository.save(chooseAction, this.getViews, console.error);
+            viewHistory.addView(chooseAction);
         },
         unview: function (evt, after) {
             var me = this;
@@ -219,6 +220,7 @@ Vue.component('resourceSelect', {
                 "@type:ChooseAction AND object:\"" + this.uri + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function (view) {
                     EcRepository._delete(view, me.getViews, console.error);
+                    viewHistory.removeView(view);
                 },
                 function (views) {
                     if (a != null) a();

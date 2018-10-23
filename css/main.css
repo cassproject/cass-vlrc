@@ -89,7 +89,7 @@ li>label {
     display: inline-block;
 }
 
-.accslide input,
+.accslide input[type="text"],
 .accslide textarea {
     width: calc(100% - 12rem);
 }
@@ -165,5 +165,8 @@ label:hover,
 }
 
 input[type="radio"]:checked+label~.accslide {
-    width: calc(100vw - 200px);
+    width: calc(100vw - 240px);
+    //width: calc(100vw - 320px);
+    //width: calc(100vw - 320px);
+    //width: calc(100vw - 320px);
 }
