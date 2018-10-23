@@ -1,6 +1,13 @@
 var repo = new EcRepository();
-if (window.location.origin.indexOf("127.0.0.1") == -1 && window.location.origin.indexOf("localhost") == -1 && window.location.origin.indexOf("vlrc.cassproject.org") == -1)
+if (window.location.origin.indexOf("127.0.0.1") != -1)
+    repo.selectedServer = "https://dev.cassproject.org/api/";
+else if (window.location.origin.indexOf("localhost:8080") != -1)
     repo.autoDetectRepository();
+else if (window.location.origin.indexOf("localhost") != -1)
+    repo.selectedServer = "https://dev.cassproject.org/api/";
+else if (window.location.origin.indexOf("vlrc.cassproject.org") != -1)
+    repo.selectedServer = "https://dev.cassproject.org/api/";
+
 if (repo.selectedServer == null)
     repo.selectedServer = "https://dev.cassproject.org/api/";
 EcRepository.caching = true;
@@ -90,10 +97,12 @@ function performInitIdentityAction(data) {
     if (queryParams.frameworkId != null) {
         setTimeout(function () {
             app.selectedFramework = EcFramework.getBlocking(queryParams.frameworkId);
+            ready2();
             $("#rad2").click();
         }, 100);
     } else {
         setTimeout(function () {
+            ready2();
             $("#rad1").click();
         }, 100);
     }
