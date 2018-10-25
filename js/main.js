@@ -7,7 +7,8 @@ else if (window.location.origin.indexOf("localhost") != -1)
     repo.selectedServer = "https://dev.cassproject.org/api/";
 else if (window.location.origin.indexOf("vlrc.cassproject.org") != -1)
     repo.selectedServer = "https://dev.cassproject.org/api/";
-
+else
+    repo.autoDetectRepository();
 if (repo.selectedServer == null)
     repo.selectedServer = "https://dev.cassproject.org/api/";
 EcRepository.caching = true;
