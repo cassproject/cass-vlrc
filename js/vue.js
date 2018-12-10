@@ -1,20 +1,6 @@
-queryParams = function () {
-    if (window.document.location.search == null)
-        return {};
-    var hashSplit = (window.document.location.search.split("?"));
-    if (hashSplit.length > 1) {
-        var o = {};
-        var paramString = hashSplit[1];
-        var parts = (paramString).split("&");
-        for (var i = 0; i < parts.length; i++)
-            o[parts[i].split("=")[0]] = decodeURIComponent(parts[i].replace(parts[i].split("=")[0] + "=", ""));
-        return o;
-    }
-    return {};
-};
-queryParams = queryParams();
-
-var app = new Vue({
+var app;
+//$(document).ready(function () {
+app = new Vue({
     el: '#app',
     computed: {
         uri: {
@@ -64,13 +50,15 @@ var app = new Vue({
     data: {
         message: 'Hello Vue!',
         login: false,
-        me: null,
+        subject: null,
         status: 'loading...',
         selectedFramework: null,
         selectedCompetency: null,
         selectedResource: null,
+        profiles: EcIdentityManager.contacts,
         inputUrl: "",
         inputName: "",
         inputDescription: ""
     }
 });
+//});

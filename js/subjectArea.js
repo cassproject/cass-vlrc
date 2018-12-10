@@ -30,10 +30,10 @@ Vue.component('frameworks', {
     },
     template: '<div>' +
         '<input type="text" class="frameworksSearchInput" placeholder="Search..." v-model="search"/>' +
-        '<ul>' +
-        '<frameworkSelect v-if="frameworks" v-for="item in frameworks" v-bind:key="item.id" :uri="item.id"></frameworkSelect>' +
-        '<div v-else><br>Loading Frameworks...</div>' +
+        '<ul v-if="frameworks">' +
+        '<frameworkSelect v-for="item in frameworks" v-bind:key="item.id" :uri="item.id"></frameworkSelect>' +
         '</ul>' +
+        '<div v-else><br>Loading Frameworks...</div>' +
         '</div>'
 });
 
