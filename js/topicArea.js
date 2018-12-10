@@ -183,7 +183,7 @@ Vue.component('competency', {
                     if (this != topicCompetencies[this.uri][i])
                         topicCompetencies[this.uri][i].getCompetence(evt, true);
             repo.search(
-                "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\" AND (\\*@reader:\"" + this.subject + "\")",
+                "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function (assertion) {},
                 function (assertions) {
                     me.competent = false;
@@ -233,7 +233,7 @@ Vue.component('competency', {
             var me = this;
             var a = after;
             EcAssertion.search(repo,
-                "competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\" AND (\\*@reader:\"" + this.subject + "\")",
+                "competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function (assertions) {
                     for (var i = 0; i < assertions.length; i++) {
                         var obj = assertions[i];
@@ -282,7 +282,7 @@ Vue.component('competency', {
             var me = this;
             var a = after;
             EcAssertion.search(repo,
-                "competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\" AND (\\*@reader:\"" + this.subject + "\")",
+                "competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function (assertions) {
                     for (var i = 0; i < assertions.length; i++) {
                         var obj = assertions[i];
