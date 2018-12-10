@@ -165,7 +165,7 @@ label:hover,
 }
 
 input[type="radio"]:checked+label~.accslide {
-    width: calc(100vw - 240px);
+    width: calc(100vw - 200px);
     //width: calc(100vw - 320px);
     //width: calc(100vw - 320px);
     //width: calc(100vw - 320px);

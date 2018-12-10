@@ -1,5 +1,5 @@
 Vue.component('framework', {
-    props: ['uri'],
+    props: ['uri', 'subject'],
     data: function () {
         return {
             competency: null
@@ -59,7 +59,7 @@ Vue.component('framework', {
                         me.competency.sort(function (a, b) {
                             return f.competency.indexOf(a.shortId()) - f.competency.indexOf(b.shortId());
                         });
-                    },console.error,console.log);
+                    }, console.error, console.log);
                 }, console.error);
                 return null;
             },
@@ -90,13 +90,13 @@ Vue.component('framework', {
     template: '<div>' +
         '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
         '<div>{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
-        '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild"></competency></ul>' +
+        '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subject="subject"></competency></ul>' +
         '<div v-else><br>Loading Framework...</div></div>'
 });
 
 var topicCompetencies = {};
 Vue.component('competency', {
-    props: ['uri', 'hasChild', 'parentCompetent', 'dontRegister'],
+    props: ['uri', 'hasChild', 'parentCompetent', 'dontRegister', 'subject'],
     data: function () {
         return {
             counter: 0,
@@ -183,7 +183,7 @@ Vue.component('competency', {
                     if (this != topicCompetencies[this.uri][i])
                         topicCompetencies[this.uri][i].getCompetence(evt, true);
             repo.search(
-                "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\" AND (\\*@reader:\"" + this.subject + "\")",
                 function (assertion) {},
                 function (assertions) {
                     me.competent = false;
@@ -233,7 +233,7 @@ Vue.component('competency', {
             var me = this;
             var a = after;
             EcAssertion.search(repo,
-                "competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                "competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\" AND (\\*@reader:\"" + this.subject + "\")",
                 function (assertions) {
                     for (var i = 0; i < assertions.length; i++) {
                         var obj = assertions[i];
@@ -282,7 +282,7 @@ Vue.component('competency', {
             var me = this;
             var a = after;
             EcAssertion.search(repo,
-                "competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                "competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\" AND (\\*@reader:\"" + this.subject + "\")",
                 function (assertions) {
                     for (var i = 0; i < assertions.length; i++) {
                         var obj = assertions[i];

@@ -1,5 +1,23 @@
+queryParams = function () {
+    if (window.document.location.search == null)
+        return {};
+    var hashSplit = (window.document.location.search.split("?"));
+    if (hashSplit.length > 1) {
+        var o = {};
+        var paramString = hashSplit[1];
+        var parts = (paramString).split("&");
+        for (var i = 0; i < parts.length; i++)
+            o[parts[i].split("=")[0]] = decodeURIComponent(parts[i].replace(parts[i].split("=")[0] + "=", ""));
+        return o;
+    }
+    return {};
+};
+queryParams = queryParams();
+
 var repo = new EcRepository();
-if (window.location.origin.indexOf("127.0.0.1") != -1)
+if (queryParams.server != null)
+    repo.selectedServer = queryParams.server;
+else if (window.location.origin.indexOf("127.0.0.1") != -1)
     repo.selectedServer = "https://dev.cassproject.org/api/";
 else if (window.location.origin.indexOf("localhost:8080") != -1)
     repo.autoDetectRepository();
@@ -7,12 +25,20 @@ else if (window.location.origin.indexOf("localhost/") != -1)
     repo.autoDetectRepository();
 else if (window.location.origin.indexOf("vlrc.cassproject.org") != -1)
     repo.selectedServer = "https://dev.cassproject.org/api/";
+else if (window.location.origin.indexOf("file://") != -1)
+    repo.selectedServer = "https://dev.cassproject.org/api/";
 else
     repo.autoDetectRepository();
 if (repo.selectedServer == null)
     repo.selectedServer = "https://dev.cassproject.org/api/";
 EcRepository.caching = true;
 
+EcIdentityManager.readIdentities();
+EcIdentityManager.readContacts();
+//for (var i = 0; i < EcIdentityManager.contacts.length; i++) {
+//    if (EcIdentityManager.getPpk(EcIdentityManager.contacts[i].pk) != null)
+//        EcIdentityManager.contacts.splice(i, 1);
+//}
 $(document).ready(function () {
     $("#rad4").change(function (evt) {
         if ($("#rad4:checked").length > 0)
@@ -25,21 +51,18 @@ $(document).ready(function () {
         console.log("Sending waiting message");
         sendWaitingMessage();
     } else {
-        setTimeout(function () {
-            EcIdentityManager.readIdentities();
-            if (EcIdentityManager.ids.length == 0) {
-                var i = new EcIdentity();
-                i.displayName = "You";
-                EcPpk.generateKeyAsync(function (ppk) {
-                    i.ppk = ppk;
-                    EcIdentityManager.addIdentity(i);
-                    ready2();
-                    EcIdentityManager.saveIdentities();
-                });
-            } else {
+        if (EcIdentityManager.ids.length == 0) {
+            var i = new EcIdentity();
+            i.displayName = "You";
+            EcPpk.generateKeyAsync(function (ppk) {
+                i.ppk = ppk;
+                EcIdentityManager.addIdentity(i);
                 ready2();
-            }
-        }, 100);
+                EcIdentityManager.saveIdentities();
+            });
+        } else {
+            ready2();
+        }
         if (queryParams.frameworkId != null) {
             setTimeout(function () {
                 app.selectedFramework = EcFramework.getBlocking(queryParams.frameworkId);
@@ -67,7 +90,7 @@ function ready2() {
     });
 
     app.login = true;
-    app.me = EcIdentityManager.ids[0].ppk.toPk().toPem();
+    app.subject = EcIdentityManager.ids[0].ppk.toPk().toPem();
 }
 
 //**************************************************************************************************

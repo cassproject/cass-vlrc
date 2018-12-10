@@ -17,8 +17,7 @@
     <script src="js/cass/cass.js"></script>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/pieces.css">
-    <link rel="stylesheet" href="//cdn.materialdesignicons.com/2.8.94/css/materialdesignicons.min.css
-">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.8.94/css/materialdesignicons.min.css">
 </head>
 
 <body>
@@ -30,9 +29,10 @@
     <script src="js/topicArea.js"></script>
     <script src="js/learningResource.js"></script>
     <script src="js/me.js"></script>
+    <script src="js/us.js"></script>
     <div id="app">
         <div class="header">
-            <a style="float:right;height:35px;margin-top:-5px;margin-right:5px" target="_blank" href="http://cassproject.org"><img style="height:35px;" src="//www.cassproject.org/img/CASS-Logo-website-white.png"></a>
+            <a style="float:right;height:35px;margin-top:-5px;margin-right:5px" target="_blank" href="http://cassproject.org"><img style="height:35px;" src="https://www.cassproject.org/img/CASS-Logo-website-white.png"></a>
             <h1>Competency based Virtual Learning Resource Center</h1>
         </div>
         <div id="container">
@@ -49,7 +49,7 @@
                     <input id="rad2" type="radio" name="rad">
                     <label for="rad2"><a class="vertical">Select Topic Area</a></label>
                     <div class="accslide">
-                        <framework id="leftFramework" v-if="selectedFramework" :uri="selectedFramework.id"></framework>
+                        <framework id="leftFramework" v-if="selectedFramework" :uri="selectedFramework.id" :subject="subject"></framework>
                         <div v-else>No subject has been selected.</div>
                     </div>
                 </li>
@@ -83,9 +83,9 @@
                     <input id="rad4" type="radio" name="rad">
                     <label for="rad4"><a class="vertical">About Me</a></label>
                     <div class="accslide">
-                        <profile :pk="me"></profile>
-                        <assertionHistory :pk="me"></assertionHistory>
-                        <viewHistory :pk="me"></viewHistory>
+                        <profile :pk="subject"></profile>
+                        <assertionHistory :pk="subject"></assertionHistory>
+                        <viewHistory :pk="subject"></viewHistory>
                     </div>
                 </li>
                 <!--
@@ -93,21 +93,21 @@
                     <input id="rad5" type="radio" name="rad">
                     <label for="rad5"><a class="vertical">My Peers</a></label>
                     <div class="accslide">
+                        <profiles :profiles="profiles"></profiles>
                     </div>
                 </li>
                 <li>
                     <input id="rad6" type="radio" name="rad">
                     <label for="rad6"><a class="vertical">Other People</a></label>
                     <div class="accslide">
+                        <persons></persons>
                     </div>
                 </li>
-                -->
                 <li>
                     <input id="rad7" type="radio" name="rad">
                     <label for="rad7"><a class="vertical">Advanced: Create and Edit my own Areas</a></label>
                     <iframe class="accslide" style="margin:0px;padding:0px;border:0px;" id="viewOutputFramework"></iframe>
                 </li>
-                <!--
                     <li>
                         <input id="rad8" type="radio" name="rad">
                         <label for="rad8"><a class="vertical">Step 8: View Output Framework</a></label>
