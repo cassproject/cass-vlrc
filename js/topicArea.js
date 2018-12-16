@@ -225,6 +225,7 @@ Vue.component('competency', {
 				a.setAssertionDate(Date.now()); //UTC Milliseconds
 				a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
 				a.setNegative(false); //This is an assertion that an individual *can* do something, not that they *cannot*.
+				a.setConfidence(1.0);
 				EcRepository.save(a, me.getCompetence, console.error);
 				assertionHistory[app.subject].addAssertion(a);
 			});
