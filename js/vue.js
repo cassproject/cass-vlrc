@@ -51,11 +51,13 @@ app = new Vue({
         message: 'Hello Vue!',
         login: false,
         subject: null,
+        me: null,
         status: 'loading...',
         selectedFramework: null,
         selectedCompetency: null,
         selectedResource: null,
         profiles: EcIdentityManager.contacts,
+        identities: EcIdentityManager.ids,
         inputUrl: "",
         inputName: "",
         inputDescription: ""

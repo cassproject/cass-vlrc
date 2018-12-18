@@ -17,7 +17,7 @@
     <script src="js/cass/cass.js"></script>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/pieces.css">
-    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.8.94/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/3.2.89/css/materialdesignicons.min.css">
 </head>
 
 <body>
@@ -42,6 +42,7 @@
                     <input id="rad1" type="radio" name="rad">
                     <label for="rad1"><a class="vertical">Select Subject Area</a></label>
                     <div class="accslide">
+                        <profile :pk="subject"></profile>
                         <frameworks />
                     </div>
                 </li>
@@ -49,6 +50,7 @@
                     <input id="rad2" type="radio" name="rad">
                     <label for="rad2"><a class="vertical">Select Topic Area</a></label>
                     <div class="accslide">
+                        <profile :pk="subject"></profile>
                         <framework id="leftFramework" v-if="selectedFramework" :uri="selectedFramework.id" :subject="subject"></framework>
                         <div v-else>No subject has been selected.</div>
                     </div>
@@ -83,26 +85,32 @@
                     <input id="rad4" type="radio" name="rad">
                     <label for="rad4"><a class="vertical">About Me</a></label>
                     <div class="accslide">
+                        <profile :pk="me"></profile>
+                        <assertionHistory :pk="me"></assertionHistory>
+                        <viewHistory :pk="me"></viewHistory>
+                    </div>
+                </li>
+                <li>
+                    <input id="rad5" type="radio" name="rad">
+                    <label for="rad5"><a class="vertical">My Contacts</a></label>
+                    <div class="accslide">
+                        <h1>Selected:</h1>
                         <profile :pk="subject"></profile>
                         <assertionHistory :pk="subject"></assertionHistory>
                         <viewHistory :pk="subject"></viewHistory>
-                    </div>
-                </li>
-                <!--
-                <li>
-                    <input id="rad5" type="radio" name="rad">
-                    <label for="rad5"><a class="vertical">My Peers</a></label>
-                    <div class="accslide">
-                        <profiles :profiles="profiles"></profiles>
+                        <hr>
+                        <h1>Contacts:</h1>
+                        <profiles :profiles="profiles" :identities="identities"></profiles>
                     </div>
                 </li>
                 <li>
                     <input id="rad6" type="radio" name="rad">
                     <label for="rad6"><a class="vertical">Other People</a></label>
                     <div class="accslide">
-                        <persons></persons>
+                        <people></people>
                     </div>
                 </li>
+                <!--
                 <li>
                     <input id="rad7" type="radio" name="rad">
                     <label for="rad7"><a class="vertical">Advanced: Create and Edit my own Areas</a></label>

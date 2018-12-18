@@ -90,7 +90,7 @@ function ready2() {
     });
 
     app.login = true;
-    app.subject = EcIdentityManager.ids[0].ppk.toPk().toPem();
+    app.me = app.subject = EcIdentityManager.ids[0].ppk.toPk().toPem();
 }
 
 //**************************************************************************************************
