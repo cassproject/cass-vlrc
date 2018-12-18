@@ -26,10 +26,12 @@ Vue.component('profile', {
             get: function () {
                 if (this.person == null)
                     return "Loading...";
+                EcIdentityManager.getIdentity(EcPk.fromPem(this.pk)).displayName = this.personObj.name;
                 return this.person.name;
             },
             set: function (newName) {
                 this.personObj.name = newName;
+                EcIdentityManager.getIdentity(EcPk.fromPem(this.pk)).displayName = this.personObj.name;
             }
         },
         mine: {
@@ -237,62 +239,14 @@ Vue.component('assertion', {
                     if (assertion.subject == null)
                         me.subject = "nobody"
                     else
-                        assertion.getSubjectAsync(function (subjectPk) {
-                            EcRepository.get(repo.selectedServer + "data/" + subjectPk.fingerprint(), function (person) {
-                                var e = new EcEncryptedValue();
-                                if (person.isAny(e.getTypes())) {
-                                    e.copyFrom(person);
-                                    e.decryptIntoObjectAsync(function (person) {
-                                        var p = new Person();
-                                        p.copyFrom(person);
-                                        me.subject = p.name;
-                                    }, function (failure) {
-                                        if (me.assertion.getSubjectName() == "Unknown")
-                                            me.subject = "someone";
-                                        else
-                                            me.subject = me.assertion.getSubjectName();
-                                    });
-                                } else {
-                                    var p = new Person();
-                                    p.copyFrom(person);
-                                    me.subject = p.name;
-                                }
-                            }, function (failure) {
-                                if (me.assertion.getSubjectName() == "Unknown")
-                                    me.subject = "someone";
-                                else
-                                    me.subject = me.assertion.getSubjectName();
-                            });
+                        assertion.getSubjectNameAsync(function (name) {
+                            me.subject = name;
                         }, console.error);
                     if (assertion.agent == null)
                         me.agent = "nobody"
                     else
-                        assertion.getAgentAsync(function (agentPk) {
-                            EcRepository.get(repo.selectedServer + "data/" + agentPk.fingerprint(), function (person) {
-                                var e = new EcEncryptedValue();
-                                if (person.isAny(e.getTypes())) {
-                                    e.copyFrom(person);
-                                    e.decryptIntoObjectAsync(function (person) {
-                                        var p = new Person();
-                                        p.copyFrom(person);
-                                        me.agent = p.name;
-                                    }, function (failure) {
-                                        if (me.assertion.getSubjectName() == "Unknown Subject")
-                                            me.agent = "someone";
-                                        else
-                                            me.agent = me.assertion.getAgentName();
-                                    });
-                                } else {
-                                    var p = new Person();
-                                    p.copyFrom(person);
-                                    me.agent = p.name;
-                                }
-                            }, function (failure) {
-                                if (me.assertion.getSubjectName() == "Unknown Subject")
-                                    me.agent = "someone";
-                                else
-                                    me.agent = me.assertion.getAgentName();
-                            });
+                        assertion.getAgentNameAsync(function (name) {
+                            me.agent = name;
                         }, console.error);
                     if (assertion.assertionDate != null)
                         assertion.getAssertionDateAsync(function (assertionDate) {
