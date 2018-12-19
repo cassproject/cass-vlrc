@@ -22,7 +22,8 @@ Vue.component('people', {
     props: [],
     data: function () {
         return {
-            peopleResult: null,
+            peopleResult: [],
+            searched: false,
             search: null,
             lastSearch: null
         };
@@ -34,13 +35,18 @@ Vue.component('people', {
                 if (this.lastSearch != this.search)
                     this.peopleResult = null;
                 this.lastSearch = this.search;
-                if (this.peopleResult != null) {
+                if (this.searched) {
                     return this.peopleResult;
                 }
                 var search = this.search;
                 if (search == null) search = "*";
-                EcPerson.search(repo, search, function (frameworks) {
-                    me.peopleResult = frameworks;
+                me.peopleResult.splice(0, me.peopleResult.length);
+                EcPerson.search(repo, search, function (people) {
+                    for (var i = 0; i < people.length; i++)
+                        if (people[i].owner != null)
+                            if (EcPk.fromPem(people[i].owner[0]).fingerprint() == people[i].getGuid())
+                                me.peopleResult.push(people[i]);
+                    me.searched = true;
                 }, console.error, {
                     size: 50
                 });

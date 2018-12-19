@@ -27,6 +27,8 @@ Vue.component('profile', {
             get: function () {
                 if (this.person == null)
                     return "Loading...";
+                if (this.person.givenName != null && this.person.familyName != null)
+                    return this.person.givenName +" "+ this.person.familyName;
                 if (this.person.name == null)
                     return "<Restricted>";
                 //EcIdentityManager.getIdentity(EcPk.fromPem(this.pk)).displayName = this.personObj.name;
@@ -56,10 +58,10 @@ Vue.component('profile', {
             get: function () {
                 if (this.personObj == null)
                     return null;
-                return "http://tinygraphs.com/spaceinvaders/"+this.personObj.getGuid()+"?theme=base&numcolors=16&size=22&fmt=svg";
+                return "http://tinygraphs.com/spaceinvaders/" + this.personObj.getGuid() + "?theme=base&numcolors=16&size=22&fmt=svg";
             }
         },
-        isContact:{
+        isContact: {
             get: function () {
                 if (this.inContactList == null) this.inContactList = EcIdentityManager.getContact(EcPk.fromPem(this.pk)) != null;
                 return this.inContactList;
@@ -72,7 +74,8 @@ Vue.component('profile', {
             this.editing = false;
             this.private = false;
         },
-        private: function () {}
+        private: function () {
+        }
     },
     methods: {
         savePerson: function () {
@@ -100,7 +103,7 @@ Vue.component('profile', {
             }
             var pk = EcPk.fromPem(this.pk);
             var me = this;
-            EcRepository.get(repo.selectedServer + "data/" + pk.fingerprint(), function (person) {
+            EcRepository.get(repo.selectedServer + "data/schema.org.Person/" + pk.fingerprint(), function (person) {
                 var e = new EcEncryptedValue();
                 if (person.isAny(e.getTypes())) {
                     me.private = true;
@@ -139,7 +142,7 @@ Vue.component('profile', {
             if (this.onClick != null)
                 this.onClick(this.pk);
         },
-        contact: function(){
+        contact: function () {
             var c = new EcContact();
             c.pk = EcPk.fromPem(this.pk);
             c.displayName = this.name;
@@ -147,34 +150,33 @@ Vue.component('profile', {
             EcIdentityManager.saveContacts();
             this.inContactList = true;
         },
-        uncontact: function(){
-            for (var i = 0;i < EcIdentityManager.contacts.length;i++)
-            {
+        uncontact: function () {
+            for (var i = 0; i < EcIdentityManager.contacts.length; i++) {
                 if (EcIdentityManager.contacts[i].pk.toPem() == this.pk)
-                    EcIdentityManager.contacts.splice(i,1);
+                    EcIdentityManager.contacts.splice(i, 1);
             }
             EcIdentityManager.saveContacts();
             this.inContactList = false;
         }
     },
     template: '<div v-if="person">' +
-        '<span v-if="mine">' +
-            '<span v-if="editing">' +
-                '<i class="mdi mdi-content-save" aria-hidden="true" style="float:right;font-size:large" title="Save your person." v-on:click="savePerson()"></i>' +
-                '<i class="mdi mdi-cancel" aria-hidden="true" style="float:right;font-size:large" title="Cancel editing." v-on:click="cancelSave();"></i>' +
-            '</span>' +
-            '<span v-else>' +
-                '<i class="mdi mdi-pencil" aria-hidden="true" style="float:right;font-size:large" title="Edit your person." v-on:click="editing = true;"></i>' +
-            '</span>' +
-        '</span>' +
-        '<span v-else>' +
-            '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i>' +
-            '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i>' +
-        '</span>' +
-        '<img style="vertical-align: sub;" v-if="fingerprint" :src="fingerprintUrl" :title="fingerprint"/> <input v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">' +
-        '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
-        '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
-        '</div>'
+    '<span v-if="mine">' +
+    '<span v-if="editing">' +
+    '<i class="mdi mdi-content-save" aria-hidden="true" style="float:right;font-size:large" title="Save your person." v-on:click="savePerson()"></i>' +
+    '<i class="mdi mdi-cancel" aria-hidden="true" style="float:right;font-size:large" title="Cancel editing." v-on:click="cancelSave();"></i>' +
+    '</span>' +
+    '<span v-else>' +
+    '<i class="mdi mdi-pencil" aria-hidden="true" style="float:right;font-size:large" title="Edit your person." v-on:click="editing = true;"></i>' +
+    '</span>' +
+    '</span>' +
+    '<span v-else>' +
+    '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i>' +
+    '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i>' +
+    '</span>' +
+    '<img style="vertical-align: sub;" v-if="fingerprint" :src="fingerprintUrl" :title="fingerprint"/> <input v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">' +
+    '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
+    '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
+    '</div>'
 });
 var assertionHistory = {};
 Vue.component('assertionhistory', {
@@ -196,21 +198,31 @@ Vue.component('assertionhistory', {
                     assertions = assertions.sort(function (a, b) {
                         return parseInt(b.id.substring(b.id.lastIndexOf("/") + 1)) - parseInt(a.id.substring(a.id.lastIndexOf("/") + 1));
                     });
-                    me.assertionResult.splice(0,me.assertionResult.length);
-                    for (var i = 0;i < assertions.length;i++)
+                    me.assertionResult.splice(0, me.assertionResult.length);
+                    for (var i = 0; i < assertions.length; i++)
                         me.assertionResult.push(assertions[i]);
                     me.searched = true;
                 }, console.error, {
                     size: 5000
                 });
                 return null;
+            },
+            set: function (assertions) {
+                if (assertions == null) {
+                    this.assertionResult.splice(0, this.assertionResult.length);
+                }
+                else {
+                    this.assertionResult.splice(0, this.assertionResult.length);
+                    for (var i = 0; i < assertions.length; i++)
+                        this.assertionResult.push(assertions[i]);
+                }
             }
         }
     },
     created: function () {
     },
     watch: {
-        pk: function (newPk,oldPk) {
+        pk: function (newPk, oldPk) {
             delete assertionHistory[oldPk];
             this.assertionResult = [];
             this.searched = false;
@@ -229,12 +241,12 @@ Vue.component('assertionhistory', {
         }
     },
     template: '<div><h3>Claims (Private)</h3>' +
-        '<span v-if="assertions"><span v-if="assertions.length == 0">None.</span></span>' +
-        '<ul v-if="assertions" style="max-height:10rem;overflow-y:scroll;">' +
-            '<assertion v-for="item in assertions" v-bind:key="item.id" :uri="item.id"></assertion>' +
-        '</ul>' +
-        '<div v-else><br>Loading Assertions...</div>' +
-        '</div>'
+    '<span v-if="assertions"><span v-if="assertions.length == 0">None.</span></span>' +
+    '<ul v-if="assertions" style="max-height:10rem;overflow-y:scroll;">' +
+    '<assertion v-for="item in assertions" v-bind:key="item.id" :uri="item.id"></assertion>' +
+    '</ul>' +
+    '<div v-else><br>Loading Assertions...</div>' +
+    '</div>'
 });
 Vue.component('assertion', {
     props: ['uri'],
@@ -278,7 +290,8 @@ Vue.component('assertion', {
             }
         }
     },
-    created: function () {},
+    created: function () {
+    },
     watch: {},
     methods: {
         initialize: function (isVisible, entry) {
@@ -360,7 +373,7 @@ Vue.component('viewhistory', {
     },
     watch: {
         pk: function () {
-            this.assertionResult = null;
+            this.viewResult = null;
         }
     },
     methods: {
@@ -375,10 +388,10 @@ Vue.component('viewhistory', {
         }
     },
     template: '<div><h3>Views (Public)</h3>' +
-        '<span v-if="views"><span v-if="views.length == 0">None.</span></span>' +
-        '<ul v-if="views" style="max-height:10rem;overflow-y:scroll;"><chooseAction v-for="item in views" v-bind:key="item.id" :uri="item.id"></chooseAction></ul>' +
-        '<div v-else><br>Loading Views...</div>' +
-        '</div>'
+    '<span v-if="views"><span v-if="views.length == 0">None.</span></span>' +
+    '<ul v-if="views" style="max-height:10rem;overflow-y:scroll;"><chooseAction v-for="item in views" v-bind:key="item.id" :uri="item.id"></chooseAction></ul>' +
+    '<div v-else><br>Loading Views...</div>' +
+    '</div>'
 });
 Vue.component('chooseAction', {
     props: ['uri'],
@@ -397,7 +410,8 @@ Vue.component('chooseAction', {
             }
         }
     },
-    created: function () {},
+    created: function () {
+    },
     watch: {},
     methods: {
         initialize: function (isVisible, entry) {
@@ -405,7 +419,7 @@ Vue.component('chooseAction', {
             if (isVisible) {
                 EcRepository.get(this.uri, function (view) {
                     me.action = view;
-                    EcRepository.get(repo.selectedServer + "data/" + EcPk.fromPem(view.owner[0]).fingerprint(), function (person) {
+                    EcRepository.get(repo.selectedServer + "data/schema.org.Person/" + EcPk.fromPem(view.owner[0]).fingerprint(), function (person) {
                         var e = new EcEncryptedValue();
                         if (person.isAny(e.getTypes())) {
                             e.copyFrom(person);
