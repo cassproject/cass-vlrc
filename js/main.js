@@ -33,6 +33,7 @@ if (repo.selectedServer == null)
     repo.selectedServer = "https://dev.cassproject.org/api/";
 
 EcRepository.caching = true;
+EcCrypto.caching = true;
 
 EcIdentityManager.readIdentities();
 EcIdentityManager.readContacts();

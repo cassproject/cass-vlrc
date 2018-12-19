@@ -103,7 +103,7 @@ Vue.component('profile', {
             }
             var pk = EcPk.fromPem(this.pk);
             var me = this;
-            EcRepository.get(repo.selectedServer + "data/schema.org.Person/" + pk.fingerprint(), function (person) {
+            EcRepository.get(repo.selectedServer + "data/" + pk.fingerprint(), function (person) {
                 var e = new EcEncryptedValue();
                 if (person.isAny(e.getTypes())) {
                     me.private = true;
