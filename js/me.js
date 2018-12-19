@@ -42,9 +42,11 @@ Vue.component('profile', {
         },
         mine: {
             get: function () {
+                if (app.me == null)
+                    return false;
                 if (this.personObj == null)
                     return false;
-                return this.personObj.hasOwner(EcIdentityManager.ids[0].ppk.toPk());
+                return this.personObj.hasOwner(EcPk.fromPem(app.me));
             }
         },
         fingerprint: {
@@ -147,15 +149,13 @@ Vue.component('profile', {
             c.pk = EcPk.fromPem(this.pk);
             c.displayName = this.name;
             EcIdentityManager.addContact(c);
-            EcIdentityManager.saveContacts();
             this.inContactList = true;
         },
         uncontact: function () {
             for (var i = 0; i < EcIdentityManager.contacts.length; i++) {
                 if (EcIdentityManager.contacts[i].pk.toPem() == this.pk)
-                    EcIdentityManager.contacts.splice(i, 1);
+                    EcIdentityManager.contactChanged(EcIdentityManager.contacts.splice(i, 1));
             }
-            EcIdentityManager.saveContacts();
             this.inContactList = false;
         }
     },

@@ -102,8 +102,8 @@ function ready2() {
 //**************************************************************************************************
 // Constants
 
-const ALIGN_MESSAGE = "gotoAlign";
 const WAITING_MESSAGE = "waiting";
+const CONTACT_UPDATED_MESSAGE = "contactsUpdated";
 
 const FWK_TO_FWK_ALIGN_TYPE = "fwkToFwk";
 
@@ -119,6 +119,7 @@ function performInitIdentityAction(data) {
     ident.ppk = EcPpk.fromPem(data.pemParm);
     ident.displayName = data.nameParm;
     EcIdentityManager.addIdentity(ident);
+    app.me = app.subject = EcIdentityManager.ids[0].ppk.toPk().toPem();
 
     if (queryParams.frameworkId != null) {
         setTimeout(function () {
@@ -154,6 +155,16 @@ function performAction(action, data) {
         case INIT_IDENTITY_ACTION:
             performInitIdentityAction(data);
             break;
+        case CONTACT_UPDATED_MESSAGE:
+            app.profiles.splice(0,app.profiles.length);
+            for (var i = 0;i < data.contacts.length;i++)
+            {
+                var c = new EcContact();
+                c.pk = EcPk.fromPem(data.contacts[i].pk);
+                c.displayName = data.contacts[i].displayName;
+                app.profiles.push(c);
+            }
+            break;
         default:
             break;
     }
@@ -177,3 +188,21 @@ if (window.addEventListener) {
 } else {
     window.attachEvent("onmessage", messageListener);
 }
+
+function contactsChanged(){
+    var ary = [];
+    for (var i = 0;i < EcIdentityManager.contacts.length;i++)
+        ary.push({
+            pk:EcIdentityManager.contacts[i].pk.toPem(),
+            displayName:EcIdentityManager.contacts[i].displayName
+        });
+    var evt = {
+        message: CONTACT_UPDATED_MESSAGE,
+        contacts: ary
+    };
+    console.log(evt);
+    if (parent != null)
+        if (queryParams.origin != null && queryParams.origin != '')
+            parent.postMessage(evt, queryParams.origin);
+}
+EcIdentityManager.onContactChanged = contactsChanged;

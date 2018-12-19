@@ -1,5 +1,4 @@
 var app;
-//$(document).ready(function () {
 app = new Vue({
     el: '#app',
     computed: {
@@ -63,4 +62,3 @@ app = new Vue({
         inputDescription: ""
     }
 });
-//});
