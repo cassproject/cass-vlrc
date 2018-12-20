@@ -37,10 +37,7 @@ EcCrypto.caching = true;
 
 EcIdentityManager.readIdentities();
 EcIdentityManager.readContacts();
-//for (var i = 0; i < EcIdentityManager.contacts.length; i++) {
-//    if (EcIdentityManager.getPpk(EcIdentityManager.contacts[i].pk) != null)
-//        EcIdentityManager.contacts.splice(i, 1);
-//}
+
 $(document).ready(function () {
     $("#rad4").change(function (evt) {
         if ($("#rad4:checked").length > 0)
