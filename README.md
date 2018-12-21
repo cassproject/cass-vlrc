@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/cassproject/cass-vlrc.svg?branch=master)](https://travis-ci.org/cassproject/cass-vlrc)
-# CASS
+# cass-vlrc
 Competency and Skills Service -- Virtual Learning Resource Center
 
 Claim competence for yourself or others, associate resources with competencies, and learn in a self-directed and competency-based example learning system.
@@ -47,6 +47,17 @@ cass-vlrc will, by default, create and manage a local user that owns the asserti
   
   Note: This method is risky, as a user that clears their localstorage will lose access to their frameworks and competencies.
   
+# Post Messages
+CASS can operate using credentials and signals provided by the parent site. These credentials are passed into the iframe via a message, in order to avoid transmitting them over HTTP. Wait for a `{message:"waiting"}` message to be posted from the iframe.
+```javascript
+$("iframe").ready(function () {
+    $(window).on("message", function (event) {
+        if (event.originalEvent.data.message == "waiting") {
+            //Initialize identity
+        }
+    });
+});
+```
 ## Operate using a provided set of user credentials.
 CASS can operate using credentials provided by the parent site. These credentials are passed into the iframe via a message, in order to avoid transmitting them over HTTP. Use `user=wait`, wait for a `{message:"waiting"}` message, and pass a RSA-OAEP 2048 bit PEM private key in via:
 
