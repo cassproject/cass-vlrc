@@ -102,7 +102,8 @@ Vue.component('competency', {
         return {
             counter: 0,
             competent: false,
-            incompetent: false
+            incompetent: false,
+            assertionsByOthers: []
         };
     },
     computed: {
@@ -187,7 +188,7 @@ Vue.component('competency', {
                     if (this != topicCompetencies[this.uri][i])
                         topicCompetencies[this.uri][i].getCompetence(evt, true);
             repo.search(
-                "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND @owner:\"" + app.me + "\"",
+                "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND (\\*@owner:\"" + app.subject + "\" OR \\*@reader:\"" + app.subject + "\")",
                 function (assertion) {
                 },
                 function (assertions) {
@@ -200,17 +201,24 @@ Vue.component('competency', {
                             assertion.copyFrom(obj);
                             assertion.getSubjectAsync(function (subject) {
                                 if (app.subject == subject.toPem()) {
-                                    if (assertion.negative != null)
-                                        assertion.getNegativeAsync(function (negative) {
-                                            if (negative)
-                                                me.incompetent = true;
+                                    assertion.getAgentAsync(function (agent) {
+                                        if (app.me == agent.toPem()) {
+                                            if (assertion.negative != null)
+                                                assertion.getNegativeAsync(function (negative) {
+                                                    if (negative)
+                                                        me.incompetent = true;
+                                                    else
+                                                        me.competent = true;
+                                                });
                                             else
                                                 me.competent = true;
-                                        });
-                                    else
-                                        me.competent = true;
+                                        }
+                                        else
+                                        {
+                                            me.assertionsByOthers.push(assertion);
+                                        }
+                                    }, console.error);
                                 }
-
                             }, console.error);
                         })(obj);
                     }
@@ -321,7 +329,8 @@ Vue.component('competency', {
     '<button class="inline" v-if="incompetent" v-on:click="unclaimIncompetence" title="By clicking this, I no longer think I cannot demonstrate this."><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
     '<button class="inline" v-else v-on:click="claimIncompetence" title="By clicking this, I think I would demonstrate that I cannot do this."><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
     ' </span> ' +
-    '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span>' +
+    '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
+    '<i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true" v-for="item in assertionsByOthers" title="Assertion from elsewhere"></i>'+
     '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
     '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :subject="subject"></competency></ul>' +
     '</li>'
