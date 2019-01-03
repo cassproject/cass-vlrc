@@ -6,8 +6,8 @@
     box-sizing: border-box;
 }
 
-h1{
-    margin-left:.5rem;
+h1 {
+    margin-left: .5rem;
 }
 
 body {
@@ -129,6 +129,15 @@ label:hover,
 
 /*SLIDES*/
 
+.processing {
+    display: block;
+    height: calc(100vh - 25px - 40px);
+    width: calc(100vw - 40px);
+    background: rgba(255, 255, 255, .95);
+    font: 12px/1.5 Helvetica, Verdana, sans-serif;
+    padding: 10px 0;
+}
+
 .accslide {
     color: #333;
     display: block;
@@ -173,4 +182,8 @@ input[type="radio"]:checked+label~.accslide {
     width: calc(100vw - 280px);
     //width: calc(100vw - 320px);
     //width: calc(100vw - 320px);
+}
+
+.profileRow:hover {
+    background-color: rgba(255, 255, 0, 0.3);
 }

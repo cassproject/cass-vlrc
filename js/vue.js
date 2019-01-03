@@ -44,12 +44,48 @@ app = new Vue({
                 app.inputName = success.meta.title;
                 app.inputDescription = success.meta.description;
             }, console.error);
+        },
+        subject: function (newSubject) {
+            var pk = EcPk.fromPem(newSubject);
+            var me = this;
+            EcRepository.get(repo.selectedServer + "data/" + pk.fingerprint(), function (person) {
+                var e = new EcEncryptedValue();
+                if (person.isAny(e.getTypes())) {
+                    e.copyFrom(person);
+                    e.decryptIntoObjectAsync(function (person) {
+                        var p = new Person();
+                        p.copyFrom(person);
+                        if (p.name != null)
+                            me.subjectName = p.name;
+                        else if (p.givenName != null && p.familyName != null)
+                            me.subjectName = p.givenName + " " + p.familyName;
+                        else if (p.givenName != null)
+                            me.subjectName = p.givenName;
+                        else
+                            me.subjectName = "Unknown Subject.";
+                    }, console.error);
+                } else {
+                    var p = new Person();
+                    p.copyFrom(person);
+                    if (p.name != null)
+                        me.subjectName = p.name;
+                    else if (p.givenName != null && p.familyName != null)
+                        me.subjectName = p.givenName + " " + p.familyName;
+                    else if (p.givenName != null)
+                        me.subjectName = p.givenName;
+                    else
+                        me.subjectName = "Unknown Subject.";
+                }
+            }, function (failure) {
+                me.subjectName = "Unknown Subject.";
+            });
         }
     },
     data: {
         message: 'Hello Vue!',
         login: false,
         subject: null,
+        subjectName: "Not loaded yet...",
         me: null,
         status: 'loading...',
         selectedFramework: null,
@@ -59,6 +95,8 @@ app = new Vue({
         identities: EcIdentityManager.ids,
         inputUrl: "",
         inputName: "",
-        inputDescription: ""
+        inputDescription: "",
+        processing: false,
+        processingMessage: ""
     }
 });

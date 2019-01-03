@@ -37,7 +37,12 @@
         </div>
         <div id="container">
             <p></p><br>
-            <ul class="noDot">
+            <div class="processing" v-show="processing">
+                <center>
+                    <h1>{{processingMessage}}</h1>
+                </center>
+            </div>
+            <ul v-show="processing == false" class="noDot">
                 <li>
                     <input id="rad1" type="radio" name="rad">
                     <label for="rad1"><a class="vertical">Select Subject Area</a></label>

@@ -68,6 +68,21 @@ Vue.component('profile', {
                 if (this.inContactList == null) this.inContactList = EcIdentityManager.getContact(EcPk.fromPem(this.pk)) != null;
                 return this.inContactList;
             }
+        },
+        shareStatement: {
+            get: function () {
+                return "Share your claims about " + app.subjectName + " with " + this.name;
+            }
+        },
+        unshareStatement: {
+            get: function () {
+                return "Unshare your claims about " + app.subjectName + " with " + this.name;
+            }
+        },
+        isSubject: {
+            get: function () {
+                return app.subject == this.pk;
+            }
         }
     },
     watch: {
@@ -156,9 +171,79 @@ Vue.component('profile', {
                     EcIdentityManager.contactChanged(EcIdentityManager.contacts.splice(i, 1));
             }
             this.inContactList = false;
+        },
+        shareAssertionsAboutSubjectWith: function () {
+            var me = this;
+            app.processing = true;
+            app.processingMessage = "Fetching assertions about " + app.subjectName;
+            var complete = 0;
+            var count = 0;
+            EcAssertion.search(repo,
+                "\"" + app.subject + "\"",
+                function (assertions) {
+                    count = assertions.length;
+                    app.processingMessage = count + " claims found. Sharing with " + me.name + ".";
+                    var eah = new EcAsyncHelper();
+                    eah.each(assertions, function (assertion, after) {
+                        assertion.getSubjectAsync(function (subject) {
+                            if (app.subject == subject.toPem()) {
+                                assertion.getAgentAsync(function (agent) {
+                                    if (app.me == agent.toPem()) {
+                                        assertion.addReader(EcPk.fromPem(me.pk));
+                                        EcRepository.save(assertion, function () {
+                                            app.processingMessage = ++complete + " of " + count + " claims shared with " + me.name + ".";
+                                            after();
+                                        }, after);
+                                    } else
+                                        after();
+                                }, console.error);
+                            } else
+                                after();
+                        }, console.error);
+                    }, function (assertions) {
+                        app.processing = false;
+                    });
+                }, console.error, {
+                    size: 5000
+                });
+        },
+        unshareAssertionsAboutSubjectWith: function (evt, after) {
+            var me = this;
+            app.processing = true;
+            app.processingMessage = "Fetching assertions about " + app.subjectName;
+            var complete = 0;
+            var count = 0;
+            EcAssertion.search(repo,
+                "\"" + app.subject + "\"",
+                function (assertions) {
+                    var eah = new EcAsyncHelper();
+                    eah.each(assertions, function (assertion, after) {
+                        count = assertions.length;
+                        app.processingMessage = count + " claims found. Unsharing with " + me.name + ".";
+                        assertion.getSubjectAsync(function (subject) {
+                            if (app.subject == subject.toPem()) {
+                                assertion.getAgentAsync(function (agent) {
+                                    if (app.me == agent.toPem()) {
+                                        assertion.removeReader(EcPk.fromPem(me.pk));
+                                        EcRepository.save(assertion, function () {
+                                            app.processingMessage = ++complete + " of " + count + " claims unshared with " + me.name + ".";
+                                            after();
+                                        }, after);
+                                    } else
+                                        after();
+                                }, console.error);
+                            } else
+                                after();
+                        }, console.error);
+                    }, function (assertions) {
+                        app.processing = false;
+                    });
+                }, console.error, {
+                    size: 5000
+                });
         }
     },
-    template: '<div v-if="person">' +
+    template: '<div class="profileRow" v-if="person">' +
         '<span v-if="mine">' +
         '<span v-if="editing">' +
         '<i class="mdi mdi-content-save" aria-hidden="true" style="float:right;font-size:large" title="Save your person." v-on:click="savePerson()"></i>' +
@@ -169,8 +254,10 @@ Vue.component('profile', {
         '</span>' +
         '</span>' +
         '<span v-else>' +
-        '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i>' +
-        '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i>' +
+        '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i> ' +
+        '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i> ' +
+        '<i class="mdi mdi-comment-processing-outline" aria-hidden="true" style="float:right;font-size:large" :title="unshareStatement" v-if="isSubject == false" v-on:click="unshareAssertionsAboutSubjectWith();"></i> ' +
+        '<i class="mdi mdi-comment-account" aria-hidden="true" style="float:right;font-size:large" :title="shareStatement" v-if="isSubject == false" v-on:click="shareAssertionsAboutSubjectWith();"></i> ' +
         '</span>' +
         '<img style="vertical-align: sub;" v-if="fingerprint" :src="fingerprintUrl" :title="fingerprint"/> <input v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">' +
         '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +

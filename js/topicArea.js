@@ -136,9 +136,27 @@ Vue.component('competency', {
         },
         countPhrase: {
             get: function () {
-                if (this.count == 0)
-                    return "";
                 return "(" + this.count + " resource" + (this.count == 1 ? "" : "s") + ")";
+            }
+        },
+        claimCompetencePhrase: {
+            get: function () {
+                return "By clicking this, I think " + (app.subject == app.me ? "I" : app.subjectName) + " can demonstrate this.";
+            }
+        },
+        unclaimCompetencePhrase: {
+            get: function () {
+                return "By clicking this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " can demonstrate this.";
+            }
+        },
+        claimIncompetencePhrase: {
+            get: function () {
+                return "By clicking this, I think " + (app.subject == app.me ? "I" : app.subjectName) + " could not demonstrate this.";
+            }
+        },
+        unclaimIncompetencePhrase: {
+            get: function () {
+                return "By clicking this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " cannot demonstrate this.";
             }
         }
     },
@@ -152,7 +170,10 @@ Vue.component('competency', {
         uri: function (newUri, oldUri) {
             this.getCompetence(null, true);
         },
-        subject: function (newUri, oldUri) {
+        subject: function (newSubject, oldSubject) {
+            this.assertionsByOthers = [];
+            this.competent = false;
+            this.incompetent = false;
             this.getCompetence(null, true);
         }
     },
@@ -226,7 +247,7 @@ Vue.component('competency', {
                 var a = new EcAssertion();
                 a.generateId(repo.selectedServer);
                 a.addOwner(EcIdentityManager.ids[0].ppk.toPk());
-                a.addReader(EcPk.fromPem("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAixq5WEp+F5HEJZj12N791JATM+vkVJuolfOq0KbqtZwiygPao12fnpTwZdRCmb/4O1n6PXkJJ1XbufAx6k7hGNyM1kTngbs743QuyzP15SmYcP9l9FluL9ISvIECt1eHo4sSKdaKxLRguOj79HjZXtFg3UDIhvvLBVqPQm5d5OQ1OPgu4WzL4GN7hYwK6PYJf2zJjxs9vEQ6agrvpAZI+Rm1DT5x3i4xtcB+Mip473Xe+6IPoRmJ/NqzcP3c0xBf6xV1GDBBIQIaRRkIJgoAb/k0fb+Hl0uXnKxcSm86nYk4Kq5GSbeZ+G+B3rrnQfXbLZnle6nTj1YdAOErOKKi2wIDAQAB-----END PUBLIC KEY-----")); //Eduworks Researcher
+                //a.addReader(EcPk.fromPem("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAixq5WEp+F5HEJZj12N791JATM+vkVJuolfOq0KbqtZwiygPao12fnpTwZdRCmb/4O1n6PXkJJ1XbufAx6k7hGNyM1kTngbs743QuyzP15SmYcP9l9FluL9ISvIECt1eHo4sSKdaKxLRguOj79HjZXtFg3UDIhvvLBVqPQm5d5OQ1OPgu4WzL4GN7hYwK6PYJf2zJjxs9vEQ6agrvpAZI+Rm1DT5x3i4xtcB+Mip473Xe+6IPoRmJ/NqzcP3c0xBf6xV1GDBBIQIaRRkIJgoAb/k0fb+Hl0uXnKxcSm86nYk4Kq5GSbeZ+G+B3rrnQfXbLZnle6nTj1YdAOErOKKi2wIDAQAB-----END PUBLIC KEY-----")); //Eduworks Researcher
                 a.setSubject(EcPk.fromPem(app.subject));
                 a.setAgent(EcPk.fromPem(app.me));
                 a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
@@ -252,18 +273,22 @@ Vue.component('competency', {
                             assertion.copyFrom(obj);
                             assertion.getSubjectAsync(function (subject) {
                                 if (app.subject == subject.toPem()) {
-                                    if (assertion.negative == null) {
-                                        EcRepository._delete(assertion, me.getCompetence, console.error);
-                                        if (assertionHistory[app.subject] != null)
-                                            assertionHistory[app.subject].removeAssertion(assertion);
-                                    } else
-                                        assertion.getNegativeAsync(function (negative) {
-                                            if (!negative) {
+                                    assertion.getAgentAsync(function (agent) {
+                                        if (app.me == agent.toPem()) {
+                                            if (assertion.negative == null) {
                                                 EcRepository._delete(assertion, me.getCompetence, console.error);
                                                 if (assertionHistory[app.subject] != null)
                                                     assertionHistory[app.subject].removeAssertion(assertion);
-                                            }
-                                        });
+                                            } else
+                                                assertion.getNegativeAsync(function (negative) {
+                                                    if (!negative) {
+                                                        EcRepository._delete(assertion, me.getCompetence, console.error);
+                                                        if (assertionHistory[app.subject] != null)
+                                                            assertionHistory[app.subject].removeAssertion(assertion);
+                                                    }
+                                                }, console.error);
+                                        }
+                                    }, console.error);
                                 }
                             }, console.error);
                         })(obj);
@@ -277,7 +302,7 @@ Vue.component('competency', {
                 var a = new EcAssertion();
                 a.generateId(repo.selectedServer);
                 a.addOwner(EcIdentityManager.ids[0].ppk.toPk());
-                a.addReader(EcPk.fromPem("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAixq5WEp+F5HEJZj12N791JATM+vkVJuolfOq0KbqtZwiygPao12fnpTwZdRCmb/4O1n6PXkJJ1XbufAx6k7hGNyM1kTngbs743QuyzP15SmYcP9l9FluL9ISvIECt1eHo4sSKdaKxLRguOj79HjZXtFg3UDIhvvLBVqPQm5d5OQ1OPgu4WzL4GN7hYwK6PYJf2zJjxs9vEQ6agrvpAZI+Rm1DT5x3i4xtcB+Mip473Xe+6IPoRmJ/NqzcP3c0xBf6xV1GDBBIQIaRRkIJgoAb/k0fb+Hl0uXnKxcSm86nYk4Kq5GSbeZ+G+B3rrnQfXbLZnle6nTj1YdAOErOKKi2wIDAQAB-----END PUBLIC KEY-----")); //Eduworks Researcher
+                //a.addReader(EcPk.fromPem("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAixq5WEp+F5HEJZj12N791JATM+vkVJuolfOq0KbqtZwiygPao12fnpTwZdRCmb/4O1n6PXkJJ1XbufAx6k7hGNyM1kTngbs743QuyzP15SmYcP9l9FluL9ISvIECt1eHo4sSKdaKxLRguOj79HjZXtFg3UDIhvvLBVqPQm5d5OQ1OPgu4WzL4GN7hYwK6PYJf2zJjxs9vEQ6agrvpAZI+Rm1DT5x3i4xtcB+Mip473Xe+6IPoRmJ/NqzcP3c0xBf6xV1GDBBIQIaRRkIJgoAb/k0fb+Hl0uXnKxcSm86nYk4Kq5GSbeZ+G+B3rrnQfXbLZnle6nTj1YdAOErOKKi2wIDAQAB-----END PUBLIC KEY-----")); //Eduworks Researcher
                 a.setSubject(EcPk.fromPem(app.subject));
                 a.setAgent(EcPk.fromPem(app.me));
                 a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
@@ -301,15 +326,20 @@ Vue.component('competency', {
                             var assertion = new EcAssertion();
                             assertion.copyFrom(obj);
                             assertion.getSubjectAsync(function (subject) {
-                                if (app.subject == subject.toPem())
-                                    if (assertion.negative != null)
-                                        assertion.getNegativeAsync(function (negative) {
-                                            if (negative) {
-                                                EcRepository._delete(assertion, me.getCompetence, console.error);
-                                                if (assertionHistory[app.subject] != null)
-                                                    assertionHistory[app.subject].removeAssertion(assertion);
-                                            }
-                                        });
+                                if (app.subject == subject.toPem()) {
+                                    assertion.getAgentAsync(function (agent) {
+                                        if (app.me == agent.toPem()) {
+                                            if (assertion.negative != null)
+                                                assertion.getNegativeAsync(function (negative) {
+                                                    if (negative) {
+                                                        EcRepository._delete(assertion, me.getCompetence, console.error);
+                                                        if (assertionHistory[app.subject] != null)
+                                                            assertionHistory[app.subject].removeAssertion(assertion);
+                                                    }
+                                                }, console.error);
+                                        }
+                                    }, console.error);
+                                }
                             }, console.error);
                         })(obj);
                     }
@@ -320,10 +350,10 @@ Vue.component('competency', {
     template: '<li>' +
         '<span v-if="parentCompetent"></span>' +
         '<span v-else>' +
-        '<button class="inline" v-if="competent" v-on:click="unclaimCompetence" title="By clicking this, I no longer think I can demonstrate this."><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
-        '<button class="inline" v-else v-on:click="claimCompetence" title="By clicking this, I think I can demonstrate this."><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
-        '<button class="inline" v-if="incompetent" v-on:click="unclaimIncompetence" title="By clicking this, I no longer think I cannot demonstrate this."><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
-        '<button class="inline" v-else v-on:click="claimIncompetence" title="By clicking this, I think I would demonstrate that I cannot do this."><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="competent" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-else v-on:click="claimCompetence" :title="claimCompetencePhrase"><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="incompetent" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-else v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
         ' </span> ' +
         '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
         '<assertion v-for="item in assertionsByOthers" :uri="item.id" icon="true" title="Assertion from elsewhere"></assertion>' +
