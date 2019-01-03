@@ -71,12 +71,12 @@ Vue.component('profile', {
         },
         shareStatement: {
             get: function () {
-                return "Share your claims about " + app.subjectName + " with " + this.name;
+                return "Share your claims about " + (app.subject == app.me ? "yourself" : app.subjectName) + " with " + this.name;
             }
         },
         unshareStatement: {
             get: function () {
-                return "Unshare your claims about " + app.subjectName + " with " + this.name;
+                return "Unshare your claims about " + (app.subject == app.me ? "yourself" : app.subjectName) + " with " + this.name;
             }
         },
         isSubject: {
