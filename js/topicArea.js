@@ -136,6 +136,7 @@ Vue.component('competency', {
         },
         countPhrase: {
             get: function () {
+                if (this.count == 0) return null;
                 return "(" + this.count + " resource" + (this.count == 1 ? "" : "s") + ")";
             }
         },
