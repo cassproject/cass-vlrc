@@ -33,8 +33,7 @@ Vue.component('framework', {
                                 var a = null;
                                 try {
                                     a = EcAlignment.getBlocking(f.relation[i]);
-                                } catch (e) {
-                                }
+                                } catch (e) {}
                                 if (a != null) {
                                     if (a.relationType == Relation.NARROWS) {
                                         if (r[a.target] == null) continue;
@@ -89,10 +88,10 @@ Vue.component('framework', {
         }
     },
     template: '<div>' +
-    '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
-    '<div>{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
-    '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subject="subject"></competency></ul>' +
-    '<div v-else><br>Loading Framework...</div></div>'
+        '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
+        '<div>{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
+        '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subject="subject"></competency></ul>' +
+        '<div v-else><br>Loading Framework...</div></div>'
 });
 
 var topicCompetencies = {};
@@ -189,8 +188,7 @@ Vue.component('competency', {
                         topicCompetencies[this.uri][i].getCompetence(evt, true);
             repo.search(
                 "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND (\\*@owner:\"" + app.subject + "\" OR \\*@reader:\"" + app.subject + "\")",
-                function (assertion) {
-                },
+                function (assertion) {},
                 function (assertions) {
                     me.competent = false;
                     me.incompetent = false;
@@ -212,9 +210,7 @@ Vue.component('competency', {
                                                 });
                                             else
                                                 me.competent = true;
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             me.assertionsByOthers.push(assertion);
                                         }
                                     }, console.error);
@@ -322,17 +318,17 @@ Vue.component('competency', {
         }
     },
     template: '<li>' +
-    '<span v-if="parentCompetent"></span>' +
-    '<span v-else>' +
-    '<button class="inline" v-if="competent" v-on:click="unclaimCompetence" title="By clicking this, I no longer think I can demonstrate this."><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-else v-on:click="claimCompetence" title="By clicking this, I think I can demonstrate this."><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="incompetent" v-on:click="unclaimIncompetence" title="By clicking this, I no longer think I cannot demonstrate this."><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-else v-on:click="claimIncompetence" title="By clicking this, I think I would demonstrate that I cannot do this."><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
-    ' </span> ' +
-    '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
-    '<i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true" v-for="item in assertionsByOthers" title="Assertion from elsewhere"></i>'+
-    '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
-    '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :subject="subject"></competency></ul>' +
-    '</li>'
+        '<span v-if="parentCompetent"></span>' +
+        '<span v-else>' +
+        '<button class="inline" v-if="competent" v-on:click="unclaimCompetence" title="By clicking this, I no longer think I can demonstrate this."><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-else v-on:click="claimCompetence" title="By clicking this, I think I can demonstrate this."><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="incompetent" v-on:click="unclaimIncompetence" title="By clicking this, I no longer think I cannot demonstrate this."><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-else v-on:click="claimIncompetence" title="By clicking this, I think I would demonstrate that I cannot do this."><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
+        ' </span> ' +
+        '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
+        '<assertion v-for="item in assertionsByOthers" :uri="item.id" icon="true" title="Assertion from elsewhere"></assertion>' +
+        '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
+        '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :subject="subject"></competency></ul>' +
+        '</li>'
 
 });

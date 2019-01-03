@@ -328,13 +328,15 @@ Vue.component('assertion', {
     computed: {
         name: {
             get: function () {
-                if (this.uri == null) return "Untitled Resource.";
+                if (this.uri == null)
+                    return "Untitled Resource.";
                 return EcAssertion.getBlocking(this.uri).getName();
             }
         },
         description: {
             get: function () {
-                if (this.uri == null) return null;
+                if (this.uri == null)
+                    return null;
                 return EcAssertion.getBlocking(this.uri).getDescription();
             }
         },

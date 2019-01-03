@@ -28,7 +28,7 @@ Vue.component('profile', {
                 if (this.person == null)
                     return "Loading...";
                 if (this.person.givenName != null && this.person.familyName != null)
-                    return this.person.givenName +" "+ this.person.familyName;
+                    return this.person.givenName + " " + this.person.familyName;
                 if (this.person.name == null)
                     return "<Restricted>";
                 //EcIdentityManager.getIdentity(EcPk.fromPem(this.pk)).displayName = this.personObj.name;
@@ -76,8 +76,7 @@ Vue.component('profile', {
             this.editing = false;
             this.private = false;
         },
-        private: function () {
-        }
+        private: function () {}
     },
     methods: {
         savePerson: function () {
@@ -160,23 +159,23 @@ Vue.component('profile', {
         }
     },
     template: '<div v-if="person">' +
-    '<span v-if="mine">' +
-    '<span v-if="editing">' +
-    '<i class="mdi mdi-content-save" aria-hidden="true" style="float:right;font-size:large" title="Save your person." v-on:click="savePerson()"></i>' +
-    '<i class="mdi mdi-cancel" aria-hidden="true" style="float:right;font-size:large" title="Cancel editing." v-on:click="cancelSave();"></i>' +
-    '</span>' +
-    '<span v-else>' +
-    '<i class="mdi mdi-pencil" aria-hidden="true" style="float:right;font-size:large" title="Edit your person." v-on:click="editing = true;"></i>' +
-    '</span>' +
-    '</span>' +
-    '<span v-else>' +
-    '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i>' +
-    '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i>' +
-    '</span>' +
-    '<img style="vertical-align: sub;" v-if="fingerprint" :src="fingerprintUrl" :title="fingerprint"/> <input v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">' +
-    '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
-    '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
-    '</div>'
+        '<span v-if="mine">' +
+        '<span v-if="editing">' +
+        '<i class="mdi mdi-content-save" aria-hidden="true" style="float:right;font-size:large" title="Save your person." v-on:click="savePerson()"></i>' +
+        '<i class="mdi mdi-cancel" aria-hidden="true" style="float:right;font-size:large" title="Cancel editing." v-on:click="cancelSave();"></i>' +
+        '</span>' +
+        '<span v-else>' +
+        '<i class="mdi mdi-pencil" aria-hidden="true" style="float:right;font-size:large" title="Edit your person." v-on:click="editing = true;"></i>' +
+        '</span>' +
+        '</span>' +
+        '<span v-else>' +
+        '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i>' +
+        '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i>' +
+        '</span>' +
+        '<img style="vertical-align: sub;" v-if="fingerprint" :src="fingerprintUrl" :title="fingerprint"/> <input v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">' +
+        '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
+        '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
+        '</div>'
 });
 var assertionHistory = {};
 Vue.component('assertionhistory', {
@@ -210,8 +209,7 @@ Vue.component('assertionhistory', {
             set: function (assertions) {
                 if (assertions == null) {
                     this.assertionResult.splice(0, this.assertionResult.length);
-                }
-                else {
+                } else {
                     this.assertionResult.splice(0, this.assertionResult.length);
                     for (var i = 0; i < assertions.length; i++)
                         this.assertionResult.push(assertions[i]);
@@ -219,8 +217,7 @@ Vue.component('assertionhistory', {
             }
         }
     },
-    created: function () {
-    },
+    created: function () {},
     watch: {
         pk: function (newPk, oldPk) {
             delete assertionHistory[oldPk];
@@ -241,15 +238,15 @@ Vue.component('assertionhistory', {
         }
     },
     template: '<div><h3>Claims (Private)</h3>' +
-    '<span v-if="assertions"><span v-if="assertions.length == 0">None.</span></span>' +
-    '<ul v-if="assertions" style="max-height:10rem;overflow-y:scroll;">' +
-    '<assertion v-for="item in assertions" v-bind:key="item.id" :uri="item.id"></assertion>' +
-    '</ul>' +
-    '<div v-else><br>Loading Assertions...</div>' +
-    '</div>'
+        '<span v-if="assertions"><span v-if="assertions.length == 0">None.</span></span>' +
+        '<ul v-if="assertions" style="max-height:10rem;overflow-y:scroll;">' +
+        '<assertion v-for="item in assertions" v-bind:key="item.id" :uri="item.id"></assertion>' +
+        '</ul>' +
+        '<div v-else><br>Loading Assertions...</div>' +
+        '</div>'
 });
 Vue.component('assertion', {
-    props: ['uri'],
+    props: ['uri', 'icon'],
     data: function () {
         return {
             assertion: null,
@@ -288,10 +285,16 @@ Vue.component('assertion', {
                     return null;
                 return this.competency.name;
             }
+        },
+        fingerprintUrl: {
+            get: function () {
+                if (this.subjectPk == null)
+                    return null;
+                return "http://tinygraphs.com/spaceinvaders/" + this.subjectPk.fingerprint() + "?theme=base&numcolors=16&size=11&fmt=svg";
+            }
         }
     },
-    created: function () {
-    },
+    created: function () {},
     watch: {},
     methods: {
         initialize: function (isVisible, entry) {
@@ -301,10 +304,14 @@ Vue.component('assertion', {
                     me.assertion = assertion;
                     if (assertion.subject == null)
                         me.subject = "nobody"
-                    else
+                    else {
                         assertion.getSubjectNameAsync(function (name) {
                             me.subject = name;
                         }, console.error);
+                        assertion.getSubjectAsync(function (pk) {
+                            me.subjectPk = pk;
+                        }, console.error);
+                    }
                     if (assertion.agent == null)
                         me.agent = "nobody"
                     else
@@ -332,7 +339,15 @@ Vue.component('assertion', {
             }
         }
     },
-    template: '<div v-observe-visibility="{callback: initialize,once: true}"><li v-if="statement" >{{ statement }}</li></div>'
+    template: '<span v-observe-visibility="{callback: initialize,once: true}">' +
+        '<span v-if="icon">' +
+        '<i v-if="negative" class="mdi mdi-close-box-outline" aria-hidden="true" :title="statement"></i>' +
+        '<i v-else class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true" :title="statement"></i>' +
+        '</span>' +
+        '<span v-else>' +
+        '<li v-if="statement" >{{ statement }}</li>' +
+        '</span>' +
+        '</span>'
 
 });
 
@@ -388,10 +403,10 @@ Vue.component('viewhistory', {
         }
     },
     template: '<div><h3>Views (Public)</h3>' +
-    '<span v-if="views"><span v-if="views.length == 0">None.</span></span>' +
-    '<ul v-if="views" style="max-height:10rem;overflow-y:scroll;"><chooseAction v-for="item in views" v-bind:key="item.id" :uri="item.id"></chooseAction></ul>' +
-    '<div v-else><br>Loading Views...</div>' +
-    '</div>'
+        '<span v-if="views"><span v-if="views.length == 0">None.</span></span>' +
+        '<ul v-if="views" style="max-height:10rem;overflow-y:scroll;"><chooseAction v-for="item in views" v-bind:key="item.id" :uri="item.id"></chooseAction></ul>' +
+        '<div v-else><br>Loading Views...</div>' +
+        '</div>'
 });
 Vue.component('chooseAction', {
     props: ['uri'],
@@ -410,8 +425,7 @@ Vue.component('chooseAction', {
             }
         }
     },
-    created: function () {
-    },
+    created: function () {},
     watch: {},
     methods: {
         initialize: function (isVisible, entry) {
