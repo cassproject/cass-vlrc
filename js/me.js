@@ -346,6 +346,18 @@ Vue.component('assertion', {
         };
     },
     computed: {
+        ok: {
+            get: function () {
+                if (this.subject == null)
+                    return false;
+                if (this.agent == null)
+                    return false;
+                if (this.competency == null)
+                    return false;
+                return true;
+            }
+
+        },
         statement: {
             get: function () {
                 if (this.subject == null)
@@ -364,6 +376,13 @@ Vue.component('assertion', {
                     statement += " could ";
                 statement += "demonstrate " + this.competencyText + ".";
                 return statement;
+            }
+        },
+        timeAgo: {
+            get: function () {
+                if (this.timestamp == null)
+                    return null;
+                return moment(this.timestamp).fromNow();
             }
         },
         competencyText: {
@@ -424,6 +443,23 @@ Vue.component('assertion', {
                     }, console.error);
                 }, console.error);
             }
+        },
+        gotoCompetency: function () {
+            var me = this;
+            EcFramework.search(repo, "competency:\"" + this.assertion.competency + "\"", function (frameworks) {
+                if (frameworks.length > 0) {
+                    app.selectedFramework = frameworks[0];
+                    app.selectedCompetency = EcCompetency.getBlocking(me.assertion.competency);
+                    $("#rad2").click();
+                    setTimeout(
+                        function () {
+                            $("[id=\"" + app.selectedCompetency.id + "\"]").each(function () {
+                                $(this)[0].scrollIntoView();
+                            })
+                        }
+                        , 1000);
+                }
+            }, console.error);
         }
     },
     template: '<span v-observe-visibility="{callback: initialize,once: true}">' +
