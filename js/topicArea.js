@@ -309,7 +309,8 @@ Vue.component('competency', {
                 a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
                 a.setAssertionDate(Date.now()); //UTC Milliseconds
                 a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
-                a.setNegative(true); //This is an assertion that an individual *can* do something, not that they *cannot*.
+                a.setNegative(true); //This is an assertion that an individual *cannot* do something, not that they *can*.
+                a.setConfidence(1.0);
                 EcRepository.save(a, me.getCompetence, console.error);
                 if (assertionHistory[app.subject] != null)
                     assertionHistory[app.subject].addAssertion(a);
