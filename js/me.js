@@ -179,7 +179,7 @@ Vue.component('profile', {
             var complete = 0;
             var count = 0;
             EcAssertion.search(repo,
-                "\"" + app.subject + "\"",
+                "@owner:\"" + app.subject + "\" AND \\*@reader:\"" + app.me + "\"",
                 function (assertions) {
                     count = assertions.length;
                     app.processingMessage = count + " claims found. Sharing with " + me.name + ".";
@@ -214,7 +214,7 @@ Vue.component('profile', {
             var complete = 0;
             var count = 0;
             EcAssertion.search(repo,
-                "\"" + app.subject + "\"",
+                "@owner:\"" + app.subject + "\" AND \\*@reader:\"" + app.me + "\"",
                 function (assertions) {
                     var eah = new EcAsyncHelper();
                     eah.each(assertions, function (assertion, after) {
