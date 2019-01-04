@@ -374,7 +374,7 @@ Vue.component('assertion', {
                     statement += " could not ";
                 else
                     statement += " could ";
-                statement += "demonstrate " + this.competencyText + ".";
+                statement += "demonstrate \"" + this.competencyText + "\".";
                 return statement;
             }
         },
@@ -450,6 +450,7 @@ Vue.component('assertion', {
                 if (frameworks.length > 0) {
                     app.selectedFramework = frameworks[0];
                     app.selectedCompetency = EcCompetency.getBlocking(me.assertion.competency);
+                    app.subject = me.assertion.getAgent().toPem();
                     $("#rad2").click();
                     setTimeout(
                         function () {
@@ -472,7 +473,7 @@ Vue.component('assertion', {
         '<span v-if="timestamp">{{ timeAgo }}, </span>' +
         '{{agent}} claimed {{subject}} ' +
         '<span v-if="negative">could not</span><span v-else>could</span>' +
-        ' demonstrate <span v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyText }}</span>' +
+        ' demonstrate <a href="#" v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyText }}</a>' +
         '</li>' +
         '</span>' +
         '</span>'
