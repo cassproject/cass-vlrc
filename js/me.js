@@ -468,7 +468,12 @@ Vue.component('assertion', {
         '<i v-else class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true" :title="statement"></i>' +
         '</span>' +
         '<span v-else>' +
-        '<li v-if="statement" >{{ statement }}</li>' +
+        '<li v-if="ok">' +
+        '<span v-if="timestamp">{{ timeAgo }}, </span>' +
+        '{{agent}} claimed {{subject}} ' +
+        '<span v-if="negative">could not</span><span v-else>could</span>' +
+        ' demonstrate <span v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyText }}</span>' +
+        '</li>' +
         '</span>' +
         '</span>'
 

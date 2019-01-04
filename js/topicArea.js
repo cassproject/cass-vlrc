@@ -349,7 +349,7 @@ Vue.component('competency', {
                 }, console.error);
         }
     },
-    template: '<li>' +
+    template: '<li :id="uri">' +
         '<span v-if="parentCompetent"></span>' +
         '<span v-else>' +
         '<button class="inline" v-if="competent" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
