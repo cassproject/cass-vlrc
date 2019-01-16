@@ -59,6 +59,7 @@ Triple = stjs.extend(Triple, null, [], function(constructor, prototype) {
     };
 }, {}, {});
 /**
+<<<<<<< Updated upstream
  *  Object Helper Functions
  * 
  *  @author fritz.ray@eduworks.com
@@ -97,6 +98,8 @@ Callback5 = stjs.extend(Callback5, null, [], function(constructor, prototype) {
     prototype.$invoke = function(p1, p2, p3, p4, p5) {};
 }, {}, {});
 /**
+=======
+>>>>>>> Stashed changes
  *  Array Helper Functions
  * 
  *  @author fritz.ray@eduworks.com
@@ -181,6 +184,13 @@ EcArray = stjs.extend(EcArray, null, [], function(constructor, prototype) {
         return false;
     };
 }, {}, {});
+<<<<<<< Updated upstream
+=======
+var Callback5 = function() {};
+Callback5 = stjs.extend(Callback5, null, [], function(constructor, prototype) {
+    prototype.$invoke = function(p1, p2, p3, p4, p5) {};
+}, {}, {});
+>>>>>>> Stashed changes
 var EcLocalStorage = function() {};
 EcLocalStorage = stjs.extend(EcLocalStorage, null, [], function(constructor, prototype) {
     constructor.removeItem = function(s, key) {
@@ -911,6 +921,45 @@ EcDate = stjs.extend(EcDate, null, [], function(constructor, prototype) {
     };
 }, {}, {});
 /**
+<<<<<<< Updated upstream
+=======
+ *  Object Helper Functions
+ * 
+ *  @author fritz.ray@eduworks.com
+ *  @class EcObject
+ *  @module com.eduworks.ec
+ */
+var EcObject = function() {};
+EcObject = stjs.extend(EcObject, null, [], function(constructor, prototype) {
+    /**
+     *  Returns true if the result is an object.
+     * 
+     *  @param {any} o Object to test.
+     *  @return true iff the object is an object.
+     *  @static
+     *  @method isArray
+     */
+    constructor.isObject = function(o) {
+        if (EcArray.isArray(o)) 
+            return false;
+        if (o == null) 
+            return false;
+        return (typeof o) == "object";
+    };
+    /**
+     *  Returns keys on the object
+     * 
+     *  @param {any} o Object to test.
+     *  @return List of keys
+     *  @static
+     *  @method keys
+     */
+    constructor.keys = function(o) {
+        return ecKeys(o);
+    };
+}, {}, {});
+/**
+>>>>>>> Stashed changes
  *  A graph consisting of a set of vertices of type <code>V</code>
  *  set and a set of edges of type <code>E</code>.  Edges of this
  *  graph type have exactly two endpoints; whether these endpoints
