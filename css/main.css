@@ -109,7 +109,7 @@ ul ul {
 }
 
 .timeline {
-    padding: 10px 40px;
+    padding: 10px 0px;
     position: relative;
     background-color: inherit;
 }
@@ -150,7 +150,8 @@ ul ul {
 .timelineElement img {
     float: left;
     clip-path: circle(22px at center);
-    margin-right: .5rem;
+    margin-left: .25rem;
+    margin-right: .25rem;
 }
 
 
