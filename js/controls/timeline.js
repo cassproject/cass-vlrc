@@ -17,7 +17,7 @@ Vue.component('timeline', {
                     });
                     me.assertionResult = assertions;
                 }, console.error, {
-                    size: 50
+                    size: 5000
                 });
                 return null;
             }
