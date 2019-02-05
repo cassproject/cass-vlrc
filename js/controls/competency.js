@@ -11,16 +11,6 @@ Vue.component('competency', {
         };
     },
     computed: {
-        competency: {
-            get: function () {
-                var me = this;
-                if (this.competencyObj != null) return this.competencyObj;
-                EcCompetency.get(this.uri, function (c) {
-                    me.competencyObj = c;
-                }, console.error);
-                return null;
-            }
-        },
         count: {
             get: function () {
                 var me = this;
@@ -31,15 +21,15 @@ Vue.component('competency', {
         name: {
             get: function () {
                 if (this.uri == null) return "Invalid Competency";
-                if (this.competency == null) return "Loading...";
-                return this.competency.getName();
+                if (this.competencyObj == null) return "Loading...";
+                return this.competencyObj.getName();
             }
         },
         description: {
             get: function () {
                 if (this.uri == null) return "Could not resolve URI.";
-                if (this.competency == null) return "Loading...";
-                var descriptionArray = this.competency.getDescription();
+                if (this.competencyObj == null) return "Loading...";
+                var descriptionArray = this.competencyObj.getDescription();
                 if (descriptionArray == null) return null;
                 if (EcArray.isArray(descriptionArray))
                     return descriptionArray[0];
@@ -121,10 +111,14 @@ Vue.component('competency', {
         getCompetence: function (evt, dontPropegate) {
             if (this.parentCompetent) return;
             var me = this;
-//            if (dontPropegate != true && topicCompetencies[this.uri] != null)
-//                for (var i = 0; i < topicCompetencies[this.uri].length; i++)
-//                    if (this != topicCompetencies[this.uri][i])
-//                        topicCompetencies[this.uri][i].getCompetence(evt, true);
+            //            if (dontPropegate != true && topicCompetencies[this.uri] != null)
+            //                for (var i = 0; i < topicCompetencies[this.uri].length; i++)
+            //                    if (this != topicCompetencies[this.uri][i])
+            //                        topicCompetencies[this.uri][i].getCompetence(evt, true);
+
+            EcCompetency.get(this.uri, function (c) {
+                me.competencyObj = c;
+            }, console.error);
             repo.search(
                 "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND (\\*@owner:\"" + app.subject + "\" OR \\*@reader:\"" + app.subject + "\")",
                 function (assertion) {},

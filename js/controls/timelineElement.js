@@ -28,26 +28,6 @@ Vue.component('timelineElement', {
             }
 
         },
-        statement: {
-            get: function () {
-                if (this.subject == null)
-                    return "Decrypting...";
-                if (this.agent == null)
-                    return "Decrypting...";
-                if (this.competency == null)
-                    return "Decrypting...";
-                var statement = "";
-                if (this.timestamp != null)
-                    statement += moment(this.timestamp).fromNow() + ", ";
-                statement += this.agent + " claimed " + this.subject;
-                if (this.negative == true)
-                    statement += " could not ";
-                else
-                    statement += " could ";
-                statement += "demonstrate \"" + this.competencyText + "\".";
-                return statement;
-            }
-        },
         timeAgo: {
             get: function () {
                 if (this.timestamp == null)
@@ -158,7 +138,7 @@ Vue.component('timelineElement', {
                 if (frameworks.length > 0) {
                     app.selectedFramework = frameworks[0];
                     app.selectedCompetency = EcCompetency.getBlocking(me.assertion.competency);
-                    app.subject = me.assertion.getSubject().toPem();
+                    app.subject = me.subjectPk;
                     $("#rad2").click();
                     setTimeout(
                         function () {
@@ -230,11 +210,19 @@ Vue.component('timelineElement', {
     },
     template: '<div class="timelineElement" v-observe-visibility="{callback: initialize,once: true}">' +
         '<span v-if="ok"><div class="time" v-if="timestamp">{{ timeAgo }},</div>' +
-        '<img style="vertical-align: sub;" v-if="fingerprintUrlAgent" :src="fingerprintUrlAgent" :title="agent"/><img style="vertical-align: sub;" v-if="fingerprintUrlSubject" :src="fingerprintUrlSubject" :title="subject"/> <div class="content">{{subject}}' +
-        ' claimed ' + '{{agent}} ' +
+        '<img style="vertical-align: sub;" v-if="fingerprintUrlAgent" :src="fingerprintUrlAgent" :title="agent"/><img style="vertical-align: sub;" v-if="fingerprintUrlSubject" :src="fingerprintUrlSubject" :title="subject"/> ' +
+        '<div class="content">' +
+        '{{agent}} claimed {{subject}} ' +
         '<span v-if="negative">could not</span><span v-else>could</span>' +
-        ' demonstrate <a href="#" v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyName }}<span v-if="frameworkName"> in the subject area {{ frameworkName }}</span></a><br><small>{{ competencyDescription }}' +
-        '</span></div>' +
+        ' demonstrate ' +
+        '<a href="#" v-on:click="gotoCompetency" :title="assertion.competency">' +
+        '{{ competencyName }}' +
+        '<span v-if="frameworkName"> in the subject area {{ frameworkName }}</span>' +
+        '</a>' +
+        '<br>' +
+        '<small>{{ competencyDescription }}</small>' +
+        '</div>' +
+        '</span>' +
         '<span v-else>Decrypting...</span>' +
         '</div>'
 
