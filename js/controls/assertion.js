@@ -1,14 +1,17 @@
 Vue.component('assertion', {
-    props: ['uri', 'icon'],
+    props: ['uri', 'icon', 'short'],
     data: function () {
         return {
             assertion: null,
             subject: null,
+            subjectPk: null,
+            agentPk: null,
             agent: null,
             timestamp: null,
             expiry: null,
             competency: null,
             negative: null,
+            agentPerson: null,
         };
     },
     computed: {
@@ -60,11 +63,15 @@ Vue.component('assertion', {
         },
         fingerprintUrl: {
             get: function () {
-                if (this.subjectPk == null)
+                if (this.agentPerson == null) {
                     return null;
-                return "http://tinygraphs.com/spaceinvaders/" + this.subjectPk.fingerprint() + "?theme=base&numcolors=16&size=11&fmt=svg";
+                }
+                if (this.agentPerson.email != null) {
+                    return "https://www.gravatar.com/avatar/" + EcCrypto.md5(this.agentPerson.email.toLowerCase()) + "?s=22";
+                }
+                return "http://tinygraphs.com/spaceinvaders/" + this.agentPerson.getGuid() + "?theme=base&numcolors=16&size=22&fmt=svg";
             }
-        }
+        },
     },
     created: function () {},
     watch: {},
@@ -90,6 +97,10 @@ Vue.component('assertion', {
                         assertion.getAgentNameAsync(function (name) {
                             me.agent = name;
                         }, console.error);
+                    assertion.getAgentAsync(function (pk) {
+                        me.agentPk = pk;
+                        me.getAgent();
+                    }, console.error);
                     if (assertion.assertionDate != null)
                         assertion.getAssertionDateAsync(function (assertionDate) {
                             me.timestamp = assertionDate;
@@ -123,25 +134,61 @@ Vue.component('assertion', {
                             $("[id=\"" + app.selectedCompetency.id + "\"]").each(function () {
                                 $(this)[0].scrollIntoView();
                             })
-                        }
-                        , 1000);
+                        }, 1000);
                 }
             }, console.error);
-        }
+        },
+        getAgent: function () {
+            this.agentPerson = null;
+            var me = this;
+            EcRepository.get(repo.selectedServer + "data/schema.org.Person/" + me.agentPk.fingerprint(), function (person) {
+                var e = new EcEncryptedValue();
+                if (person.isAny(e.getTypes())) {
+                    e.copyFrom(person);
+                    e.decryptIntoObjectAsync(function (person) {
+                        var p = new Person();
+                        p.copyFrom(person);
+                        me.agentPerson = p;
+                    }, console.error);
+                } else {
+                    var p = new Person();
+                    p.copyFrom(person);
+                    me.agentPerson = p;
+                }
+            }, function (failure) {
+                var pk = me.agentPk;
+                var p = new Person();
+                p.assignId(repo.selectedServer, pk.fingerprint());
+                p.addOwner(pk);
+                if (me.displayName == null)
+                    p.name = "Unknown Person.";
+                else
+                    p.name = me.displayName;
+                me.agentPerson = p;
+            });
+        },
     },
-    template: '<span v-observe-visibility="{callback: initialize,once: true}">' +
-    '<span v-if="icon">' +
-    '<i v-if="negative" class="mdi mdi-close-box-outline" aria-hidden="true" :title="statement"></i>' +
-    '<i v-else class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true" :title="statement"></i>' +
-    '</span>' +
-    '<span v-else>' +
-    '<li v-if="ok">' +
-    '<span v-if="timestamp">{{ timeAgo }}, </span>' +
-    '{{agent}} claimed {{subject}} ' +
-    '<span v-if="negative">could not</span><span v-else>could</span>' +
-    ' demonstrate <a href="#" v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyText }}</a>' +
-    '</li>' +
-    '</span>' +
-    '</span>'
+    template: '<span class="assertion" v-observe-visibility="{callback: initialize,once: true}">' +
+        '<span v-if="icon">' +
+        '<i v-if="negative" class="mdi mdi-close-box-outline" aria-hidden="true" :title="statement"></i>' +
+        '<i v-else class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true" :title="statement"></i>' +
+        '</span>' +
+        '<span v-else-if="short">' +
+        '<li v-if="ok">' +
+        '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="agent"/> ' +
+        '<span v-if="negative">Can&#39t do it - </span><span v-else>Can do it - </span> ' +
+        '<span v-if="timestamp">said {{ timeAgo }}</span>' +
+        ' by {{agent}}' +
+        '</li>' +
+        '</span>' +
+        '<span v-else>' +
+        '<li v-if="ok">' +
+        '<span v-if="timestamp">{{ timeAgo }}, </span>' +
+        '{{agent}} claimed {{subject}} ' +
+        '<span v-if="negative">could not</span><span v-else>could</span>' +
+        ' demonstrate <a href="#" v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyText }}</a>' +
+        '</li>' +
+        '</span>' +
+        '</span>'
 
 });

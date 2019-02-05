@@ -92,6 +92,13 @@ function ready2() {
     app.me = app.subject = EcIdentityManager.ids[0].ppk.toPk().toPem();
 }
 
+function showPage(pageNumber) {
+    $('.page').hide();
+    $('#div' + pageNumber).show();
+    $(".rad").removeClass("selected");
+    $('#rad' + pageNumber).addClass("selected");
+}
+
 //**************************************************************************************************
 // CASS UI VLRC iFrame Communication Functions
 //**************************************************************************************************
@@ -153,9 +160,8 @@ function performAction(action, data) {
             performInitIdentityAction(data);
             break;
         case CONTACT_UPDATED_MESSAGE:
-            app.profiles.splice(0,app.profiles.length);
-            for (var i = 0;i < data.contacts.length;i++)
-            {
+            app.profiles.splice(0, app.profiles.length);
+            for (var i = 0; i < data.contacts.length; i++) {
                 var c = new EcContact();
                 c.pk = EcPk.fromPem(data.contacts[i].pk);
                 c.displayName = data.contacts[i].displayName;
@@ -186,12 +192,12 @@ if (window.addEventListener) {
     window.attachEvent("onmessage", messageListener);
 }
 
-function contactsChanged(){
+function contactsChanged() {
     var ary = [];
-    for (var i = 0;i < EcIdentityManager.contacts.length;i++)
+    for (var i = 0; i < EcIdentityManager.contacts.length; i++)
         ary.push({
-            pk:EcIdentityManager.contacts[i].pk.toPem(),
-            displayName:EcIdentityManager.contacts[i].displayName
+            pk: EcIdentityManager.contacts[i].pk.toPem(),
+            displayName: EcIdentityManager.contacts[i].displayName
         });
     var evt = {
         message: CONTACT_UPDATED_MESSAGE,

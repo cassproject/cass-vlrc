@@ -40,6 +40,19 @@ Vue.component('profile', {
                     EcIdentityManager.getIdentity(EcPk.fromPem(this.pk)).displayName = this.personObj.name;
             }
         },
+        email: {
+            get: function () {
+                if (this.person == null)
+                    return "Loading...";
+                if (this.person.name == null)
+                    return "";
+
+                return this.person.email;
+            },
+            set: function (newEmail) {
+                this.personObj.email = newEmail;
+            }
+        },
         mine: {
             get: function () {
                 if (app.me == null)
@@ -60,7 +73,10 @@ Vue.component('profile', {
             get: function () {
                 if (this.personObj == null)
                     return null;
-                return "http://tinygraphs.com/spaceinvaders/" + this.personObj.getGuid() + "?theme=base&numcolors=16&size=22&fmt=svg";
+                if (this.personObj.email != null) {
+                    return "https://www.gravatar.com/avatar/" + EcCrypto.md5(this.personObj.email.toLowerCase()) + "?s=44";
+                }
+                return "http://tinygraphs.com/spaceinvaders/" + this.personObj.getGuid() + "?theme=base&numcolors=16&size=44&fmt=svg";
             }
         },
         isContact: {
@@ -119,7 +135,7 @@ Vue.component('profile', {
             }
             var pk = EcPk.fromPem(this.pk);
             var me = this;
-            EcRepository.get(repo.selectedServer + "data/" + pk.fingerprint(), function (person) {
+            EcRepository.get(repo.selectedServer + "data/schema.org.Person/" + pk.fingerprint(), function (person) {
                 var e = new EcEncryptedValue();
                 if (person.isAny(e.getTypes())) {
                     me.private = true;
@@ -244,23 +260,23 @@ Vue.component('profile', {
         }
     },
     template: '<div class="profileRow" v-if="person">' +
-    '<span v-if="mine">' +
-    '<span v-if="editing">' +
-    '<i class="mdi mdi-content-save" aria-hidden="true" style="float:right;font-size:large" title="Save your person." v-on:click="savePerson()"></i>' +
-    '<i class="mdi mdi-cancel" aria-hidden="true" style="float:right;font-size:large" title="Cancel editing." v-on:click="cancelSave();"></i>' +
-    '</span>' +
-    '<span v-else>' +
-    '<i class="mdi mdi-pencil" aria-hidden="true" style="float:right;font-size:large" title="Edit your person." v-on:click="editing = true;"></i>' +
-    '</span>' +
-    '</span>' +
-    '<span v-else>' +
-    '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i> ' +
-    '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i> ' +
-    '<i class="mdi mdi-comment-processing-outline" aria-hidden="true" style="float:right;font-size:large" :title="unshareStatement" v-if="isSubject == false" v-on:click="unshareAssertionsAboutSubjectWith();"></i> ' +
-    '<i class="mdi mdi-comment-account" aria-hidden="true" style="float:right;font-size:large" :title="shareStatement" v-if="isSubject == false" v-on:click="shareAssertionsAboutSubjectWith();"></i> ' +
-    '</span>' +
-    '<img style="vertical-align: sub;" v-if="fingerprint" :src="fingerprintUrl" :title="fingerprint"/> <input v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">' +
-    '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
-    '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
-    '</div>'
+        '<span v-if="mine">' +
+        '<span v-if="editing">' +
+        '<i class="mdi mdi-content-save" aria-hidden="true" style="float:right;font-size:large" title="Save your person." v-on:click="savePerson()"></i>' +
+        '<i class="mdi mdi-cancel" aria-hidden="true" style="float:right;font-size:large" title="Cancel editing." v-on:click="cancelSave();"></i>' +
+        '</span>' +
+        '<span v-else>' +
+        '<i class="mdi mdi-pencil" aria-hidden="true" style="float:right;font-size:large" title="Edit your person." v-on:click="editing = true;"></i>' +
+        '</span>' +
+        '</span>' +
+        '<span v-else>' +
+        '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i> ' +
+        '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i> ' +
+        '<i class="mdi mdi-comment-processing-outline" aria-hidden="true" style="float:right;font-size:large" :title="unshareStatement" v-if="isSubject == false" v-on:click="unshareAssertionsAboutSubjectWith();"></i> ' +
+        '<i class="mdi mdi-comment-account" aria-hidden="true" style="float:right;font-size:large" :title="shareStatement" v-if="isSubject == false" v-on:click="shareAssertionsAboutSubjectWith();"></i> ' +
+        '</span>' +
+        '<img style="vertical-align: sub;" v-if="fingerprint" :src="fingerprintUrl" :title="fingerprint"/> <span v-if="editing">Name:</span><input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name"> <span v-if="editing">Email:</span><input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="email">' +
+        '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
+        '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
+        '</div>'
 });

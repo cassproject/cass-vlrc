@@ -41,7 +41,7 @@ Vue.component('competency', {
         countPhrase: {
             get: function () {
                 if (this.count == 0) return null;
-                return "(" + this.count + " resource" + (this.count == 1 ? "" : "s") + ")";
+                return "(" + this.count + " resource" + (this.count == 1 ? "" : "s") + " available)";
             }
         },
         claimCompetencePhrase: {
@@ -253,18 +253,18 @@ Vue.component('competency', {
                 }, console.error);
         }
     },
-    template: '<li :id="uri">' +
-    '<span v-if="parentCompetent"></span>' +
-    '<span v-else>' +
-    '<button class="inline" v-if="competent" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-else v-on:click="claimCompetence" :title="claimCompetencePhrase"><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="incompetent" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-else v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
-    ' </span> ' +
-    '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
-    '<assertion v-for="item in assertionsByOthers" :uri="item.id" icon="true" title="Assertion from elsewhere"></assertion>' +
-    '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
-    '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :subject="subject"></competency></ul>' +
-    '</li>'
+    template: '<li class="competency" :id="uri">' +
+        '<span v-if="parentCompetent"></span>' +
+        '<span v-else>' +
+        '<button class="inline" v-if="competent" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-else v-on:click="claimCompetence" :title="claimCompetencePhrase"><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="incompetent" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-else v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
+        ' </span> ' +
+        '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
+        '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
+        '<assertion v-for="item in assertionsByOthers" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
+        '<ul><competency v-for="item in hasChild" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :subject="subject"></competency></ul>' +
+        '</li>'
 
 });

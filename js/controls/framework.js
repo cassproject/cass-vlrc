@@ -89,7 +89,7 @@ Vue.component('framework', {
     },
     template: '<div>' +
         '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
-        '<div>{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
+        '<div class="frameworkNameAndDescription">{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
         '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subject="subject"></competency></ul>' +
         '<div v-else><br>Loading Framework...</div></div>'
 });

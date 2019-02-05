@@ -41,10 +41,6 @@
     <script src="js/controls/resourceSelect.js"></script>
     <script src="js/controls/viewHistory.js"></script>
     <div id="app">
-        <div class="header">
-            <a style="float:right;height:35px;margin-top:-5px;margin-right:5px" target="_blank" href="http://cassproject.org"><img style="height:35px;" src="https://www.cassproject.org/img/CASS-Logo-website-white.png"></a>
-            <h1>Competency based Virtual Learning Resource Center</h1>
-        </div>
         <div id="container">
             <p></p><br>
             <div class="processing" v-show="processing">
@@ -52,79 +48,69 @@
                     <h1>{{processingMessage}}</h1>
                 </center>
             </div>
-            <ul v-show="processing == false" class="noDot">
-                <li>
-                    <input id="rad1" type="radio" name="rad">
-                    <label for="rad1"><a class="vertical">Select Subject Area</a></label>
-                    <div class="accslide">
-                        <profile :pk="subject"></profile>
-                        <frameworks />
-                    </div>
-                </li>
-                <li>
-                    <input id="rad2" type="radio" name="rad">
-                    <label for="rad2"><a class="vertical">Select Topic Area</a></label>
-                    <div class="accslide">
-                        <profile :pk="subject"></profile>
-                        <framework id="leftFramework" v-if="selectedFramework" :uri="selectedFramework.id" :subject="subject"></framework>
-                        <div v-else>No subject has been selected.</div>
-                    </div>
-                </li>
-                <li>
-                    <input id="rad3" type="radio" name="rad">
-                    <label for="rad3"><a class="vertical">Select Learning Resource</a></label>
-                    <div class="accslide">
-                        <div v-if="selectedCompetency">
-                            <div>The following resources exist for:
-                                <competency :uri="selectedCompetency.id" />
-                            </div>
+            <div id="pages" v-show="processing == false">
+                <div id="sidebar">
+                    <i id="rad1" onclick="showPage('1');" class="rad mdi mdi-book-open-page-variant mdi-48px"></i>
+                    <label for="rad1" class="rad">Subject Area</label>
+                    <i id="rad2" onclick="showPage('2');" class="rad mdi mdi-book-open mdi-48px"></i>
+                    <label for="rad2" class="rad">Topic Area</label>
+                    <i id="rad3" onclick="showPage('3');" class="rad mdi mdi-file mdi-48px"></i>
+                    <label for="rad3" class="rad">Learning Resource</label>
+                    <i id="rad4" onclick="showPage('4');" class="rad mdi mdi-account mdi-48px"></i>
+                    <label for="rad4" class="rad">My Account</label>
+                    <i id="rad5" onclick="showPage('5');" class="rad mdi mdi-account-group mdi-48px"></i>
+                    <label for="rad5" class="rad">My Contacts</label>
+                    <i id="rad6" onclick="showPage('6');" class="rad mdi mdi-account-search mdi-48px"></i>
+                    <label for="rad6" class="rad">Contact Search</label>
+                </div>
+                <div id="div1" class="page">
+                    <profile :pk="subject"></profile>
+                    <frameworks />
+                </div>
+                <div id="div2" class="page" style="display:none;">
+                    <profile :pk="subject"></profile>
+                    <framework id="leftFramework" v-if="selectedFramework" :uri="selectedFramework.id" :subject="subject"></framework>
+                    <div v-else>No subject has been selected.</div>
+                </div>
+                <div id="div3" class="page" style="display:none;">
+                    <div v-if="selectedCompetency">
+                        <div>The following resources exist for:
+                            <competency :uri="selectedCompetency.id" />
+                        </div>
 
-                            <hr>
-                            <resources :url="selectedCompetency.id"></resources>
-                            <hr>
-                            <!--<div>You have the following history:</div>
+                        <hr>
+                        <resources :url="selectedCompetency.id"></resources>
+                        <hr>
+                        <!--<div>You have the following history:</div>
                             <history></history>
                             <hr>-->
-                            <button v-on:click="searchGoogle">Search for additional resources on Google.</button>
-                            <hr>
-                            <div><strong>Add a resource</strong></div>
-                            <label for="inputUrl">URL: </label><input id="inputUrl" v-model="inputUrl" placeholder="Url" /><br>
-                            <label for="inputName">Name: </label><input id="inputName" v-model="inputName" placeholder="Name of Resource" /><br>
-                            <label for="inputDescription">Description: </label><textarea id="inputDescription" v-model="inputDescription" placeholder="Description of Resource"></textarea><br>
-                            <button style="float:right;" v-on:click="addResource">Add Resource</button>
-                        </div>
-                        <div v-else>No topic has been selected.</div>
-                    </div>
-                </li>
-                <li>
-                    <input id="rad4" type="radio" name="rad">
-                    <label for="rad4"><a class="vertical">About Me</a></label>
-                    <div class="accslide">
-                        <profile :pk="me"></profile>
-                        <assertionHistory :pk="me"></assertionHistory>
-                        <viewHistory :pk="me"></viewHistory>
-                    </div>
-                </li>
-                <li>
-                    <input id="rad5" type="radio" name="rad">
-                    <label for="rad5"><a class="vertical">My Contacts</a></label>
-                    <div class="accslide">
-                        <h1>Selected:</h1>
-                        <profile :pk="subject"></profile>
-                        <assertionHistory :pk="subject"></assertionHistory>
-                        <viewHistory :pk="subject"></viewHistory>
+                        <button v-on:click="searchGoogle">Search for additional resources on Google.</button>
                         <hr>
-                        <h1>Contacts:</h1>
-                        <profiles :profiles="profiles" :identities="identities"></profiles>
+                        <div><strong>Add a resource</strong></div>
+                        <label for="inputUrl">URL: </label><input id="inputUrl" v-model="inputUrl" placeholder="Url" /><br>
+                        <label for="inputName">Name: </label><input id="inputName" v-model="inputName" placeholder="Name of Resource" /><br>
+                        <label for="inputDescription">Description: </label><textarea id="inputDescription" v-model="inputDescription" placeholder="Description of Resource"></textarea><br>
+                        <button style="float:right;" v-on:click="addResource">Add Resource</button>
                     </div>
-                </li>
-                <li>
-                    <input id="rad6" type="radio" name="rad">
-                    <label for="rad6"><a class="vertical">Other People</a></label>
-                    <div class="accslide">
-                        <people></people>
-                    </div>
-                </li>
+                    <div v-else>No topic has been selected.</div>
+                </div>
+                <div id="div4" class="page" style="display:none;">
+                    <profile :pk="me"></profile>
+                    <assertionHistory :pk="me"></assertionHistory>
+                    <viewHistory :pk="me"></viewHistory>
+                </div>
+                <div id="div5" class="page" style="display:none;">
+                    <h1>Selected:</h1>
+                    <profile :pk="subject"></profile>
+                    <assertionHistory :pk="subject"></assertionHistory>
+                    <viewHistory :pk="subject"></viewHistory>
+                    <hr>
+                    <h1>Contacts:</h1>
+                    <profiles :profiles="profiles" :identities="identities"></profiles>
+                </div>
+                <div id="div6" class="page" style="display:none;">
+                    <people></people>
+                </div>
                 <!--
                 <li>
                     <input id="rad7" type="radio" name="rad">
@@ -150,7 +136,7 @@
                         </div>
                     </li>
 -->
-            </ul>
+            </div>
         </div>
     </div>
     <script src="js/vue.js"></script>

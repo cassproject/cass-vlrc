@@ -10,7 +10,9 @@ Vue.component('frameworkSelect', {
         description: {
             get: function () {
                 if (this.uri == null) return "Could not resolve URI.";
-                return EcFramework.getBlocking(this.uri).getDescription();
+                var description = EcFramework.getBlocking(this.uri).getDescription();
+                if (description == null || description == "")
+                    return "A collection of " + this.count + " topic" + (this.count > 1 ? "s" : "") + ".";
             }
         },
         count: {
@@ -29,8 +31,8 @@ Vue.component('frameworkSelect', {
             $("#rad2").click();
         }
     },
-    template: '<li v-on:click="setFramework">' +
-    '<span>{{ name }}</span> ({{ count }} topics)' +
-    '<small v-if="description" class="block">{{ description }}</small>' +
-    '</li>'
+    template: '<li class="frameworkSelect" v-on:click="setFramework">' +
+        '<span class="frameworkSelectName">{{ name }}</span> ({{ count }} topics)' +
+        '<small v-if="description" class="frameworkSelectDescription block">{{ description }}</small>' +
+        '</li>'
 });
