@@ -231,18 +231,18 @@ Vue.component('resourceSelect', {
                 }, console.error);
         }
     },
-    template: '<li>' +
-    '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
-    '<button class="inline" v-if="upvoted" v-on:click="unupvote" title="Remove Upvote"><i class="mdi mdi-thumb-up-outline" aria-hidden="true"> {{upvotes}}</i></button>' +
-    '<button class="inline" v-else v-on:click="upvote" title="Upvote"><i class="mdi mdi-thumb-up" aria-hidden="true"> {{upvotes}}</i></button> ' +
-    '<button class="inline" v-if="downvoted" v-on:click="undownvote" title="Remove Downvote"><i class="mdi mdi-thumb-down-outline" aria-hidden="true"> {{downvotes}}</i></button> ' +
-    '<button class="inline" v-else v-on:click="downvote" title="Remove Downvote"><i class="mdi mdi-thumb-down" aria-hidden="true"> {{downvotes}}</i></button> ' +
-    '<button class="inline" v-if="viewed" v-on:click="unview" title="By clicking this, I did not really view this."><i class="mdi mdi-eye-off-outline" aria-hidden="true"> {{views}}</i></button> ' +
-    '<button class="inline" v-else v-on:click="view" title="By clicking this, I viewed this already."><i class="mdi mdi-eye-outline" aria-hidden="true"> {{views}}</i></button> ' +
-    '<a v-on:click="setResource" :href="url" :target="urlTarget" style="cursor:pointer;">' +
-    '<i class="mdi mdi-link-variant" aria-hidden="true"></i>' +
-    '{{ name }}' +
-    '</a> ' +
-    '<small v-on:click="setResource" v-if="description" class="block">{{ description }}</small>' +
-    '</li>'
+    template: '<li class="resource">' +
+        '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
+        '<button class="inline" v-if="upvoted" v-on:click="unupvote" title="Remove Upvote"><i class="mdi mdi-thumb-up-outline" aria-hidden="true"> {{upvotes}}</i></button>' +
+        '<button class="inline" v-else v-on:click="upvote" title="Upvote"><i class="mdi mdi-thumb-up" aria-hidden="true"> {{upvotes}}</i></button> ' +
+        '<button class="inline" v-if="downvoted" v-on:click="undownvote" title="Remove Downvote"><i class="mdi mdi-thumb-down-outline" aria-hidden="true"> {{downvotes}}</i></button> ' +
+        '<button class="inline" v-else v-on:click="downvote" title="Remove Downvote"><i class="mdi mdi-thumb-down" aria-hidden="true"> {{downvotes}}</i></button> ' +
+        '<button class="inline" v-if="viewed" v-on:click="unview" title="By clicking this, I did not really view this."><i class="mdi mdi-eye-off-outline" aria-hidden="true"> {{views}}</i></button> ' +
+        '<button class="inline" v-else v-on:click="view" title="By clicking this, I viewed this already."><i class="mdi mdi-eye-outline" aria-hidden="true"> {{views}}</i></button> ' +
+        '<a v-on:click="setResource" :href="url" :target="urlTarget" style="cursor:pointer;">' +
+        '<i class="mdi mdi-link-variant" aria-hidden="true"></i>' +
+        '{{ name }}' +
+        '</a> ' +
+        '<small v-on:click="setResource" v-if="description" class="block">{{ description }}</small>' +
+        '</li>'
 });

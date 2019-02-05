@@ -74,7 +74,8 @@
                 </div>
                 <div id="div3" class="page" style="display:none;">
                     <div v-if="selectedCompetency">
-                        <div>The following resources exist for:
+                        <div>
+                            <h4>The following resources exist for:</h4>
                             <competency :uri="selectedCompetency.id" />
                         </div>
 
@@ -86,32 +87,33 @@
                             <hr>-->
                         <button v-on:click="searchGoogle">Search for additional resources on Google.</button>
                         <hr>
-                        <div><strong>Add a resource</strong></div>
-                        <label for="inputUrl">URL: </label><input id="inputUrl" v-model="inputUrl" placeholder="Url" /><br>
-                        <label for="inputName">Name: </label><input id="inputName" v-model="inputName" placeholder="Name of Resource" /><br>
-                        <label for="inputDescription">Description: </label><textarea id="inputDescription" v-model="inputDescription" placeholder="Description of Resource"></textarea><br>
-                        <button style="float:right;" v-on:click="addResource">Add Resource</button>
+                        <h3>Add a resource</h3>
                     </div>
-                    <div v-else>No topic has been selected.</div>
+                    <label for="inputUrl">URL: </label><input type="text" id="inputUrl" v-model="inputUrl" placeholder="Url" /><br>
+                    <label for="inputName">Name: </label><input type="text" id="inputName" v-model="inputName" placeholder="Name of Resource" /><br>
+                    <label for="inputDescription">Description: </label><textarea id="inputDescription" v-model="inputDescription" placeholder="Description of Resource"></textarea><br>
+                    <button style="float:right;" v-on:click="addResource">Add Resource</button>
                 </div>
-                <div id="div4" class="page" style="display:none;">
-                    <profile :pk="me"></profile>
-                    <assertionHistory :pk="me"></assertionHistory>
-                    <viewHistory :pk="me"></viewHistory>
-                </div>
-                <div id="div5" class="page" style="display:none;">
-                    <h1>Selected:</h1>
-                    <profile :pk="subject"></profile>
-                    <assertionHistory :pk="subject"></assertionHistory>
-                    <viewHistory :pk="subject"></viewHistory>
-                    <hr>
-                    <h1>Contacts:</h1>
-                    <profiles :profiles="profiles" :identities="identities"></profiles>
-                </div>
-                <div id="div6" class="page" style="display:none;">
-                    <people></people>
-                </div>
-                <!--
+                <div v-else>No topic has been selected.</div>
+            </div>
+            <div id="div4" class="page" style="display:none;">
+                <profile :pk="me"></profile>
+                <assertionHistory :pk="me"></assertionHistory>
+                <viewHistory :pk="me"></viewHistory>
+            </div>
+            <div id="div5" class="page" style="display:none;">
+                <h1>Selected:</h1>
+                <profile :pk="subject"></profile>
+                <assertionHistory :pk="subject"></assertionHistory>
+                <viewHistory :pk="subject"></viewHistory>
+                <hr>
+                <h1>Contacts:</h1>
+                <profiles :profiles="profiles" :identities="identities"></profiles>
+            </div>
+            <div id="div6" class="page" style="display:none;">
+                <people></people>
+            </div>
+            <!--
                 <li>
                     <input id="rad7" type="radio" name="rad">
                     <label for="rad7"><a class="vertical">Advanced: Create and Edit my own Areas</a></label>
@@ -136,8 +138,8 @@
                         </div>
                     </li>
 -->
-            </div>
         </div>
+    </div>
     </div>
     <script src="js/vue.js"></script>
 </body>
