@@ -59,22 +59,22 @@ Vue.component('competency', {
         },
         claimCompetencePhrase: {
             get: function () {
-                return "By clicking this, I think " + (app.subject == app.me ? "I" : app.subjectName) + " can demonstrate this.";
+                return "By selecting this, I think " + (app.subject == app.me ? "I" : app.subjectName) + " can demonstrate this.";
             }
         },
         unclaimCompetencePhrase: {
             get: function () {
-                return "By clicking this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " can demonstrate this.";
+                return "By deselecting this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " can demonstrate this.";
             }
         },
         claimIncompetencePhrase: {
             get: function () {
-                return "By clicking this, I think " + (app.subject == app.me ? "I" : app.subjectName) + " could not demonstrate this.";
+                return "By selecting this, I think " + (app.subject == app.me ? "I" : app.subjectName) + " could not demonstrate this.";
             }
         },
         unclaimIncompetencePhrase: {
             get: function () {
-                return "By clicking this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " cannot demonstrate this.";
+                return "By deselecting this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " cannot demonstrate this.";
             }
         }
     },
