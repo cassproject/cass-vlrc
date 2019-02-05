@@ -1,5 +1,5 @@
-Vue.component('assertion', {
-    props: ['uri', 'icon', 'short'],
+Vue.component('timelineElement', {
+    props: ['uri'],
     data: function () {
         return {
             assertion: null,
@@ -12,6 +12,7 @@ Vue.component('assertion', {
             competency: null,
             negative: null,
             agentPerson: null,
+            subjectPerson: null,
         };
     },
     computed: {
@@ -54,22 +55,47 @@ Vue.component('assertion', {
                 return moment(this.timestamp).fromNow();
             }
         },
-        competencyText: {
+        competencyName: {
             get: function () {
                 if (this.competency == null)
                     return null;
-                return this.competency.name;
+                return this.competency.getName();
             }
         },
-        fingerprintUrl: {
+        frameworkName: {
+            get: function () {
+                if (this.framework == null)
+                    return null;
+                return this.framework.getName();
+            }
+        },
+        competencyDescription: {
+            get: function () {
+                if (this.competency == null)
+                    return null;
+                return this.competency.getDescription();
+            }
+        },
+        fingerprintUrlAgent: {
             get: function () {
                 if (this.agentPerson == null) {
                     return null;
                 }
                 if (this.agentPerson.email != null) {
-                    return "https://www.gravatar.com/avatar/" + EcCrypto.md5(this.agentPerson.email.toLowerCase()) + "?s=22";
+                    return "https://www.gravatar.com/avatar/" + EcCrypto.md5(this.agentPerson.email.toLowerCase()) + "?s=44";
                 }
-                return "http://tinygraphs.com/spaceinvaders/" + this.agentPerson.getGuid() + "?theme=base&numcolors=16&size=22&fmt=svg";
+                return "http://tinygraphs.com/spaceinvaders/" + this.agentPerson.getGuid() + "?theme=base&numcolors=16&size=44&fmt=svg";
+            }
+        },
+        fingerprintUrlSubject: {
+            get: function () {
+                if (this.subjectPerson == null) {
+                    return null;
+                }
+                if (this.subjectPerson.email != null) {
+                    return "https://www.gravatar.com/avatar/" + EcCrypto.md5(this.subjectPerson.email.toLowerCase()) + "?s=44";
+                }
+                return "http://tinygraphs.com/spaceinvaders/" + this.subjectPerson.getGuid() + "?theme=base&numcolors=16&size=44&fmt=svg";
             }
         },
     },
@@ -89,6 +115,7 @@ Vue.component('assertion', {
                         }, console.error);
                         assertion.getSubjectAsync(function (pk) {
                             me.subjectPk = pk.toPem();
+                            me.getSubject();
                         }, console.error);
                     }
                     if (assertion.agent == null)
@@ -115,6 +142,10 @@ Vue.component('assertion', {
                         }, console.error);
                     else
                         me.negative = false;
+                    if (assertion.framework != null)
+                        EcFramework.get(assertion.framework, function (framework) {
+                            me.framework = framework;
+                        }, console.error);
                     EcCompetency.get(assertion.competency, function (competency) {
                         me.competency = competency;
                     }, console.error);
@@ -167,28 +198,44 @@ Vue.component('assertion', {
                 me.agentPerson = p;
             });
         },
+        getSubject: function () {
+            this.subjectPerson = null;
+            var me = this;
+            EcRepository.get(repo.selectedServer + "data/schema.org.Person/" + EcPk.fromPem(me.subjectPk).fingerprint(), function (person) {
+                var e = new EcEncryptedValue();
+                if (person.isAny(e.getTypes())) {
+                    e.copyFrom(person);
+                    e.decryptIntoObjectAsync(function (person) {
+                        var p = new Person();
+                        p.copyFrom(person);
+                        me.subjectPerson = p;
+                    }, console.error);
+                } else {
+                    var p = new Person();
+                    p.copyFrom(person);
+                    me.subjectPerson = p;
+                }
+            }, function (failure) {
+                var pk = EcPk.fromPem(me.agentPk);
+                var p = new Person();
+                p.assignId(repo.selectedServer, pk.fingerprint());
+                p.addOwner(pk);
+                if (me.displayName == null)
+                    p.name = "Unknown Person.";
+                else
+                    p.name = me.displayName;
+                me.subjectPerson = p;
+            });
+        },
     },
-    template: '<span class="assertion" v-observe-visibility="{callback: initialize,once: true}">' +
-        '<span v-if="icon">' +
-        '<i v-if="negative" class="mdi mdi-close-box-outline" aria-hidden="true" :title="statement"></i>' +
-        '<i v-else class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true" :title="statement"></i>' +
-        '</span>' +
-        '<span v-else-if="short">' +
-        '<li v-if="ok">' +
-        '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="agent"/> ' +
-        '<span v-if="negative">Can&#39t do it - </span><span v-else>Can do it - </span> ' +
-        '<span v-if="timestamp">said {{ timeAgo }}</span>' +
-        ' by {{agent}}' +
-        '</li>' +
-        '</span>' +
-        '<span v-else>' +
-        '<li v-if="ok">' +
-        '<span v-if="timestamp">{{ timeAgo }}, </span>' +
-        '{{agent}} claimed {{subject}} ' +
+    template: '<div class="timelineElement" v-observe-visibility="{callback: initialize,once: true}">' +
+        '<span v-if="ok"><div class="time" v-if="timestamp">{{ timeAgo }},</div>' +
+        '<img style="vertical-align: sub;" v-if="fingerprintUrlAgent" :src="fingerprintUrlAgent" :title="agent"/><img style="vertical-align: sub;" v-if="fingerprintUrlSubject" :src="fingerprintUrlSubject" :title="subject"/> <div class="content">{{subject}}' +
+        ' claimed ' + '{{agent}} ' +
         '<span v-if="negative">could not</span><span v-else>could</span>' +
-        ' demonstrate <a href="#" v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyText }}</a>' +
-        '</li>' +
-        '</span>' +
-        '</span>'
+        ' demonstrate <a href="#" v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyName }}<span v-if="frameworkName"> in the subject area {{ frameworkName }}</span></a><br><small>{{ competencyDescription }}' +
+        '</span></div>' +
+        '<span v-else>Decrypting...</span>' +
+        '</div>'
 
 });

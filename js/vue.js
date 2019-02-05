@@ -11,7 +11,9 @@ app = new Vue({
             }
         }
     },
-    created: function () {},
+    created: function () {
+        this.identities = EcIdentityManager.ids
+    },
     methods: {
         searchGoogle: function () {
             window.open("https://google.com/search?q=" + app.selectedCompetency.getName(), "lernnit");
@@ -92,7 +94,6 @@ app = new Vue({
         selectedCompetency: null,
         selectedResource: null,
         profiles: EcIdentityManager.contacts,
-        identities: EcIdentityManager.ids,
         inputUrl: "",
         inputName: "",
         inputDescription: "",

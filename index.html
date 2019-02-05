@@ -39,6 +39,8 @@
     <script src="js/controls/profiles.js"></script>
     <script src="js/controls/resources.js"></script>
     <script src="js/controls/resourceSelect.js"></script>
+    <script src="js/controls/timeline.js"></script>
+    <script src="js/controls/timelineElement.js"></script>
     <script src="js/controls/viewHistory.js"></script>
     <div id="app">
         <div id="container">
@@ -50,6 +52,8 @@
             </div>
             <div id="pages" v-show="processing == false">
                 <div id="sidebar">
+                    <i id="rad0" onclick="showPage('0');" class="rad mdi mdi-timeline-text mdi-48px"></i>
+                    <label for="rad0" class="rad">Timeline</label>
                     <i id="rad1" onclick="showPage('1');" class="rad mdi mdi-book-open-page-variant mdi-48px"></i>
                     <label for="rad1" class="rad">Subject Area</label>
                     <i id="rad2" onclick="showPage('2');" class="rad mdi mdi-book-open mdi-48px"></i>
@@ -63,7 +67,11 @@
                     <i id="rad6" onclick="showPage('6');" class="rad mdi mdi-account-search mdi-48px"></i>
                     <label for="rad6" class="rad">Contact Search</label>
                 </div>
-                <div id="div1" class="page">
+                <div id="div0" class="page" style="display:none;">
+                    <profile :pk="me"></profile>
+                    <timeline />
+                </div>
+                <div id="div1" class="page" style="display:none;">
                     <profile :pk="subject"></profile>
                     <frameworks />
                 </div>

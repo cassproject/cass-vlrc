@@ -69,7 +69,7 @@ $(document).ready(function () {
             }, 100);
         } else {
             setTimeout(function () {
-                $("#rad1").click();
+                $("#rad0").click();
             }, 100);
         }
     }
@@ -134,7 +134,7 @@ function performInitIdentityAction(data) {
     } else {
         setTimeout(function () {
             ready2();
-            $("#rad1").click();
+            $("#rad0").click();
         }, 100);
     }
 }
