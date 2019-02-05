@@ -195,7 +195,7 @@ Vue.component('profile', {
             var complete = 0;
             var count = 0;
             EcAssertion.search(repo,
-                "@owner:\"" + app.subject + "\" AND \\*@reader:\"" + app.me + "\"",
+                "@owner:\"" + app.me + "\" AND \\*@reader:\"" + app.subject + "\"",
                 function (assertions) {
                     count = assertions.length;
                     app.processingMessage = count + " claims found. Sharing with " + me.name + ".";
@@ -205,10 +205,11 @@ Vue.component('profile', {
                             if (app.subject == subject.toPem()) {
                                 assertion.getAgentAsync(function (agent) {
                                     if (app.me == agent.toPem()) {
-                                        assertion.addReader(EcPk.fromPem(me.pk));
-                                        EcRepository.save(assertion, function () {
-                                            app.processingMessage = ++complete + " of " + count + " claims shared with " + me.name + ".";
-                                            after();
+                                        assertion.addReaderAsync(EcPk.fromPem(me.pk), function () {
+                                            EcRepository.save(assertion, function () {
+                                                app.processingMessage = ++complete + " of " + count + " claims shared with " + me.name + ".";
+                                                after();
+                                            }, after);
                                         }, after);
                                     } else
                                         after();
@@ -230,7 +231,7 @@ Vue.component('profile', {
             var complete = 0;
             var count = 0;
             EcAssertion.search(repo,
-                "@owner:\"" + app.subject + "\" AND \\*@reader:\"" + app.me + "\"",
+                "@owner:\"" + app.me + "\" AND \\*@reader:\"" + app.subject + "\"",
                 function (assertions) {
                     var eah = new EcAsyncHelper();
                     eah.each(assertions, function (assertion, after) {
@@ -240,10 +241,11 @@ Vue.component('profile', {
                             if (app.subject == subject.toPem()) {
                                 assertion.getAgentAsync(function (agent) {
                                     if (app.me == agent.toPem()) {
-                                        assertion.removeReader(EcPk.fromPem(me.pk));
-                                        EcRepository.save(assertion, function () {
-                                            app.processingMessage = ++complete + " of " + count + " claims unshared with " + me.name + ".";
-                                            after();
+                                        assertion.removeReaderAsync(EcPk.fromPem(me.pk), function () {
+                                            EcRepository.save(assertion, function () {
+                                                app.processingMessage = ++complete + " of " + count + " claims unshared with " + me.name + ".";
+                                                after();
+                                            }, after);
                                         }, after);
                                     } else
                                         after();
