@@ -12,10 +12,19 @@ Vue.component('timeline', {
                 var me = this;
                 if (this.assertionResult != null) return this.assertionResult;
                 EcAssertion.search(repo, "*", function (assertions) {
-                    assertions = assertions.sort(function (a, b) {
-                        return parseInt(b.id.substring(b.id.lastIndexOf("/") + 1)) - parseInt(a.id.substring(a.id.lastIndexOf("/") + 1));
-                    });
-                    me.assertionResult = assertions;
+                    var eah = new EcAsyncHelper();
+                    eah.each(assertions, function (assertion, callback) {
+                            assertion.getAssertionDateAsync(function (date) {
+                                assertion.assertionDateDecrypted = date;
+                                callback();
+                            }, callback)
+                        },
+                        function (assertions) {
+                            assertions = assertions.sort(function (a, b) {
+                                return b.assertionDateDecrypted - a.assertionDateDecrypted;
+                            });
+                            me.assertionResult = assertions;
+                        });
                 }, console.error, {
                     size: 5000
                 });
