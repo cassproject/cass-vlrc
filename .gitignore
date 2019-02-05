@@ -2,3 +2,7 @@
 target/
 
 build\.log
+
+cass-vlrc\.iml
+
+\.idea/
