@@ -13,9 +13,9 @@
     <meta name="application-name" content="CbVLRC">
     <meta name="theme-color" content="#ffffff">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>
     <script src="js/cass/cass.js"></script>
     <link rel="stylesheet" href="css/main.css">
@@ -37,8 +37,9 @@
     <script src="js/controls/frameworkSelect.js"></script>
     <script src="js/controls/history.js"></script>
     <script src="js/controls/jobPostings.js"></script>
-    <script src="js/controls/jobPostingSelect.js"></script>
     <script src="js/controls/jobPostingCreate.js"></script>
+    <script src="js/controls/jobPostingDetail.js"></script>
+    <script src="js/controls/jobPostingSelect.js"></script>
     <script src="js/controls/people.js"></script>
     <script src="js/controls/profile.js"></script>
     <script src="js/controls/profiles.js"></script>
@@ -128,8 +129,12 @@
                     <people></people>
                 </div>
                 <div id="div7" class="page" style="display:none;">
-                    <profile :pk="me"></profile>
+                    <profile :pk="subject"></profile>
                     <jobPostings></jobPostings>
+                </div>
+                <div id="div8" class="page" style="display:none;">
+                    <profile></profile>
+                    <jobPostingDetail :uri="selectedJobPosting" :subject="subject"></jobPostingDetail>
                 </div>
                 <!--
                 <li>

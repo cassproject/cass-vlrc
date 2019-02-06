@@ -93,6 +93,7 @@ app = new Vue({
         selectedFramework: null,
         selectedCompetency: null,
         selectedResource: null,
+        selectedJobPosting: null,
         profiles: EcIdentityManager.contacts,
         inputUrl: "",
         inputName: "",
@@ -100,5 +101,6 @@ app = new Vue({
         processing: false,
         processingMessage: "",
         assertions: null,
+        jobPostings: null,
     }
 });

@@ -1,16 +1,12 @@
-Vue.component('jobPostingSelect', {
-    props: ['uri'],
+Vue.component('jobpostingdetail', {
+    props: ['uri', 'subject'],
     data: function () {
         return {};
     },
-    created: function () {},
     computed: {
         resource: {
             get: function () {
                 var resource = EcRepository.getBlocking(this.uri);
-                var count = 0;
-                while (count++ < 50 && resource.url != null && resource.url.indexOf(repo.selectedServer) != -1)
-                    resource = EcRepository.getBlocking(resource.url);
                 return resource;
             }
         },
@@ -29,7 +25,12 @@ Vue.component('jobPostingSelect', {
                 if (this.uri == null) return "Untitled Posting.";
                 var resource = this.resource;
                 if (resource != null && resource.additionalType != null)
-                    return resource.additionalType;
+                    return {
+                        "jobPostingType://gig": "Gig",
+                        "jobPostingType://job": "Job",
+                        "jobPostingType://position": "Position",
+                        "jobPostingType://temp": "Temporary Position"
+                    }[resource.additionalType];
                 else
                     return null;
             }
@@ -66,6 +67,16 @@ Vue.component('jobPostingSelect', {
                     return null;
             }
         },
+        competencies: {
+            get: function () {
+                if (this.uri == null) return null;
+                var resource = this.resource;
+                if (resource != null && resource.skills != null)
+                    return resource.skills;
+                else
+                    return null;
+            }
+        }
     },
     methods: {
         deleteMe: function () {
@@ -81,18 +92,18 @@ Vue.component('jobPostingSelect', {
                             topicCompetencies[app.selectedCompetency.id][i].getResourceCount();
                 });
             }, console.error);
-        },
-        setJobPosting: function () {
-            app.selectedJobPosting = this.uri;
-            showPage('8');
         }
     },
-    template: '<li class="jobPostingSelect">' +
+    template: '<li class="jobPostingDetail">' +
+        '<h2>{{type}} Description:</h2>' +
         '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
-        '<a v-on:click="setJobPosting" href="#" style="cursor:pointer;">' +
+        '<span>' +
         '<i class="mdi mdi-briefcase-outline" aria-hidden="true"></i> ' +
         '{{ name }}' +
-        ' <span v-if="count">({{count}} required skills)</span>' + '</a> ' +
-        '<small v-on:click="setJobPosting" v-if="description" class="block">{{ description }}</small>' +
+        '</span>' +
+        '<small v-if="description" class="block">{{ description }}</small>' +
+        '<hr>' +
+        '<h3>Required Skills:</h3>' +
+        '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item" :uri="item" :subject="subject"></competency></ul>' +
         '</li>'
 });

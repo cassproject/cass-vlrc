@@ -12,10 +12,10 @@ Vue.component('jobpostings', {
             get: function () {
                 var me = this;
                 if (this.lastSearch != this.search)
-                    this.jobPostingsResult = null;
+                    app.jobPostings = null;
                 this.lastSearch = this.search;
-                if (this.jobPostingsResult != null) {
-                    return this.jobPostingsResult;
+                if (app.jobPostings != null) {
+                    return app.jobPostings;
                 }
                 var search = this.search;
                 if (search == null) search = "*";
@@ -23,7 +23,7 @@ Vue.component('jobpostings', {
                 repo.searchWithParams(search, {
                     size: 50
                 }, function (result) {}, function (results) {
-                    me.jobPostingsResult = results;
+                    app.jobPostings = results;
                 }, console.error);
                 return null;
             }
