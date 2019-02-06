@@ -90,9 +90,10 @@
                 </div>
                 <div id="div3" class="page" style="display:none;">
                     <div v-if="selectedCompetency">
+                        <profile :pk="me"></profile>
                         <div>
                             <h4>The following resources exist for:</h4>
-                            <competency :uri="selectedCompetency.id" />
+                            <competency :uri="selectedCompetency.id" :subject="me" />
                         </div>
 
                         <hr>
@@ -133,7 +134,7 @@
                     <jobPostings></jobPostings>
                 </div>
                 <div id="div8" class="page" style="display:none;">
-                    <profile></profile>
+                    <profile :pk="subject"></profile>
                     <jobPostingDetail :uri="selectedJobPosting" :subject="subject"></jobPostingDetail>
                 </div>
                 <!--

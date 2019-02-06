@@ -49,9 +49,9 @@ Vue.component('viewhistory', {
             }
         }
     },
-    template: '<div><h3>Views (Public)</h3>' +
-    '<span v-if="views"><span v-if="views.length == 0">None.</span></span>' +
-    '<ul v-if="views" style="max-height:10rem;overflow-y:scroll;"><chooseAction v-for="item in views" v-bind:key="item.id" :uri="item.id"></chooseAction></ul>' +
-    '<div v-else><br>Loading Views...</div>' +
-    '</div>'
+    template: '<div><h3>View History (Public)</h3>' +
+        '<span v-if="views"><span v-if="views.length == 0">None.</span></span>' +
+        '<ul v-if="views" style="max-height:10rem;overflow-y:scroll;"><chooseAction v-for="item in views" v-bind:key="item.id" :uri="item.id"></chooseAction></ul>' +
+        '<div v-else><br>Loading Views...</div>' +
+        '</div>'
 });

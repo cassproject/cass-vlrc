@@ -78,7 +78,7 @@ Vue.component('assertion', {
     methods: {
         initialize: function (isVisible, entry) {
             var me = this;
-            if (true && isVisible) {
+            if (isVisible) {
                 EcAssertion.get(this.uri, function (assertion) {
                     me.assertion = assertion;
                     if (assertion.subject == null)

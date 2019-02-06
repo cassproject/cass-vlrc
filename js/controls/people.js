@@ -46,7 +46,7 @@ Vue.component('people', {
     template: '<div>' +
         '<input type="text" class="frameworksSearchInput" placeholder="Search for people..." v-model="search"/>' +
         '<ul v-if="people">' +
-        '<profile v-for="item in people" v-bind:key="item.owner[0] + \'people\'":pk="item.owner[0]" :displayName="item.name" :onClick="changeSelected"></profile>' +
+        '<profile v-for="item in people" v-bind:key="item.id" :pk="item.owner[0]" :displayName="item.name" :onClick="changeSelected"></profile>' +
         '</ul>' +
         '<div v-else><br>Loading People...</div>' +
         '</div>'
