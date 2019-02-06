@@ -223,7 +223,7 @@ Vue.component('timelineElement', {
         '<small>{{ competencyDescription }}</small>' +
         '</div>' +
         '</span>' +
-        '<span v-else>Decrypting...</span>' +
+        '<div class="time" v-else><i class="mdi mdi-spin mdi-loading"/></div>' +
         '</div>'
 
 });

@@ -177,7 +177,7 @@ Vue.component('assertion', {
         '<li v-if="ok">' +
         '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="agent"/> <span style="color:blue">{{agent}}</span> ' +
         '<span v-if="timestamp">claimed {{ timeAgo }}:</span>' +
-        '<span class="statement" v-if="negative">{{subject}} can&#39t do it.</span><span class="statement" v-else>{{subject}} can do it.</span> ' +
+        '<span class="statement" v-if="negative">{{subject}} can&#39t do this.</span><span class="statement" v-else>{{subject}} can do this.</span> ' +
         '</li>' +
         '</span>' +
         '<span v-else>' +

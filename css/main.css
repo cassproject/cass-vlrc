@@ -131,9 +131,10 @@ ul ul {
     float: left;
     padding: .5rem;
     left: -.2rem;
-    max-width: 120px;
+    width: 120px;
     background-color: white;
     border: 4px solid black;
+    text-align: center;
     top: -.5rem;
     z-index: 5;
 }
