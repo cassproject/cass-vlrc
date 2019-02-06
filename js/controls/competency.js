@@ -17,25 +17,24 @@ Vue.component('competency', {
         competency: {
             get: function () {
                 var me = this;
-                if (this.competencyObj == null)
+                if (this.competencyObj == null) {
                     EcCompetency.get(this.uri, function (c) {
                         me.competencyObj = c;
                     });
+                }
                 return this.competencyObj;
             }
         },
         competent: {
             get: function () {
                 var me = this;
-                if (!this.visible)
-                    return false;
                 if (this.competency == null)
                     return false;
                 if (app.assertions == null)
                     return false;
-                if (app.assertions.length != this.assertionCounter) {
+                if (this.visible && app.assertions.length != this.assertionCounter) {
                     this.assertionCounter = app.assertions.length;
-                    this.competentState = null;
+                    this.competentStateNew = null;
                     var eah = new EcAsyncHelper();
                     eah.each(app.assertions, function (assertion, callback) {
                         if (me.competency.isId(assertion.competency)) {
@@ -47,11 +46,11 @@ Vue.component('competency', {
                                                 assertion.getNegativeAsync(function (negative) {
                                                     if (negative);
                                                     else
-                                                        me.competentState = true;
+                                                        me.competentStateNew = true;
                                                     callback();
                                                 });
                                             else {
-                                                me.competentState = true;
+                                                me.competentStateNew = true;
                                                 callback();
                                             }
                                         } else {
@@ -65,7 +64,8 @@ Vue.component('competency', {
                         } else
                             callback();
                     }, function (assertions) {
-                        if (me.competentState == null) me.competentState = false;
+                        if (me.competentStateNew == null) me.competentStateNew = false;
+                        me.competentState = me.competentStateNew;
                     });
                 }
                 return this.competentState;
@@ -74,15 +74,13 @@ Vue.component('competency', {
         incompetent: {
             get: function () {
                 var me = this;
-                if (!this.visible)
-                    return false;
                 if (this.competency == null)
                     return false;
                 if (app.assertions == null)
                     return false;
-                if (app.assertions.length != this.assertionCounterIncompetent) {
+                if (this.visible && app.assertions.length != this.assertionCounterIncompetent) {
                     this.assertionCounterIncompetent = app.assertions.length;
-                    this.incompetentState = null;
+                    this.incompetentStateNew = null;
                     var eah = new EcAsyncHelper();
                     eah.each(app.assertions, function (assertion, callback) {
                         if (assertion == null) return;
@@ -94,7 +92,7 @@ Vue.component('competency', {
                                             if (assertion.negative != null)
                                                 assertion.getNegativeAsync(function (negative) {
                                                     if (negative)
-                                                        me.incompetentState = true;
+                                                        me.incompetentStateNew = true;
                                                     callback();
                                                 });
                                             else {
@@ -111,7 +109,8 @@ Vue.component('competency', {
                         } else
                             callback();
                     }, function (assertions) {
-                        if (me.incompetentState == null) me.incompetentState = false;
+                        if (me.incompetentStateNew == null) me.incompetentStateNew = false;
+                        me.incompetentState = me.incompetentStateNew;
                     });
                 }
                 return this.incompetentState;
@@ -127,15 +126,15 @@ Vue.component('competency', {
         name: {
             get: function () {
                 if (this.uri == null) return "Invalid Competency";
-                if (this.competencyObj == null) return "Loading...";
-                return this.competencyObj.getName();
+                if (this.competency == null) return "Loading...";
+                return this.competency.getName();
             }
         },
         description: {
             get: function () {
                 if (this.uri == null) return "Could not resolve URI.";
-                if (this.competencyObj == null) return "Loading...";
-                var descriptionArray = this.competencyObj.getDescription();
+                if (this.competency == null) return "Loading...";
+                var descriptionArray = this.competency.getDescription();
                 if (descriptionArray == null) return null;
                 if (EcArray.isArray(descriptionArray))
                     return descriptionArray[0];
@@ -204,6 +203,7 @@ Vue.component('competency', {
         getResourceCount: function () {
             var me = this;
             var search = "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\"";
+            EcRepository.unsigned = true;
             repo.searchWithParams(search, {
                     size: 50
                 },
@@ -211,6 +211,8 @@ Vue.component('competency', {
                 function (resources) {
                     me.counter = resources.length;
                 }, console.error);
+
+            EcRepository.unsigned = false;
         },
         setCompetency: function () {
             app.selectedCompetency = EcCompetency.getBlocking(this.uri);
