@@ -90,6 +90,7 @@ function ready2() {
 
     app.login = true;
     app.me = app.subject = EcIdentityManager.ids[0].ppk.toPk().toPem();
+    openWebSocket();
 }
 
 function showPage(pageNumber) {
@@ -209,3 +210,62 @@ function contactsChanged() {
             parent.postMessage(evt, queryParams.origin);
 }
 EcIdentityManager.onContactChanged = contactsChanged;
+
+//
+// Websocket
+//
+
+
+var webSocketBackoff = 100;
+var webSocketConnection = false;
+
+openWebSocket = function (r) {
+    var connection;
+    // Instead of /ws/custom, will be /ws in next release.
+    if (queryParams.webSocketOverride == null || queryParams.webSocketOverride === undefined)
+        connection = new WebSocket(repo.selectedServer.replace(/http/, "ws").replace(/api\//, "ws/custom"));
+    else
+        connection = new WebSocket(queryParams.webSocketOverride);
+
+    connection.onopen = function () {
+        console.log("WebSocket open.");
+        webSocketConnection = true;
+    };
+
+    connection.onerror = function (error) {
+        console.log(error);
+    };
+
+    //Re-establish connection on close.
+    connection.onclose = function (evt) {
+        console.log(evt);
+        webSocketBackoff *= 2;
+        webSocketConnection = false;
+        setTimeout(function () {
+            openWebSocket(r);
+        }, webSocketBackoff);
+    };
+
+    connection.onmessage = function (e) {
+        console.log('Server: ' + e.data);
+        delete EcRepository.cache[e.data];
+        if (app.assertions != null)
+            for (var i = 0; i < app.assertions.length; i++)
+                if (app.assertions[i].isId(e.data))
+                    app.assertions.splice(i, 1);
+        EcRepository.get(e.data, function (wut) {
+            delete EcRepository.cache[wut.id];
+            delete EcRepository.cache[wut.shortId()];
+
+            if (new Assertion().isA(wut.getFullType())) {
+                if (app.assertions != null) {
+                    var a = new EcAssertion();
+                    a.copyFrom(wut);
+                    app.assertions.unshift(a);
+                }
+            }
+
+        }, console.error);
+    };
+
+}

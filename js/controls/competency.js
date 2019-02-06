@@ -251,6 +251,7 @@ Vue.component('competency', {
         },
         unclaimCompetence: function (evt, after) {
             var me = this;
+            me.competentState = null;
             var a = after;
             EcCompetency.get(this.uri, function (c) {
                 me.competencyObj = c;
@@ -318,6 +319,7 @@ Vue.component('competency', {
         },
         unclaimIncompetence: function (evt, after) {
             var me = this;
+            me.incompetentState = null;
             var a = after;
             EcCompetency.get(this.uri, function (c) {
                 me.competencyObj = c;
