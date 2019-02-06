@@ -89,8 +89,8 @@ Vue.component('jobPostingSelect', {
     },
     template: '<li class="jobPostingSelect">' +
         '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
-        '<a v-on:click="setJobPosting" href="#" style="cursor:pointer;">' +
         '<i class="mdi mdi-briefcase-outline" aria-hidden="true"></i> ' +
+        '<a v-on:click="setJobPosting" href="#" style="cursor:pointer;">' +
         '{{ name }}' +
         ' <span v-if="count">({{count}} required skills)</span>' + '</a> ' +
         '<small v-on:click="setJobPosting" v-if="description" class="block">{{ description }}</small>' +

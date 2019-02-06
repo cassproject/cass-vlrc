@@ -228,11 +228,14 @@ Vue.component('competency', {
         },
         claimCompetence: function (evt, after) {
             var me = this;
+            me.competentState = null;
             this.unclaimIncompetence(evt, function () {
                 var a = new EcAssertion();
                 a.generateId(repo.selectedServer);
                 a.addOwner(EcIdentityManager.ids[0].ppk.toPk());
                 //a.addReader(EcPk.fromPem("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAixq5WEp+F5HEJZj12N791JATM+vkVJuolfOq0KbqtZwiygPao12fnpTwZdRCmb/4O1n6PXkJJ1XbufAx6k7hGNyM1kTngbs743QuyzP15SmYcP9l9FluL9ISvIECt1eHo4sSKdaKxLRguOj79HjZXtFg3UDIhvvLBVqPQm5d5OQ1OPgu4WzL4GN7hYwK6PYJf2zJjxs9vEQ6agrvpAZI+Rm1DT5x3i4xtcB+Mip473Xe+6IPoRmJ/NqzcP3c0xBf6xV1GDBBIQIaRRkIJgoAb/k0fb+Hl0uXnKxcSm86nYk4Kq5GSbeZ+G+B3rrnQfXbLZnle6nTj1YdAOErOKKi2wIDAQAB-----END PUBLIC KEY-----")); //Eduworks Researcher
+                for (var i = 0; i < EcIdentityManager.contacts.length; i++)
+                    a.addReader(EcIdentityManager.contacts[i].pk);
                 a.setSubject(EcPk.fromPem(app.subject));
                 a.setAgent(EcPk.fromPem(app.me));
                 a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
@@ -292,11 +295,14 @@ Vue.component('competency', {
         },
         claimIncompetence: function (evt, after) {
             var me = this;
+            me.incompetentState = null;
             this.unclaimCompetence(evt, function () {
                 var a = new EcAssertion();
                 a.generateId(repo.selectedServer);
                 a.addOwner(EcIdentityManager.ids[0].ppk.toPk());
                 //a.addReader(EcPk.fromPem("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAixq5WEp+F5HEJZj12N791JATM+vkVJuolfOq0KbqtZwiygPao12fnpTwZdRCmb/4O1n6PXkJJ1XbufAx6k7hGNyM1kTngbs743QuyzP15SmYcP9l9FluL9ISvIECt1eHo4sSKdaKxLRguOj79HjZXtFg3UDIhvvLBVqPQm5d5OQ1OPgu4WzL4GN7hYwK6PYJf2zJjxs9vEQ6agrvpAZI+Rm1DT5x3i4xtcB+Mip473Xe+6IPoRmJ/NqzcP3c0xBf6xV1GDBBIQIaRRkIJgoAb/k0fb+Hl0uXnKxcSm86nYk4Kq5GSbeZ+G+B3rrnQfXbLZnle6nTj1YdAOErOKKi2wIDAQAB-----END PUBLIC KEY-----")); //Eduworks Researcher
+                for (var i = 0; i < EcIdentityManager.contacts.length; i++)
+                    a.addReader(EcIdentityManager.contacts[i].pk);
                 a.setSubject(EcPk.fromPem(app.subject));
                 a.setAgent(EcPk.fromPem(app.me));
                 a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
@@ -362,7 +368,5 @@ Vue.component('competency', {
         '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
         '<assertion v-for="item in assertionsByOthers" v-bind:key="item.id" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
         '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :subject="subject"></competency></ul>' +
-
         '</li>'
-
 });

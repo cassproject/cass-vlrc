@@ -82,7 +82,7 @@ Vue.component('jobPostingCreate', {
         '</select>' +
         '<input type="text" placeholder="Position, Job or Gig Title." id="jobPostingCreateTitle" v-model="jobPostingObject.title"/>' +
         '<textarea placeholder="Position, Job or Gig Description." id="jobPostingCreateDescription" v-model="jobPostingObject.description"/>' +
-        '<h4>An applicant for this job should be able to:</h4>' +
+        '<h4 v-if="skills != null && skills.length > 0">An applicant for this job should be able to:</h4>' +
         '<ul><div v-for="(item,index) in skills" :key="item"><button v-on:click="removeRequirement(index);">Remove</button><competency :uri="item" :parentCompetent="true"/></div></ul>' +
         '<label for="tags">Add Requirements: </label><input type="text" id="tags" v-model="candidateRequirement">' +
         '<button v-on:click="saveNewPosting">Create New Posting</button>' +
