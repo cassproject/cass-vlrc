@@ -138,6 +138,11 @@ ul ul {
     z-index: 5;
 }
 
+.assertion .statement {
+    display: block;
+    margin-top: .25rem;
+}
+
 .timelineElement .content {
     margin-left: 13rem;
 }

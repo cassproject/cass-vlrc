@@ -9,24 +9,8 @@ Vue.component('timeline', {
         assertions: {
             get: function () {
                 var me = this;
-                if (app.assertions != null) return app.assertions;
-                EcAssertion.search(repo, "*", function (assertions) {
-                    var eah = new EcAsyncHelper();
-                    eah.each(assertions, function (assertion, callback) {
-                            assertion.getAssertionDateAsync(function (date) {
-                                assertion.assertionDateDecrypted = date;
-                                callback();
-                            }, callback)
-                        },
-                        function (assertions) {
-                            assertions = assertions.sort(function (a, b) {
-                                return b.assertionDateDecrypted - a.assertionDateDecrypted;
-                            });
-                            app.assertions = assertions;
-                        });
-                }, console.error, {
-                    size: 5000
-                });
+                if (app.assertions != null)
+                    return app.assertions;
                 return null;
             }
         }

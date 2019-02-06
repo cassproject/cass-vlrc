@@ -12,7 +12,34 @@ app = new Vue({
         }
     },
     created: function () {
-        this.identities = EcIdentityManager.ids
+        this.identities = EcIdentityManager.ids;
+        var assertions = localStorage.getItem("assertions");
+        if (assertions != null) {
+            assertions = JSON.parse(LZString.decompress(assertions));
+            for (var i = 0; i < assertions.length; i++) {
+                var a = new EcAssertion();
+                a.copyFrom(assertions[i]);
+                assertions[i] = a;
+            }
+            this.assertions = assertions;
+        }
+        EcAssertion.search(repo, "*", function (assertions) {
+            var eah = new EcAsyncHelper();
+            eah.each(assertions, function (assertion, callback) {
+                    assertion.getAssertionDateAsync(function (date) {
+                        assertion.assertionDateDecrypted = date;
+                        callback();
+                    }, callback)
+                },
+                function (assertions) {
+                    assertions = assertions.sort(function (a, b) {
+                        return b.assertionDateDecrypted - a.assertionDateDecrypted;
+                    });
+                    app.assertions = assertions;
+                });
+        }, console.error, {
+            size: 5000
+        });
     },
     methods: {
         searchGoogle: function () {
@@ -40,6 +67,14 @@ app = new Vue({
         }
     },
     watch: {
+        assertions: function (newAssertions, oldAssertions) {
+            if (app.timeout != null)
+                clearTimeout(app.timeout);
+            app.timeout = setTimeout(function () {
+                console.log("Saving assertions to localstorage.");
+                localStorage.setItem("assertions", LZString.compress(JSON.stringify(newAssertions)));
+            }, 5000);
+        },
         inputUrl: function (newUrl) {
             var me = this;
             EcRemote.getExpectingObject("https://api.urlmeta.org/", "?url=" + newUrl, function (success) {
