@@ -18,7 +18,7 @@ Vue.component('jobpostings', {
                     return app.jobPostings;
                 }
                 var search = this.search;
-                if (search == null) search = "*";
+                if (search == null || search == "") search = "*";
                 search = "(" + search + ") AND @type:JobPosting";
                 repo.searchWithParams(search, {
                     size: 50

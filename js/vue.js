@@ -67,15 +67,7 @@ app = new Vue({
         }
     },
     watch: {
-        assertions: function (newAssertions, oldAssertions) {
-            if (oldAssertions == null) return;
-            if (app.timeout != null)
-                clearTimeout(app.timeout);
-            app.timeout = setTimeout(function () {
-                console.log("Saving assertions to localstorage.");
-                localStorage.setItem("assertions", LZString.compress(JSON.stringify(newAssertions)));
-            }, 5000);
-        },
+        assertions: function (newAssertions, oldAssertions) {},
         inputUrl: function (newUrl) {
             var me = this;
             EcRemote.getExpectingObject("https://api.urlmeta.org/", "?url=" + newUrl, function (success) {
@@ -140,3 +132,7 @@ app = new Vue({
         jobPostings: null,
     }
 });
+window.addEventListener("beforeunload", function (e) {
+    console.log("Saving assertions to localstorage.");
+    localStorage.setItem("assertions", LZString.compress(JSON.stringify(app.assertions)));
+}, false);

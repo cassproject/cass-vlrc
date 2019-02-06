@@ -143,6 +143,10 @@ ul ul {
     margin-top: .25rem;
 }
 
+.jobPostingSelect {
+    margin-top: .5rem;
+}
+
 .timelineElement .content {
     margin-left: 13rem;
 }
