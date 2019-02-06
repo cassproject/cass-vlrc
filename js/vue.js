@@ -68,6 +68,7 @@ app = new Vue({
     },
     watch: {
         assertions: function (newAssertions, oldAssertions) {
+            if (oldAssertions == null) return;
             if (app.timeout != null)
                 clearTimeout(app.timeout);
             app.timeout = setTimeout(function () {
