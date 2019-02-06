@@ -240,8 +240,10 @@ Vue.component('competency', {
                 a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
                 a.setNegative(false); //This is an assertion that an individual *can* do something, not that they *cannot*.
                 a.setConfidence(1.0);
-                app.assertions.unshift(a);
-                EcRepository.save(a, console.log, console.error);
+                EcRepository.save(a, function () {
+                    me.competentState = null;
+                    app.assertions.unshift(a);
+                }, console.error);
             });
         },
         unclaimCompetence: function (evt, after) {
@@ -266,6 +268,7 @@ Vue.component('competency', {
                                                     for (var delIndex = 0; delIndex < app.assertions.length; delIndex++)
                                                         if (app.assertions[delIndex].id == assertion.id)
                                                             app.assertions.splice(delIndex, 1);
+                                                    me.competentState = null;
                                                 }, console.error);
                                             } else
                                                 assertion.getNegativeAsync(function (negative) {
@@ -274,6 +277,7 @@ Vue.component('competency', {
                                                             for (var delIndex = 0; delIndex < app.assertions.length; delIndex++)
                                                                 if (app.assertions[delIndex].id == assertion.id)
                                                                     app.assertions.splice(delIndex, 1);
+                                                            me.competentState = null;
                                                         }, console.error);
                                                     }
                                                 }, console.error);
@@ -300,8 +304,10 @@ Vue.component('competency', {
                 a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
                 a.setNegative(true); //This is an assertion that an individual *cannot* do something, not that they *can*.
                 a.setConfidence(1.0);
-                app.assertions.unshift(a);
-                EcRepository.save(a, console.log, console.error);
+                EcRepository.save(a, function () {
+                    me.incompetentState = null;
+                    app.assertions.unshift(a);
+                }, console.error);
             });
         },
         unclaimIncompetence: function (evt, after) {
@@ -328,6 +334,7 @@ Vue.component('competency', {
                                                             for (var delIndex = 0; delIndex < app.assertions.length; delIndex++)
                                                                 if (app.assertions[delIndex].id == assertion.id)
                                                                     app.assertions.splice(delIndex, 1);
+                                                            me.incompetentState = null;
                                                         }, console.error);
                                                     }
                                                 }, console.error);

@@ -52,7 +52,7 @@ Vue.component('assertionhistory', {
         }
     },
     template: '<div v-observe-visibility="{callback: initialize}">' +
-        '<h3>Claims (Private)</h3>' +
+        '<h3>Recent Claims (Privately shared):</h3>' +
         '<span v-if="assertions"><span v-if="assertions.length == 0">None.</span></span>' +
         '<ul v-if="assertions" style="max-height:10rem;overflow-y:scroll;">' +
         '<assertion v-for="item in assertions" :uri="item.id"></assertion>' +
