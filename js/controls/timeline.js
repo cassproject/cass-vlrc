@@ -2,7 +2,6 @@ Vue.component('timeline', {
     props: [],
     data: function () {
         return {
-            assertionResult: null,
             searched: false
         }
     },
@@ -10,7 +9,7 @@ Vue.component('timeline', {
         assertions: {
             get: function () {
                 var me = this;
-                if (this.assertionResult != null) return this.assertionResult;
+                if (app.assertions != null) return app.assertions;
                 EcAssertion.search(repo, "*", function (assertions) {
                     var eah = new EcAsyncHelper();
                     eah.each(assertions, function (assertion, callback) {
@@ -23,7 +22,7 @@ Vue.component('timeline', {
                             assertions = assertions.sort(function (a, b) {
                                 return b.assertionDateDecrypted - a.assertionDateDecrypted;
                             });
-                            me.assertionResult = assertions;
+                            app.assertions = assertions;
                         });
                 }, console.error, {
                     size: 5000

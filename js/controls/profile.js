@@ -127,12 +127,6 @@ Vue.component('profile', {
         },
         getPerson: function () {
             this.personObj = null;
-            if (this.refreshesStuff) {
-                if (assertionHistory[this.pk] != null)
-                    assertionHistory[this.pk].assertions = null;
-                if (viewHistory[this.pk] != null)
-                    viewHistory[this.pk].views = null;
-            }
             var pk = EcPk.fromPem(this.pk);
             var me = this;
             EcRepository.get(repo.selectedServer + "data/schema.org.Person/" + pk.fingerprint(), function (person) {

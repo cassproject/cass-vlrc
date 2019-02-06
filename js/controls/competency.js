@@ -1,6 +1,6 @@
 var topicCompetencies = {};
 Vue.component('competency', {
-    props: ['uri', 'hasChild', 'parentCompetent', 'dontRegister', 'subject'],
+    props: ['uri', 'hasChild', 'parentCompetent', 'subject'],
     data: function () {
         return {
             counter: 0,
@@ -109,7 +109,6 @@ Vue.component('competency', {
             $("#rad3").click();
         },
         getCompetence: function (evt, dontPropegate) {
-            if (this.parentCompetent) return;
             var me = this;
             //            if (dontPropegate != true && topicCompetencies[this.uri] != null)
             //                for (var i = 0; i < topicCompetencies[this.uri].length; i++)
@@ -118,15 +117,13 @@ Vue.component('competency', {
 
             EcCompetency.get(this.uri, function (c) {
                 me.competencyObj = c;
-            }, console.error);
-            repo.search(
-                "@type:Assertion AND competency:\"" + EcRemoteLinkedData.trimVersionFromUrl(this.uri) + "\" AND (\\*@owner:\"" + app.subject + "\" OR \\*@reader:\"" + app.subject + "\")",
-                function (assertion) {},
-                function (assertions) {
-                    me.competent = false;
-                    me.incompetent = false;
-                    for (var i = 0; i < assertions.length; i++) {
-                        var obj = assertions[i];
+                var assertions = app.assertions;
+                me.competent = false;
+                me.incompetent = false;
+                if (me.parentCompetent) return;
+                for (var i = 0; i < assertions.length; i++) {
+                    var obj = assertions[i];
+                    if (me.competencyObj.isId(obj.competency))
                         (function (obj) {
                             var assertion = new EcAssertion();
                             assertion.copyFrom(obj);
@@ -150,8 +147,8 @@ Vue.component('competency', {
                                 }
                             }, console.error);
                         })(obj);
-                    }
-                }, console.error);
+                }
+            }, console.error);
         },
         claimCompetence: function (evt, after) {
             var me = this;
@@ -170,6 +167,7 @@ Vue.component('competency', {
                 EcRepository.save(a, me.getCompetence, console.error);
                 if (assertionHistory[app.subject] != null)
                     assertionHistory[app.subject].addAssertion(a);
+                app.assertions.unshift(a);
             });
         },
         unclaimCompetence: function (evt, after) {

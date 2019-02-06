@@ -214,3 +214,16 @@ textarea {
     padding: .25rem;
     margin: .25rem;
 }
+
+
+/*JobPosting*/
+
+.jobPostingCreate ul {
+    padding-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.jobPostingCreate ul li {
+    list-style: disc;
+    display: inline;
+}

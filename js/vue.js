@@ -98,6 +98,7 @@ app = new Vue({
         inputName: "",
         inputDescription: "",
         processing: false,
-        processingMessage: ""
+        processingMessage: "",
+        assertions: null,
     }
 });

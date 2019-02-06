@@ -13,7 +13,9 @@
     <meta name="application-name" content="CbVLRC">
     <meta name="theme-color" content="#ffffff">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/jquery"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>
     <script src="js/cass/cass.js"></script>
     <link rel="stylesheet" href="css/main.css">
@@ -34,6 +36,9 @@
     <script src="js/controls/frameworks.js"></script>
     <script src="js/controls/frameworkSelect.js"></script>
     <script src="js/controls/history.js"></script>
+    <script src="js/controls/jobPostings.js"></script>
+    <script src="js/controls/jobPostingSelect.js"></script>
+    <script src="js/controls/jobPostingCreate.js"></script>
     <script src="js/controls/people.js"></script>
     <script src="js/controls/profile.js"></script>
     <script src="js/controls/profiles.js"></script>
@@ -42,7 +47,7 @@
     <script src="js/controls/timeline.js"></script>
     <script src="js/controls/timelineElement.js"></script>
     <script src="js/controls/viewHistory.js"></script>
-    <div id="app">
+    <div id="app" v-if="login">
         <div id="container">
             <p></p><br>
             <div class="processing" v-show="processing">
@@ -53,19 +58,21 @@
             <div id="pages" v-show="processing == false">
                 <div id="sidebar">
                     <i id="rad0" onclick="showPage('0');" class="rad mdi mdi-timeline-text mdi-48px"></i>
-                    <label for="rad0" class="rad">Timeline</label>
+                    <label onclick="showPage('0');" for="rad0" class="rad">Timeline</label>
                     <i id="rad1" onclick="showPage('1');" class="rad mdi mdi-book-open-page-variant mdi-48px"></i>
-                    <label for="rad1" class="rad">Subject Area</label>
+                    <label onclick="showPage('1');" for="rad1" class="rad">Subject Area</label>
                     <i id="rad2" onclick="showPage('2');" class="rad mdi mdi-book-open mdi-48px"></i>
-                    <label for="rad2" class="rad">Topic Area</label>
+                    <label onclick="showPage('2');" for="rad2" class="rad">Topic Area</label>
                     <i id="rad3" onclick="showPage('3');" class="rad mdi mdi-file mdi-48px"></i>
-                    <label for="rad3" class="rad">Learning Resource</label>
+                    <label onclick="showPage('3');" for="rad3" class="rad">Learning Resource</label>
                     <i id="rad4" onclick="showPage('4');" style="display:none;" class="rad mdi mdi-account mdi-48px"></i>
-                    <label for="rad4" class="rad" style="display:none;">My Account</label>
+                    <label onclick="showPage('4');" for="rad4" class="rad" style="display:none;">My Account</label>
                     <i id="rad5" onclick="showPage('5');" class="rad mdi mdi-account-group mdi-48px"></i>
-                    <label for="rad5" class="rad">My Contacts</label>
+                    <label onclick="showPage('5');" for="rad5" class="rad">My Contacts</label>
                     <i id="rad6" onclick="showPage('6');" class="rad mdi mdi-account-search mdi-48px"></i>
-                    <label for="rad6" class="rad">Contact Search</label>
+                    <label onclick="showPage('6');" for="rad6" class="rad">Contact Search</label>
+                    <i id="rad7" onclick="showPage('7');" class="rad mdi mdi-briefcase mdi-48px"></i>
+                    <label onclick="showPage('7');" for="rad7" class="rad">Jobs, Gigs, and Positions</label>
                 </div>
                 <div id="div0" class="page" style="display:none;">
                     <profile :pk="me"></profile>
@@ -119,6 +126,10 @@
                 </div>
                 <div id="div6" class="page" style="display:none;">
                     <people></people>
+                </div>
+                <div id="div7" class="page" style="display:none;">
+                    <profile :pk="me"></profile>
+                    <jobPostings></jobPostings>
                 </div>
                 <!--
                 <li>
