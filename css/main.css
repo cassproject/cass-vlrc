@@ -164,6 +164,10 @@ ul ul {
     margin-right: .25rem;
 }
 
+.jobPostingCreate .autoSuggest {
+    width: calc(100% - 100px)
+}
+
 
 /*SIDEBAR*/
 
@@ -228,12 +232,16 @@ textarea {
 
 /*JobPosting*/
 
-.jobPostingCreate ul {
+.jobPostingCreate ul div {
     padding-left: 2rem;
     margin-bottom: 1rem;
+    display: block;
 }
 
-.jobPostingCreate ul li {
-    list-style: disc;
+.jobPostingCreate ul div input {
+    font-size: 1rem;
+}
+
+.jobPostingCreate ul div li {
     display: inline;
 }
