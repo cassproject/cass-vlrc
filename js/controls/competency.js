@@ -245,7 +245,6 @@ Vue.component('competency', {
                 a.setConfidence(1.0);
                 EcRepository.save(a, function () {
                     me.competentState = null;
-                    app.assertions.unshift(a);
                 }, console.error);
             });
         },
@@ -313,7 +312,6 @@ Vue.component('competency', {
                 a.setConfidence(1.0);
                 EcRepository.save(a, function () {
                     me.incompetentState = null;
-                    app.assertions.unshift(a);
                 }, console.error);
             });
         },

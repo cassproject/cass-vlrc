@@ -95,13 +95,12 @@ Vue.component('jobpostingdetail', {
         }
     },
     template: '<li class="jobPostingDetail">' +
-        '<h2>{{type}} Description:</h2>' +
+        '<h2>{{type}}:</h2>' +
         '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
-        '<span>' +
-        '<i class="mdi mdi-briefcase-outline" aria-hidden="true"></i> ' +
+        '<h3>' +
         '{{ name }}' +
-        '</span>' +
-        '<small v-if="description" class="block">{{ description }}</small>' +
+        '</h3>' +
+        '<pre v-if="description" class="block">{{ description }}</pre>' +
         '<hr>' +
         '<h3>Required Skills:</h3>' +
         '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item" :uri="item" :subject="subject"></competency></ul>' +
