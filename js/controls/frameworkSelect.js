@@ -28,7 +28,9 @@ Vue.component('frameworkSelect', {
     methods: {
         setFramework: function () {
             app.selectedFramework = EcFramework.getBlocking(this.uri);
-            $("#rad2").click();
+            setTimeout(function () {
+                $("#rad2").click();
+            }, 100);
         }
     },
     template: '<li class="frameworkSelect" v-on:click="setFramework">' +

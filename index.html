@@ -63,10 +63,10 @@
                     <label onclick="showPage('0');" for="rad0" class="rad">Timeline</label>
                     <i id="rad1" onclick="showPage('1');" class="rad mdi mdi-book-open-page-variant mdi-48px"></i>
                     <label onclick="showPage('1');" for="rad1" class="rad">Subject Area</label>
-                    <i id="rad2" onclick="showPage('2');" class="rad mdi mdi-book-open mdi-48px"></i>
-                    <label onclick="showPage('2');" for="rad2" class="rad">Topic Area</label>
-                    <i id="rad3" onclick="showPage('3');" class="rad mdi mdi-file mdi-48px"></i>
-                    <label onclick="showPage('3');" for="rad3" class="rad">Learning Resource</label>
+                    <i v-if="selectedFramework" id="rad2" onclick="showPage('2');" class="rad mdi mdi-book-open mdi-48px"></i>
+                    <label v-if="selectedFramework" onclick="showPage('2');" for="rad2" class="rad">Topic Area</label>
+                    <i v-if="selectedCompetency" id="rad3" onclick="showPage('3');" class="rad mdi mdi-file mdi-48px"></i>
+                    <label v-if="selectedCompetency"onclick="showPage('3');" for="rad3" class="rad">Learning Resource</label>
                     <i id="rad4" onclick="showPage('4');" style="display:none;" class="rad mdi mdi-account mdi-48px"></i>
                     <label onclick="showPage('4');" for="rad4" class="rad" style="display:none;">My Account</label>
                     <i id="rad5" onclick="showPage('5');" class="rad mdi mdi-account-group mdi-48px"></i>
@@ -141,31 +141,6 @@
                     <h3>Select a contact to compare them against the posting.</h3>
                     <profiles :profiles="profiles" :identities="identities"></profiles>
                 </div>
-                <!--
-                <li>
-                    <input id="rad7" type="radio" name="rad">
-                    <label for="rad7"><a class="vertical">Advanced: Create and Edit my own Areas</a></label>
-                    <iframe class="accslide" style="margin:0px;padding:0px;border:0px;" id="viewOutputFramework"></iframe>
-                </li>
-                    <li>
-                        <input id="rad8" type="radio" name="rad">
-                        <label for="rad8"><a class="vertical">Step 8: View Output Framework</a></label>
-                        <iframe class="accslide" style="margin:0px;padding:0px;border:0px;" id="viewOutputFramework">
-                </iframe>
-                    </li>
-                    <li>
-                        <input id="rad9" type="radio" name="rad">
-                        <label for="rad9"><a class="vertical">Step 9: View CTDL/ASN</a></label>
-                        <div class="accslide">
-                        </div>
-                    </li>
-                    <li>
-                        <input id="rad10" type="radio" name="rad">
-                        <label for="rad10"><a class="vertical">Step 10: Export S1000D</a></label>
-                        <div class="accslide">
-                        </div>
-                    </li>
--->
             </div>
         </div>
     </div>

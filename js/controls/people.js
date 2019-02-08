@@ -3,40 +3,43 @@ Vue.component('people', {
     data: function () {
         return {
             peopleResult: [],
-            searched: false,
-            search: "",
-            lastSearch: null
+            search: ""
         };
     },
     computed: {
         people: {
             get: function () {
-                if (this.lastSearch != this.search) {
-                    this.peopleResult.splice(0, this.peopleResult.length);
-                    this.searched = false;
+                if (app.people == null) return null;
+                var results = [];
+                for (var i = 0; i < app.people.length; i++) {
+                    if (app.people[i].owner == null || app.people[i].length == 0)
+                        continue;
+                    if (EcPk.fromPem(app.people[i].owner[0]).fingerprint() != app.people[i].getGuid())
+                        continue;
+                    if (app.people[i].getName() == null)
+                        continue;
+                    if (app.people[i].getName().toLowerCase().indexOf(this.search.toLowerCase()) != -1)
+                        results.push(app.people[i]);
                 }
-                this.lastSearch = this.search;
-                if (this.searched) {
-                    return this.peopleResult;
-                }
-                var search = this.search;
-                if (search == null || search == "") search = "*";
-                var me = this;
-                this.peopleResult.splice(0, this.peopleResult.length);
-                EcPerson.search(repo, search, function (people) {
-                    me.peopleResult.splice(0, me.peopleResult.length);
-                    for (var i = 0; i < people.length; i++)
-                        if (people[i].owner != null)
-                            if (EcPk.fromPem(people[i].owner[0]).fingerprint() == people[i].getGuid())
-                                me.peopleResult.push(people[i]);
-                    me.searched = true;
-                }, console.error, {
-                    size: 50
-                });
-                return null;
+                return results;
             }
         }
     },
+    created: function () {
+        var me = this;
+        EcPerson.search(repo, "*", function (people) {
+            for (var i = 0; i < people.length; i++) {
+                if (people[i].owner == null || people[i].length == 0)
+                    people.splice(i, 1);
+                else if (EcPk.fromPem(people[i].owner[0]).fingerprint() != people[i].getGuid())
+                    people.splice(i, 1);
+            }
+            app.people = people;
+        }, console.error, {
+            size: 5000
+        });
+    },
+    watch: {},
     methods: {
         changeSelected: function (pk) {
             app.subject = pk;
@@ -44,10 +47,11 @@ Vue.component('people', {
         }
     },
     template: '<div>' +
-        '<input type="text" class="frameworksSearchInput" placeholder="Search for people..." v-model="search"/>' +
-        '<ul v-if="people">' +
-        '<profile v-for="item in people" v-bind:key="item.id" :pk="item.owner[0]" :displayName="item.name" :onClick="changeSelected"></profile>' +
-        '</ul>' +
-        '<div v-else><br>Loading People...</div>' +
-        '</div>'
+    '<input type="text" class="frameworksSearchInput" placeholder="Search for people..." v-model="search"/>' +
+    '<ul>' +
+    '<profile v-if="people" v-for="item in people" :key="item.id" :pk="item.owner[0]" :displayName="item.name" :onClick="changeSelected"></profile>' +
+    '</ul>' +
+    '<div v-if="people != null && people.length == 0"><br>None found...</div>' +
+    '<div v-if="people == null"><br>Loading People...</div>' +
+    '</div>'
 });

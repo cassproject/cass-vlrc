@@ -39,13 +39,6 @@ EcIdentityManager.readIdentities();
 EcIdentityManager.readContacts();
 
 $(document).ready(function () {
-    $("#rad4").change(function (evt) {
-        if ($("#rad4:checked").length > 0)
-            $("#viewOutputFramework").attr("src", "cass-editor/index.html?server=" + repo.selectedServer + "&user=wait&origin=" + window.location.origin);
-        else
-            $("#viewOutputFramework").attr("src", "");
-    });
-
     if (queryParams.user == "wait") {
         console.log("Sending waiting message");
         sendWaitingMessage();

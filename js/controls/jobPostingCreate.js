@@ -6,40 +6,23 @@ Vue.component('jobPostingCreate', {
             candidateRequirement: "",
             title: "New Position",
             description: "",
+            additionalType: "jobPostingType://gig",
             skills: [],
             candidates: [],
         };
     },
     computed: {
-        title: {
-            get: function () {
-                return this.title;
-            },
-            set: function (newVal) {
-                this.title = newVal;
-            }
-        },
-        description: {
-            get: function () {
-                return this.description;
-            },
-            set: function (newVal) {
-                this.description = newVal;
-            }
-        },
         type: {
             get: function () {
-                return this.jobPostingObject.additionalType;
+                return this.additionalType;
             },
             set: function (newVal) {
-                this.jobPostingObject.additionalType = newVal;
+                this.additionalType = newVal;
             }
         }
     },
     created: function () {
         this.jobPostingObject = new JobPosting();
-        this.jobPostingObject.title = "New Position";
-        this.jobPostingObject.additionalType = "jobPostingType://gig";
         this.jobPostingObject.addOwner(EcPk.fromPem(app.me));
         var me = this;
         this.$nextTick(function () {
@@ -74,6 +57,7 @@ Vue.component('jobPostingCreate', {
             this.jobPostingObject.skills = this.skills;
             this.jobPostingObject.description = this.description;
             this.jobPostingObject.title = this.title;
+            this.jobPostingObject.additionalType = this.additionalType;
             this.jobPostingObject.generateId(repo.selectedServer);
             var jobPosting = this.jobPostingObject;
             EcRepository.save(this.jobPostingObject, function () {
@@ -81,8 +65,9 @@ Vue.component('jobPostingCreate', {
             }, console.error);
             this.skills = [];
             this.jobPostingObject = new JobPosting();
-            this.jobPostingObject.title = "New Position";
-            this.jobPostingObject.additionalType = "jobPostingType://gig";
+            this.title = "New Position";
+            this.description = "New Position";
+            this.additionalType = "jobPostingType://gig";
             this.jobPostingObject.addOwner(EcPk.fromPem(app.me));
         },
         removeRequirement: function (index) {
@@ -109,7 +94,7 @@ Vue.component('jobPostingCreate', {
                             first = false;
                         } else {
                             if (line.endsWith(":"))
-                            ;
+                                ;
                             else if (line.startsWith("•") || line.startsWith("-") || line.startsWith("*"))
                                 me.candidates.push(line.substring(1));
                             else
@@ -173,25 +158,22 @@ Vue.component('jobPostingCreate', {
                         });
                         $(".autoSuggest").first().autocomplete('search');
                     });
-                })
-                .catch(err => {
-                    console.error('Failed to read clipboard contents: ', err);
                 });
         }
     },
     template: '<div class="jobPostingCreate"><hr><h3>New Posting</h3>' +
-        '<select v-model="type">' +
-        '<option value="jobPostingType://gig">Gig</option>' +
-        '<option value="jobPostingType://job">Job</option>' +
-        '<option value="jobPostingType://position">Position</option>' +
-        '<option value="jobPostingType://temp">Temporary Position</option>' +
-        '</select>' +
-        '<input type="text" placeholder="Position, Job or Gig Title." id="jobPostingCreateTitle" v-model="title"/>' +
-        '<textarea placeholder="Position, Job or Gig Description." id="jobPostingCreateDescription" v-model="description"/>' +
-        '<h4 v-if="skills != null && skills.length > 0">An applicant for this job should be able to:</h4>' +
-        '<ul><div v-for="(item,index) in skills" :key="item"><button v-on:click="removeRequirement(index);">Remove</button><competency :uri="item" :parentCompetent="true"/></div></ul>' +
-        '<ul><div v-for="(item,index) in candidates"><button v-on:click="removeCandidate(index);">Remove</button><input :value="item" class="autoSuggest" /></div></ul>' +
-        '<label for="tags">Add Requirements: </label><input type="text" class="tags" v-model="candidateRequirement">' +
-        '<button v-on:click="saveNewPosting">Create New Posting</button><button v-on:click="readFromClipboard">Read from Clipboard</button>' +
-        '</div>'
+    '<select v-model="type">' +
+    '<option value="jobPostingType://gig">Gig</option>' +
+    '<option value="jobPostingType://job">Job</option>' +
+    '<option value="jobPostingType://position">Position</option>' +
+    '<option value="jobPostingType://temp">Temporary Position</option>' +
+    '</select>' +
+    '<input type="text" placeholder="Position, Job or Gig Title." id="jobPostingCreateTitle" v-model="title"/>' +
+    '<textarea placeholder="Position, Job or Gig Description." id="jobPostingCreateDescription" v-model="description"/>' +
+    '<h4 v-if="skills != null && skills.length > 0">An applicant for this job should be able to:</h4>' +
+    '<ul><div v-for="(item,index) in skills" :key="item"><button v-on:click="removeRequirement(index);">Remove</button><competency :uri="item" :parentCompetent="true"/></div></ul>' +
+    '<ul><div v-for="(item,index) in candidates"><button v-on:click="removeCandidate(index);">Remove</button><input :value="item" class="autoSuggest" /></div></ul>' +
+    '<label for="tags">Add Requirements: </label><input type="text" class="tags" v-model="candidateRequirement">' +
+    '<button v-on:click="saveNewPosting">Create New Posting</button><button v-on:click="readFromClipboard">Read from Clipboard</button>' +
+    '</div>'
 });

@@ -48,7 +48,7 @@ Vue.component('competency', {
                                         if (app.me == agent.toPem()) {
                                             if (assertion.negative != null)
                                                 assertion.getNegativeAsync(function (negative) {
-                                                    if (negative);
+                                                    if (negative) ;
                                                     else
                                                         me.competentStateNew = true;
                                                     callback();
@@ -203,7 +203,8 @@ Vue.component('competency', {
     methods: {
         initialize: function (isVisible, entry) {
             this.visible = isVisible;
-            if (isVisible) {
+            if (isVisible && this.once == null) {
+                this.once = true;
                 this.getResourceCount();
             }
         },
@@ -218,13 +219,14 @@ Vue.component('competency', {
                 function (resources) {
                     me.counter = resources.length;
                 }, console.error);
-
             EcRepository.unsigned = false;
         },
         setCompetency: function () {
             app.selectedCompetency = EcCompetency.getBlocking(this.uri);
             app.availableResources = null;
-            $("#rad3").click();
+            setTimeout(function () {
+                $("#rad3").click();
+            }, 100);
         },
         claimCompetence: function (evt, after) {
             var me = this;
@@ -355,18 +357,18 @@ Vue.component('competency', {
         }
     },
     template: '<li class="competency" v-observe-visibility="{callback: initialize}" :id="uri">' +
-        '<span v-if="parentCompetent"></span>' +
-        '<span v-else>' +
-        '<button class="inline" v-if="competent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-        '<button class="inline" v-if="competent == true" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
-        '<button class="inline" v-if="competent == false" v-on:click="claimCompetence" :title="claimCompetencePhrase"><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
-        '<button class="inline" v-if="incompetent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-        '<button class="inline" v-if="incompetent == true" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
-        '<button class="inline" v-if="incompetent == false" v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
-        ' </span> ' +
-        '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
-        '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
-        '<assertion v-for="item in assertionsByOthers" v-bind:key="item.id" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
-        '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :subject="subject"></competency></ul>' +
-        '</li>'
+    '<span v-if="parentCompetent || subject == null"></span>' +
+    '<span v-else>' +
+    '<button class="inline" v-if="competent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="competent == true" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="competent == false" v-on:click="claimCompetence" :title="claimCompetencePhrase"><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="incompetent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="incompetent == true" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="incompetent == false" v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
+    ' </span> ' +
+    '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
+    '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
+    '<assertion v-for="item in assertionsByOthers" v-bind:key="item.id" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
+    '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :subject="subject"></competency></ul>' +
+    '</li>'
 });

@@ -130,6 +130,7 @@ app = new Vue({
         processingMessage: "",
         assertions: null,
         jobPostings: null,
+        people: null,
     }
 });
 window.addEventListener("beforeunload", function (e) {
