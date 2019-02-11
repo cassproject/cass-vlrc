@@ -69,18 +69,7 @@ $(document).ready(function () {
 });
 
 function ready2() {
-    $("iframe").ready(function () {
-        $(window).on("message", function (event) {
-            if (event.originalEvent.data.message == "waiting") {
-                //Identity
-                $("iframe")[0].contentWindow.postMessage(JSON.stringify({
-                    action: "identity",
-                    identity: EcIdentityManager.ids[0].ppk.toPem()
-                }), window.location.origin);
-            };
-        });
-    });
-
+    startVlrc();
     app.login = true;
     app.me = app.subject = EcIdentityManager.ids[0].ppk.toPk().toPem();
     openWebSocket();
