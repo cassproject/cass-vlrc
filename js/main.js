@@ -112,12 +112,12 @@ function performInitIdentityAction(data) {
             app.selectedFramework = EcFramework.getBlocking(queryParams.frameworkId);
             ready2();
             $("#rad2").click();
-        }, 100);
+        }, 1000);
     } else {
         setTimeout(function () {
             ready2();
             $("#rad0").click();
-        }, 100);
+        }, 1000);
     }
 }
 
@@ -240,7 +240,7 @@ openWebSocket = function (r) {
             for (var i = 0; i < app.assertions.length; i++)
                 if (app.assertions[i].isId(e.data))
                     app.assertions.splice(i, 1);
-        EcRepository.get(e.data, function (wut) {
+        EcRepository.get(EcRemoteLinkedData.trimVersionFromUrl(e.data), function (wut) {
             delete EcRepository.cache[wut.id];
             delete EcRepository.cache[wut.shortId()];
 

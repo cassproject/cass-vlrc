@@ -6,6 +6,8 @@ Vue.component('competency', {
             counter: 0,
             assertionCounter: -1,
             assertionCounterIncompetent: -1,
+            competentStateNew: null,
+            incompetentStateNew: null,
             competentState: null,
             incompetentState: null,
             assertionsByOthers: [],
