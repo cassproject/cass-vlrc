@@ -106,7 +106,6 @@ function performInitIdentityAction(data) {
     ident.ppk = EcPpk.fromPem(data.pemParm);
     ident.displayName = data.nameParm;
     EcIdentityManager.addIdentity(ident);
-    app.me = app.subject = EcIdentityManager.ids[0].ppk.toPk().toPem();
 
     if (queryParams.frameworkId != null) {
         setTimeout(function () {
