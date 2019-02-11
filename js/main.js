@@ -142,6 +142,12 @@ function performAction(action, data) {
             performInitIdentityAction(data);
             break;
         case CONTACT_UPDATED_MESSAGE:
+            if (app == null) {
+                setTimeout(function () {
+                    performAction(action, data);
+                }, 1000);
+                return;
+            }
             app.profiles.splice(0, app.profiles.length);
             for (var i = 0; i < data.contacts.length; i++) {
                 var c = new EcContact();
