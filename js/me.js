@@ -53,14 +53,8 @@ Vue.component('profile', {
             get: function () {
                 if (this.personObj == null)
                     return null;
+                setTimeout(function(){jdenticon()},100);
                 return this.personObj.getGuid();
-            }
-        },
-        fingerprintUrl: {
-            get: function () {
-                if (this.personObj == null)
-                    return null;
-                return "http://tinygraphs.com/spaceinvaders/" + this.personObj.getGuid() + "?theme=base&numcolors=16&size=22&fmt=svg";
             }
         },
         isContact: {
@@ -173,7 +167,7 @@ Vue.component('profile', {
     '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i>' +
     '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i>' +
     '</span>' +
-    '<img style="vertical-align: sub;" v-if="fingerprint" :src="fingerprintUrl" :title="fingerprint"/> <input v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">' +
+    '<svg style="vertical-align: sub;" width="22" height="22" v-if="fingerprint" :data-jdenticon-value="fingerprint" :title="fingerprint"></svg> <input v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">' +
     '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
     '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
     '</div>'
