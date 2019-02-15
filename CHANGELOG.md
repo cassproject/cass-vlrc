@@ -1,7 +1,25 @@
 # Change Log
 
-## [Unreleased](https://github.com/cassproject/cass-vlrc/tree/HEAD)
+## [1.0.6](https://github.com/cassproject/cass-vlrc/tree/1.0.6) (2019-02-15)
+[Full Changelog](https://github.com/cassproject/cass-vlrc/compare/1.0.5...1.0.6)
 
+## [1.0.5](https://github.com/cassproject/cass-vlrc/tree/1.0.5) (2019-02-08)
+[Full Changelog](https://github.com/cassproject/cass-vlrc/compare/book-slide-style...1.0.5)
+
+## [book-slide-style](https://github.com/cassproject/cass-vlrc/tree/book-slide-style) (2019-02-05)
+[Full Changelog](https://github.com/cassproject/cass-vlrc/compare/0.4.26...book-slide-style)
+
+**Closed issues:**
+
+- Error adding assertions [\#19](https://github.com/cassproject/cass-vlrc/issues/19)
+
+## [0.4.26](https://github.com/cassproject/cass-vlrc/tree/0.4.26) (2019-01-18)
+[Full Changelog](https://github.com/cassproject/cass-vlrc/compare/1.0.3...0.4.26)
+
+## [1.0.3](https://github.com/cassproject/cass-vlrc/tree/1.0.3) (2019-01-17)
+[Full Changelog](https://github.com/cassproject/cass-vlrc/compare/1.0.4...1.0.3)
+
+## [1.0.4](https://github.com/cassproject/cass-vlrc/tree/1.0.4) (2019-01-17)
 **Closed issues:**
 
 - Checking off competencies "I think I know this." [\#11](https://github.com/cassproject/cass-vlrc/issues/11)
