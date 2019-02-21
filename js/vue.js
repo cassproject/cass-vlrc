@@ -18,6 +18,8 @@ function startVlrc() {
             var assertions = localStorage.getItem("assertions");
             if (assertions != null) {
                 assertions = JSON.parse(LZString.decompress(assertions));
+                if (assertions == null)
+                    assertions = [];
                 for (var i = 0; i < assertions.length; i++) {
                     var a = new EcAssertion();
                     a.copyFrom(assertions[i]);
