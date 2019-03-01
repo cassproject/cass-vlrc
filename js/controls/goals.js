@@ -10,6 +10,8 @@ Vue.component('goals', {
                 if (this.person == null) return null;
                 if (this.person.seeks == null)
                     return null;
+                if (this.person.seeks.length == 0)
+                    return null;
                 return this.person.seeks;
             }
         }
