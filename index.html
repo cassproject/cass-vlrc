@@ -28,6 +28,7 @@
     <script src="js/vendor/vue.js"></script>
     <script src="js/vendor/vue-observe-visibility.min.js"></script>
     <script src="js/vendor/moment.js"></script>
+    <script src="js/vendor/jdenticon.js"></script>
     <script src="js/main.js"></script>
     <script src="js/controls/assertion.js"></script>
     <script src="js/controls/assertionHistory.js"></script>
@@ -36,6 +37,7 @@
     <script src="js/controls/framework.js"></script>
     <script src="js/controls/frameworks.js"></script>
     <script src="js/controls/frameworkSelect.js"></script>
+    <script src="js/controls/goals.js"></script>
     <script src="js/controls/history.js"></script>
     <script src="js/controls/jobPostings.js"></script>
     <script src="js/controls/jobPostingCreate.js"></script>
@@ -49,7 +51,7 @@
     <script src="js/controls/timeline.js"></script>
     <script src="js/controls/timelineElement.js"></script>
     <script src="js/controls/viewHistory.js"></script>
-    <div id="app" v-if="login">
+    <div id="app" v-if="login" style="display:none;">
         <div id="container">
             <p></p><br>
             <div class="processing" v-show="processing">
@@ -67,8 +69,8 @@
                     <label v-if="selectedFramework" onclick="showPage('2');" for="rad2" class="rad">Topic Area</label>
                     <i v-if="selectedCompetency" id="rad3" onclick="showPage('3');" class="rad mdi mdi-file mdi-48px"></i>
                     <label v-if="selectedCompetency"onclick="showPage('3');" for="rad3" class="rad">Learning Resource</label>
-                    <i id="rad4" onclick="showPage('4');" style="display:none;" class="rad mdi mdi-account mdi-48px"></i>
-                    <label onclick="showPage('4');" for="rad4" class="rad" style="display:none;">My Account</label>
+                    <i id="rad4" onclick="showPage('4');" class="rad mdi mdi-bullseye mdi-48px"></i>
+                    <label onclick="showPage('4');" for="rad4" class="rad">My Goals</label>
                     <i id="rad5" onclick="showPage('5');" class="rad mdi mdi-account-group mdi-48px"></i>
                     <label onclick="showPage('5');" for="rad5" class="rad">My Contacts</label>
                     <i id="rad6" onclick="showPage('6');" class="rad mdi mdi-account-search mdi-48px"></i>
@@ -86,7 +88,7 @@
                 </div>
                 <div id="div2" class="page" style="display:none;">
                     <profile :pk="subject"></profile>
-                    <framework id="leftFramework" v-if="selectedFramework" :uri="selectedFramework.id" :subject="subject"></framework>
+                    <framework id="leftFramework" v-if="selectedFramework" :uri="selectedFramework.id" :subjectperson="subjectPerson" :subject="subject"></framework>
                     <div v-else>No subject has been selected.</div>
                 </div>
                 <div id="div3" class="page" style="display:none;">
@@ -115,14 +117,11 @@
                 </div>
                 <div id="div4" class="page" style="display:none;">
                     <profile :pk="me"></profile>
-                    <assertionHistory :pk="me"></assertionHistory>
-                    <viewHistory :pk="me"></viewHistory>
+                    <goals :pk="me" :person="mePerson"></goals>
                 </div>
                 <div id="div5" class="page" style="display:none;">
                     <h1>Selected:</h1>
                     <profile :pk="subject"></profile>
-                    <assertionHistory :pk="subject"></assertionHistory>
-                    <viewHistory :pk="subject"></viewHistory>
                     <hr>
                     <h1>Contacts:</h1>
                     <profiles :profiles="profiles" :identities="identities"></profiles>

@@ -1,5 +1,11 @@
+/**
+ * @property uri - URI of the framework
+ * @property subject - Subject to use to measure competence, see if they have this as a goal, etc.
+ * @property subjectPerson - Person object to use to see if they have this as a goal, etc.
+ * @property competencyUri - Only show the tree under this URI, if present.
+ */
 Vue.component('framework', {
-    props: ['uri', 'subject'],
+    props: ['uri', 'subject','subjectperson','competencyUri'],
     data: function () {
         return {
             competency: null
@@ -54,11 +60,15 @@ Vue.component('framework', {
                             }
                         me.competency = [];
                         var keys = EcObject.keys(top);
-                        for (var i = 0; i < keys.length; i++)
-                            me.competency.push(top[keys[i]]);
+                        if (me.competencyUri != null)
+                            me.competency.push(r[me.competencyUri]);
+                        else
+                            for (var i = 0; i < keys.length; i++)
+                                me.competency.push(top[keys[i]]);
                         me.competency.sort(function (a, b) {
                             return f.competency.indexOf(a.shortId()) - f.competency.indexOf(b.shortId());
                         });
+
                     }, console.error, console.log);
                 }, console.error);
                 return null;
@@ -90,6 +100,6 @@ Vue.component('framework', {
     template: '<div>' +
         '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
         '<div class="frameworkNameAndDescription">{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
-        '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subject="subject"></competency></ul>' +
+        '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subjectPerson="subjectperson" :frameworkUri="uri" :subject="subject"></competency></ul>' +
         '<div v-else><br>Loading Framework...</div></div>'
 });

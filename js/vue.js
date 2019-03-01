@@ -14,6 +14,7 @@ function startVlrc() {
             }
         },
         created: function () {
+            $("#app").show();
             this.identities = EcIdentityManager.ids;
             var assertions = localStorage.getItem("assertions");
             if (assertions != null) {
@@ -121,7 +122,9 @@ function startVlrc() {
             login: false,
             subject: null,
             subjectName: "Not loaded yet...",
+            subjectPerson: null,
             me: null,
+            mePerson: null,
             status: 'loading...',
             selectedFramework: null,
             selectedCompetency: null,

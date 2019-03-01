@@ -1,6 +1,6 @@
 var topicCompetencies = {};
 Vue.component('competency', {
-    props: ['uri', 'hasChild', 'parentCompetent', 'subject'],
+    props: ['uri', 'hasChild', 'parentCompetent', 'subject','frameworkUri','subjectPerson'],
     data: function () {
         return {
             counter: 0,
@@ -152,6 +152,17 @@ Vue.component('competency', {
                 return this.competent || this.parentCompetent;
             }
         },
+        isGoal:{
+            get: function(){
+                if (this.subjectPerson.seeks == null) return false;
+                for (var i = 0;i < this.subjectPerson.seeks.length;i++)
+                    if (this.subjectPerson.seeks[i].itemOffered != null)
+                        if (this.subjectPerson.seeks[i].itemOffered.serviceOutput != null)
+                        if (this.competency.isId(this.subjectPerson.seeks[i].itemOffered.serviceOutput.competency))
+                            return true;
+                return false;
+            }
+        },
         countPhrase: {
             get: function () {
                 if (this.count == 0) return null;
@@ -176,6 +187,23 @@ Vue.component('competency', {
         unclaimIncompetencePhrase: {
             get: function () {
                 return "By deselecting this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " cannot demonstrate this.";
+            }
+        },
+        makeGoalPhrase: {
+            get: function () {
+                return "By selecting this, I would like to add this to " + (app.subject == app.me ? "my" : app.subjectName+"'s") + " goals.";
+            }
+        },
+        unmakeGoalPhrase: {
+            get: function () {
+                return "By selecting this, I would like to remove this from " + (app.subject == app.me ? "my" : app.subjectName+"'s") + " goals.";
+            }
+        },
+        canEditSubject: {
+            get: function(){
+                if (this.subjectPerson == null) return false;
+                if (EcIdentityManager.ids.length == 0) return false;
+                return this.subjectPerson.canEdit(EcIdentityManager.ids[0].ppk.toPk());
             }
         }
     },
@@ -356,9 +384,35 @@ Vue.component('competency', {
                 }
                 if (a != null) a();
             }, console.error);
+        },
+        makeGoal: function (evt, after) {
+            this.goalState = null;
+            var d = new Demand();
+            d.itemOffered = new Service();
+            d.itemOffered.serviceOutput = new Assertion();
+            d.itemOffered.serviceOutput.competency = this.competencyObj.shortId();
+            d.itemOffered.serviceOutput.framework = this.frameworkUri;
+            this.subjectPerson.seeks.push(d);
+            EcRepository.save(this.subjectPerson,function(){},console.error);
+        },
+        unmakeGoal: function (evt, after) {
+            this.goalState = null;
+            var needsSave = false;
+            for (var i = 0;i < this.subjectPerson.seeks.length;i++)
+            {
+                if (this.subjectPerson.seeks[i].itemOffered == null) continue;
+                if (this.subjectPerson.seeks[i].itemOffered.serviceOutput == null) continue;
+                if (this.competency.isId(this.subjectPerson.seeks[i].itemOffered.serviceOutput.competency)) {
+                    this.subjectPerson.seeks.splice(i, 1);
+                    needsSave = true;
+                }
+            }
+            if (needsSave)
+                EcRepository.save(this.subjectPerson,function(){},console.error);
         }
     },
     template: '<li class="competency" v-observe-visibility="{callback: initialize}" :id="uri">' +
+    '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> ' +
     '<span v-if="parentCompetent || subject == null"></span>' +
     '<span v-else>' +
     '<button class="inline" v-if="competent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
@@ -367,10 +421,15 @@ Vue.component('competency', {
     '<button class="inline" v-if="incompetent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="incompetent == true" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="incompetent == false" v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
+    '<span v-if="canEditSubject">'+
+    '<button class="inline" v-if="isGoal == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="isGoal == false" v-on:click="makeGoal" :title="makeGoalPhrase"><i class="mdi mdi-bullseye" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="isGoal == true" v-on:click="unmakeGoal" :title="unmakeGoalPhrase"><i class="mdi mdi-bullseye-arrow" style="color:green;" aria-hidden="true"></i></button>' +
+    '</span>'+
     ' </span> ' +
-    '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> <span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
+    '<span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
     '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
     '<assertion v-for="item in assertionsByOthers" v-bind:key="item.id" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
-    '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :subject="subject"></competency></ul>' +
+    '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :frameworkUri="frameworkUri" :subjectPerson="subjectPerson" :subject="subject"></competency></ul>' +
     '</li>'
 });

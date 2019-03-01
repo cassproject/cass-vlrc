@@ -66,6 +66,7 @@ Vue.component('profile', {
             get: function () {
                 if (this.personObj == null)
                     return null;
+                setTimeout(function(){jdenticon()},100);
                 return this.personObj.getGuid();
             }
         },
@@ -76,7 +77,7 @@ Vue.component('profile', {
                 if (this.personObj.email != null) {
                     return "https://www.gravatar.com/avatar/" + EcCrypto.md5(this.personObj.email.toLowerCase()) + "?s=44";
                 }
-                return "http://tinygraphs.com/spaceinvaders/" + this.personObj.getGuid() + "?theme=base&numcolors=16&size=44&fmt=svg";
+                return null;
             }
         },
         isContact: {
@@ -125,6 +126,17 @@ Vue.component('profile', {
                 EcRepository.save(thingToSave, me.getPerson, console.error);
             }
         },
+        setPerson: function(person){
+            var p = new Person();
+            p.copyFrom(person);
+            if (p.seeks == null)
+                p.seeks = [];
+            this.person = p;
+            if (this.pk == app.subject)
+                app.subjectPerson = p;
+            if (this.pk == app.me)
+                app.mePerson = p;
+        },
         getPerson: function () {
             this.personObj = null;
             var pk = EcPk.fromPem(this.pk);
@@ -134,28 +146,27 @@ Vue.component('profile', {
                 if (person.isAny(e.getTypes())) {
                     me.private = true;
                     e.copyFrom(person);
-                    e.decryptIntoObjectAsync(function (person) {
-                        var p = new Person();
-                        p.copyFrom(person);
-                        me.person = p;
-                    }, console.error);
+                    e.decryptIntoObjectAsync(me.setPerson, console.error);
                 } else {
                     me.private = false;
-                    var p = new Person();
-                    p.copyFrom(person);
-                    me.person = p;
+                    me.setPerson(person);
                 }
             }, function (failure) {
                 var pk = EcPk.fromPem(me.pk);
                 var p = new Person();
                 p.assignId(repo.selectedServer, pk.fingerprint());
                 p.addOwner(pk);
+                p.seeks = [];
                 if (me.displayName == null)
                     p.name = "Unknown Person.";
                 else
                     p.name = me.displayName;
                 me.person = p;
                 me.private = true;
+                if (me.pk == app.subject)
+                    app.subjectPerson = p;
+                if (me.pk == app.me)
+                    app.mePerson = p;
                 if (me.mine)
                     me.savePerson();
             });
@@ -271,7 +282,7 @@ Vue.component('profile', {
         '<i class="mdi mdi-comment-processing-outline" aria-hidden="true" style="float:right;font-size:large" :title="unshareStatement" v-if="isSubject == false" v-on:click="unshareAssertionsAboutSubjectWith();"></i> ' +
         '<i class="mdi mdi-comment-account" aria-hidden="true" style="float:right;font-size:large" :title="shareStatement" v-if="isSubject == false" v-on:click="shareAssertionsAboutSubjectWith();"></i> ' +
         '</span>' +
-        '<img style="vertical-align: sub;" v-if="fingerprint" :src="fingerprintUrl" :title="fingerprint"/> <span v-if="editing">Name:</span><input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name"> <span v-if="editing">Email:</span><input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="email">' +
+        '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="fingerprint"/><svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprint" :title="fingerprint"></svg> <span v-if="editing">Name:</span><input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name"> <span v-if="editing">Email:</span><input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="email">' +
         '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
         '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
         '</div>'

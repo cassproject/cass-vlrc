@@ -21,7 +21,9 @@ else if (window.location.origin.indexOf("127.0.0.1") != -1)
     repo.selectedServer = "https://dev.cassproject.org/api/";
 else if (window.location.origin.indexOf("localhost:8080") != -1)
     repo.autoDetectRepository();
-else if (window.location.origin.indexOf("localhost/") != -1)
+else if (window.location.origin.indexOf("localhost:63342") != -1)
+    repo.selectedServer = "https://dev.cassproject.org/api/";
+else if (window.location.origin.indexOf("localhost") != -1)
     repo.autoDetectRepository();
 else if (window.location.origin.indexOf("vlrc.cassproject.org") != -1)
     repo.selectedServer = "https://dev.cassproject.org/api/";
