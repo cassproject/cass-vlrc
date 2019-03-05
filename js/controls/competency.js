@@ -412,7 +412,7 @@ Vue.component('competency', {
         }
     },
     template: '<li class="competency" v-observe-visibility="{callback: initialize}" :id="uri">' +
-    '<a v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> ' +
+    '<a href="#" v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> ' +
     '<span v-if="parentCompetent || subject == null"></span>' +
     '<span v-else>' +
     '<button class="inline" v-if="competent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +

@@ -1,10 +1,10 @@
 * {
-    margin: 0;
-    padding: 0;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    font-family: Helvetica, Arial, Sans-Serif;
+	margin: 0;
+	padding: 0;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	font-family: Helvetica, Arial, Sans-Serif;
 }
 
 h1,
@@ -12,251 +12,251 @@ h2,
 h3,
 h4,
 h5 {
-    margin-top: 1rem;
-    margin-bottom: .5rem;
+	margin-top: 1rem;
+	margin-bottom: .5rem;
 }
 
 body {
-    background: #fff;
-    background-repeat: no-repeat;
-    background-size: cover;
+	background: #fff;
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 
 pre {
-    overflow: scroll;
-    width: 100%;
+	overflow: scroll;
+	width: 100%;
 }
 
 
 /*PAGE*/
 
 #pages {
-    display: flex;
-    flex-direction: row;
+	display: flex;
+	flex-direction: row;
 }
 
 .page {
-    width: calc(100vw - 200px);
+	width: calc(100vw - 200px);
 }
 
 ul,
 li {
-    list-style: none;
+	list-style: none;
 }
 
 ul ul {
-    margin-left: 2.5rem;
+	margin-left: 2.5rem;
 }
 
 .selected {
-    color: green;
+	color: green;
 }
 
 .profileRow {
-    margin-bottom: .5rem;
+	margin-bottom: .5rem;
 }
 
 .frameworkTitle {}
 
 .frameworkNameAndDescription {
-    font-size: large;
-    padding-bottom: .5rem;
+	font-size: large;
+	padding-bottom: .5rem;
 }
 
 .competency {
-    margin-bottom: .25rem;
+	margin-bottom: .25rem;
 }
 
 .resource {
-    margin-bottom: .5rem;
+	margin-bottom: .5rem;
 }
 
 .frameworkSelect {
-    margin-bottom: .25rem;
-    padding: .5rem;
-    border: 1px gray solid;
-    border-radius: 1rem;
-    min-height: 30px;
+	margin-bottom: .25rem;
+	padding: .5rem;
+	border: 1px gray solid;
+	border-radius: 1rem;
+	min-height: 30px;
 }
 
 .timelineElement {
-    margin-bottom: .25rem;
-    padding: .5rem;
-    min-height: 30px;
+	margin-bottom: .25rem;
+	padding: .5rem;
+	min-height: 30px;
 }
 
 .frameworkSelectName {
-    margin-left: 0rem;
+	margin-left: 0rem;
 }
 
 .frameworkSelectDescription {
-    display: block;
-    margin-top: .25rem;
-    margin-left: 0rem;
+	display: block;
+	margin-top: .25rem;
+	margin-left: 0rem;
 }
 
 .competency .assertion {
-    font-size: small;
-    margin-left: 1rem;
-    display: block;
-    margin-left: .6rem;
-    padding: .25rem;
+	font-size: small;
+	margin-left: 1rem;
+	display: block;
+	margin-left: .6rem;
+	padding: .25rem;
 }
 
 .competency .assertion img {
-    clip-path: circle(11px at center);
-    margin-right: .0rem;
+	clip-path: circle(11px at center);
+	margin-right: .0rem;
 }
 
 .timeline {
-    padding: 10px 0px;
-    position: relative;
-    background-color: inherit;
+	padding: 10px 0px;
+	position: relative;
+	background-color: inherit;
 }
 
 .timeline::before {
-    content: '';
-    position: absolute;
-    width: 6px;
-    background-color: black;
-    top: 0rem;
-    bottom: 0;
-    margin-left: 3.3rem;
+	content: '';
+	position: absolute;
+	width: 6px;
+	background-color: black;
+	top: 0rem;
+	bottom: 0;
+	margin-left: 3.3rem;
 }
 
 .timelineElement .time {
-    content: 'aa';
-    position: relative;
-    display: block;
-    float: left;
-    padding: .5rem;
-    left: -.2rem;
-    width: 120px;
-    background-color: white;
-    border: 4px solid black;
-    text-align: center;
-    top: -.5rem;
-    z-index: 5;
+	content: 'aa';
+	position: relative;
+	display: block;
+	float: left;
+	padding: .5rem;
+	left: -.2rem;
+	width: 120px;
+	background-color: white;
+	border: 4px solid black;
+	text-align: center;
+	top: -.5rem;
+	z-index: 5;
 }
 
 .assertion .statement {
-    display: block;
-    margin-top: .25rem;
+	display: block;
+	margin-top: .25rem;
 }
 
 .jobPostingSelect {
-    margin-top: .5rem;
+	margin-top: .5rem;
 }
 
 .timelineElement .content {
-    margin-left: 13rem;
+	margin-left: 13rem;
 }
 
 .timelineElement {
-    left: 0rem;
-    min-height: calc(44px + 1rem);
+	left: 0rem;
+	min-height: calc(44px + 1rem);
 }
 
 .timelineElement img {
-    float: left;
-    clip-path: circle(22px at center);
-    margin-left: .25rem;
-    margin-right: .25rem;
+	float: left;
+	clip-path: circle(22px at center);
+	margin-left: .25rem;
+	margin-right: .25rem;
 }
 
 .jobPostingCreate .autoSuggest {
-    width: calc(100% - 100px)
+	width: calc(100% - 100px)
 }
 
 
 /*SIDEBAR*/
 
 #sidebar {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    width: 140px;
-    margin-right: .5rem;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	width: 140px;
+	margin-right: .5rem;
 }
 
 #sidebar i {
-    display: block;
+	display: block;
 }
 
 #sidebar label {
-    display: block;
+	display: block;
 }
 
 
 /*HEADER*/
 
 .header {
-    height: 25px;
-    background: rgba(0, 0, 0, 1);
-    color: #fff;
-    text-align: center;
-    font: 10px/25px Helvetica, Verdana, sans-serif;
+	height: 25px;
+	background: rgba(0, 0, 0, 1);
+	color: #fff;
+	text-align: center;
+	font: 10px/25px Helvetica, Verdana, sans-serif;
 }
 
 .header a {
-    color: #999;
+	color: #999;
 }
 
 
 /*SLIDES*/
 
 .processing {
-    display: block;
-    height: calc(100vh - 25px - 40px);
-    width: calc(100vw - 40px);
-    background: rgba(255, 255, 255, .95);
-    font: 12px/1.5 Helvetica, Verdana, sans-serif;
-    padding: 10px 0;
+	display: block;
+	height: calc(100vh - 25px - 40px);
+	width: calc(100vw - 40px);
+	background: rgba(255, 255, 255, .95);
+	font: 12px/1.5 Helvetica, Verdana, sans-serif;
+	padding: 10px 0;
 }
 
 
 /*INPUT*/
 
 input[type="text"] {
-    width: 100%;
-    padding: .25rem;
-    margin: .25rem;
+	width: 100%;
+	padding: .25rem;
+	margin: .25rem;
 }
 
 textarea {
-    width: 100%;
-    padding: .25rem;
-    margin: .25rem;
+	width: 100%;
+	padding: .25rem;
+	margin: .25rem;
 }
 
 
 /*JobPosting*/
 
 .jobPostingCreate ul div {
-    padding-left: 2rem;
-    margin-bottom: 1rem;
-    display: block;
+	padding-left: 2rem;
+	margin-bottom: 1rem;
+	display: block;
 }
 
 .jobPostingCreate ul div input {
-    font-size: 1rem;
+	font-size: 1rem;
 }
 
 .jobPostingCreate ul div li {
-    display: inline;
+	display: inline;
 }
 
 .jobPostingDetail pre {
-    margin-top: 1rem;
-    white-space: pre-wrap;
-    /* Since CSS 2.1 */
-    white-space: -moz-pre-wrap;
-    /* Mozilla, since 1999 */
-    white-space: -pre-wrap;
-    /* Opera 4-6 */
-    white-space: -o-pre-wrap;
-    /* Opera 7 */
-    word-wrap: break-word;
-    /* Internet Explorer 5.5+ */
-    overflow: hidden;
+	margin-top: 1rem;
+	white-space: pre-wrap;
+	/* Since CSS 2.1 */
+	white-space: -moz-pre-wrap;
+	/* Mozilla, since 1999 */
+	white-space: -pre-wrap;
+	/* Opera 4-6 */
+	white-space: -o-pre-wrap;
+	/* Opera 7 */
+	word-wrap: break-word;
+	/* Internet Explorer 5.5+ */
+	overflow: hidden;
 }
