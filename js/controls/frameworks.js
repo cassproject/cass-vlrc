@@ -24,7 +24,7 @@ Vue.component('frameworks', {
                 }, console.error, {
                     size: 50
                 });
-                return null;
+                return this.frameworksResult;
             }
         }
     },

@@ -36,6 +36,7 @@ if (repo.selectedServer == null)
 
 EcRepository.caching = true;
 EcCrypto.caching = true;
+EcRepository.cachingSearch = true;
 
 EcIdentityManager.readIdentities();
 EcIdentityManager.readContacts();
@@ -237,6 +238,11 @@ openWebSocket = function (r) {
 
 	connection.onmessage = function (e) {
 		console.log('Server: ' + e.data);
+		for (var key in EcRepository.cache)
+		{
+			if (key.startsWith("{"))
+				delete EcRepository.cache[key];
+		}
 		delete EcRepository.cache[e.data];
 		if (app.assertions != null)
 			for (var i = 0; i < app.assertions.length; i++)

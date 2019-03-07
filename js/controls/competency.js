@@ -23,6 +23,8 @@ Vue.component('competency', {
                 if (this.competencyObj == null) return null;
                 if (this.estimatedCompetenceValue != null)
                     return this.estimatedCompetenceValue == "TRUE";
+                if (this.visible)
+                    this.getEstimatedCompetence();
             }
         },
         estimatedCompetenceFalse:{
@@ -184,6 +186,7 @@ Vue.component('competency', {
         },
         isGoal:{
             get: function(){
+                if (this.competency == null) return false;
                 if (this.subjectPerson.seeks == null) return false;
                 for (var i = 0;i < this.subjectPerson.seeks.length;i++)
                     if (this.subjectPerson.seeks[i].itemOffered != null)
@@ -261,8 +264,9 @@ Vue.component('competency', {
             this.incompetentState = null;
             this.estimatedCompetenceValue = null;
         },
-        parentCompetent: function (newVal, oldVal) {
-            this.estimatedCompetenceValue = null;
+        parentCompetent: function(newVal,oldVal){
+            var me = this;
+            setTimeout(function(){me.getEstimatedCompetence();},2000);
         }
     },
     methods: {
@@ -271,7 +275,6 @@ Vue.component('competency', {
             if (isVisible && this.once == null) {
                 this.once = true;
                 this.getResourceCount();
-                this.getEstimatedCompetence();
             }
         },
         getResourceCount: function () {
@@ -293,6 +296,7 @@ Vue.component('competency', {
                 return;
             me.estimatedCompetenceValue = null;
             var ep = new PessimisticQuadnaryAssertionProcessor();
+            ep.transferIndeterminateOptimistically = false;
             ep.logFunction = function (data) {
             };
             ep.repositories.push(repo);
@@ -348,7 +352,7 @@ Vue.component('competency', {
                 a.setNegative(false); //This is an assertion that an individual *can* do something, not that they *cannot*.
                 a.setConfidence(1.0);
                 EcRepository.save(a, function () {
-                    me.competentState = null;
+                    me.competentState = null;me.getEstimatedCompetence();
                 }, console.error);
             });
         },
@@ -375,7 +379,7 @@ Vue.component('competency', {
                                                     for (var delIndex = 0; delIndex < app.assertions.length; delIndex++)
                                                         if (app.assertions[delIndex].id == assertion.id)
                                                             app.assertions.splice(delIndex, 1);
-                                                    me.competentState = null;
+                                                    me.competentState = null;me.getEstimatedCompetence();
                                                 }, console.error);
                                             } else
                                                 assertion.getNegativeAsync(function (negative) {
@@ -384,7 +388,7 @@ Vue.component('competency', {
                                                             for (var delIndex = 0; delIndex < app.assertions.length; delIndex++)
                                                                 if (app.assertions[delIndex].id == assertion.id)
                                                                     app.assertions.splice(delIndex, 1);
-                                                            me.competentState = null;
+                                                            me.competentState = null;me.getEstimatedCompetence();
                                                         }, console.error);
                                                     }
                                                 }, console.error);
@@ -415,7 +419,7 @@ Vue.component('competency', {
                 a.setNegative(true); //This is an assertion that an individual *cannot* do something, not that they *can*.
                 a.setConfidence(1.0);
                 EcRepository.save(a, function () {
-                    me.incompetentState = null;
+                    me.incompetentState = null;me.getEstimatedCompetence();
                 }, console.error);
             });
         },
@@ -443,7 +447,7 @@ Vue.component('competency', {
                                                         EcRepository._delete(assertion, function () {
                                                             for (var delIndex = 0; delIndex < app.assertions.length; delIndex++)
                                                                 if (app.assertions[delIndex].id == assertion.id)
-                                                                    app.assertions.splice(delIndex, 1);
+                                                                    app.assertions.splice(delIndex, 1);me.getEstimatedCompetence();
                                                             me.incompetentState = null;
                                                         }, console.error);
                                                     }
@@ -485,8 +489,7 @@ Vue.component('competency', {
     },
     template: '<li class="competency" v-observe-visibility="{callback: initialize}" :id="uri">' +
     '<a href="#" v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> ' +
-    '<span v-if="parentCompetent || subject == null"></span>' +
-    '<span v-else>' +
+    '<span v-if="subject != null">' +
     '<button class="inline" v-if="competent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="competent == true" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="competent == false" v-on:click="claimCompetence" :title="claimCompetencePhrase"><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
@@ -498,9 +501,9 @@ Vue.component('competency', {
     '<button class="inline" v-if="isGoal == false" v-on:click="makeGoal" :title="makeGoalPhrase"><i class="mdi mdi-bullseye" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="isGoal == true" v-on:click="unmakeGoal" :title="unmakeGoalPhrase"><i class="mdi mdi-bullseye-arrow" style="color:green;" aria-hidden="true"></i></button>' +
     '</span>'+
-    ' </span> ' +
+    '</span>'+
     '<span v-if="subject">'+
-    '<button class="inline" v-if="estimatedCompetenceValue == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="estimatedCompetenceValue == null" v-on:click="getEstimatedCompetence" ><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="estimatedCompetenceUnknown" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-help-circle" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="estimatedCompetenceIndeterminant" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-flash-circle" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="estimatedCompetenceTrue" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-check-circle" aria-hidden="true"></i></button>' +
