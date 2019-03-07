@@ -13,6 +13,7 @@ Vue.component('competency', {
             assertionsByOthers: [],
             competencyObj: null,
             estimatedCompetenceValue: null,
+            estimatedCompetenceTitle: null,
             visible: false
         };
     },
@@ -306,6 +307,15 @@ Vue.component('competency', {
                 additionalSignatures,
                 function (success) {
                     me.estimatedCompetenceValue = success.result._name;
+                    if (me.estimatedCompetenceValue == "TRUE")
+                        me.estimatedCompetenceTitle = "The system believes you hold this competency. Click to recompute. ";
+                    else if (me.estimatedCompetenceValue == "FALSE")
+                        me.estimatedCompetenceTitle = "The system believes you do not hold this competency. Click to recompute. ";
+                    else if (me.estimatedCompetenceValue == "INDETERMINANT")
+                        me.estimatedCompetenceTitle = "There is conflicting evidence that you hold this competency. Click to recompute. ";
+                    else if (me.estimatedCompetenceValue == "UNKNOWN")
+                        me.estimatedCompetenceTitle = "It is not known if you hold this competency. Click to recompute. ";
+                    me.estimatedCompetenceTitle += "\n\nReasoning:"+app.explain(success);
                 },
                 function (ask) {
                     console.log(ask);
@@ -491,10 +501,10 @@ Vue.component('competency', {
     ' </span> ' +
     '<span v-if="subject">'+
     '<button class="inline" v-if="estimatedCompetenceValue == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceUnknown" v-on:click="getEstimatedCompetence" title="It is not known if you hold this competency. Click to recompute."><i class="mdi mdi-help-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceIndeterminant" v-on:click="getEstimatedCompetence" title="There is conflicting evidence that you hold this competency. Click to recompute."><i class="mdi mdi-flash-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceTrue" v-on:click="getEstimatedCompetence" title="The system believes you hold this competency. Click to recompute."><i class="mdi mdi-check-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceFalse" v-on:click="getEstimatedCompetence" title="The system believes you do not hold this competency. Click to recompute."><i class="mdi mdi-diameter-variant" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="estimatedCompetenceUnknown" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-help-circle" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="estimatedCompetenceIndeterminant" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-flash-circle" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="estimatedCompetenceTrue" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-check-circle" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="estimatedCompetenceFalse" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-diameter-variant" aria-hidden="true"></i></button>' +
     '</span>'+
     '<span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
     '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
