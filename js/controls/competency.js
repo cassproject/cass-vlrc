@@ -488,7 +488,6 @@ Vue.component('competency', {
         }
     },
     template: '<li class="competency" v-observe-visibility="{callback: initialize}" :id="uri">' +
-    '<a href="#" v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> ' +
     '<span v-if="subject != null">' +
     '<button class="inline" v-if="competent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="competent == true" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
@@ -496,6 +495,8 @@ Vue.component('competency', {
     '<button class="inline" v-if="incompetent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="incompetent == true" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="incompetent == false" v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
+    ' </span> ' +
+    '<a href="#" v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> ' +
     '<span v-if="canEditSubject">'+
     '<button class="inline" v-if="isGoal == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="isGoal == false" v-on:click="makeGoal" :title="makeGoalPhrase"><i class="mdi mdi-bullseye" aria-hidden="true"></i></button>' +

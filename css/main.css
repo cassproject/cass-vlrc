@@ -36,7 +36,7 @@ pre {
 }
 
 .page {
-	width: calc(100vw - 200px);
+	width: calc(100vw - 300px);
 }
 
 ul,
@@ -172,19 +172,14 @@ ul ul {
 /*SIDEBAR*/
 
 #sidebar {
-	display: flex;
-	flex-direction: column;
-	text-align: center;
-	width: 140px;
+	width: 240px;
 	margin-right: .5rem;
 }
 
 #sidebar i {
-	display: block;
 }
 
 #sidebar label {
-	display: block;
 }
 
 

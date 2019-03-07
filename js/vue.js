@@ -224,6 +224,6 @@ function startVlrc() {
 }
 
 window.addEventListener("beforeunload", function (e) {
-    console.log("Saving assertions to localstorage.");
-    localStorage.setItem("assertions", LZString.compress(JSON.stringify(app.assertions)));
+	console.log("Saving assertions to localstorage.");
+	localStorage.setItem("assertions", LZString.compress(JSON.stringify(app.assertions)));
 }, false);
