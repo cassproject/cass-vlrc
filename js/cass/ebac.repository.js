@@ -1091,13 +1091,17 @@ EcRepository = stjs.extend(EcRepository, null, [], function(constructor, prototy
                 return;
             }
             (EcRepository.cache)[originalUrl] = d;
-            if (d.id != null) 
-                (EcRepository.cache)[d.id] = d;
+            if (d != null) {
+                if (d.id != null) 
+                    (EcRepository.cache)[d.id] = d;
+            }
         }, function(s) {
             var d = EcRepository.findBlocking(originalUrl, s, new Object(), 0);
             (EcRepository.cache)[originalUrl] = d;
-            if (d.id != null) 
-                (EcRepository.cache)[d.id] = d;
+            if (d != null) {
+                if (d.id != null) 
+                    (EcRepository.cache)[d.id] = d;
+            }
         });
         EcRemote.async = oldAsync;
         var result = (EcRepository.cache)[originalUrl];

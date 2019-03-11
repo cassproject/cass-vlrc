@@ -3749,6 +3749,8 @@ CombinatorAssertionProcessor = stjs.extend(CombinatorAssertionProcessor, Asserti
             if (ep.context != null && ep.context.relation != null) 
                 for (var i = 0; i < ep.context.relation.length; i++) {
                     var a = EcAlignment.getBlocking(ep.context.relation[i]);
+                    if (a == null) 
+                        continue;
                     if ((relationLookup)[a.source] == null) 
                         (relationLookup)[a.source] = new Array();
                     ((relationLookup)[a.source]).push(a);

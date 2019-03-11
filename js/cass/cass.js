@@ -54544,6 +54544,26 @@ function() {
 };
 RsvpResponseType = stjs.extend(RsvpResponseType, Enumeration, [], null, {identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
+ *  Schema.org/EventStatusType
+ *  EventStatusType is an enumeration type whose instances represent several states that an Event may be in.
+ * 
+ *  @author schema.org
+ *  @class EventStatusType
+ *  @module org.schema
+ *  @extends Enumeration
+ */
+var EventStatusType = /**
+ *  Constructor, automatically sets @context and @type.
+ * 
+ *  @constructor
+ */
+function() {
+    Enumeration.call(this);
+    this.context = "http://schema.org/";
+    this.type = "EventStatusType";
+};
+EventStatusType = stjs.extend(EventStatusType, Enumeration, [], null, {identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+/**
  *  Schema.org/Specialty
  *  Any branch of a field in which people typically develop specific expertise, usually after significant study, time, and effort.
  * 
@@ -68491,13 +68511,17 @@ EcRepository = stjs.extend(EcRepository, null, [], function(constructor, prototy
                 return;
             }
             (EcRepository.cache)[originalUrl] = d;
-            if (d.id != null) 
-                (EcRepository.cache)[d.id] = d;
+            if (d != null) {
+                if (d.id != null) 
+                    (EcRepository.cache)[d.id] = d;
+            }
         }, function(s) {
             var d = EcRepository.findBlocking(originalUrl, s, new Object(), 0);
             (EcRepository.cache)[originalUrl] = d;
-            if (d.id != null) 
-                (EcRepository.cache)[d.id] = d;
+            if (d != null) {
+                if (d.id != null) 
+                    (EcRepository.cache)[d.id] = d;
+            }
         });
         EcRemote.async = oldAsync;
         var result = (EcRepository.cache)[originalUrl];
@@ -76130,6 +76154,8 @@ CombinatorAssertionProcessor = stjs.extend(CombinatorAssertionProcessor, Asserti
             if (ep.context != null && ep.context.relation != null) 
                 for (var i = 0; i < ep.context.relation.length; i++) {
                     var a = EcAlignment.getBlocking(ep.context.relation[i]);
+                    if (a == null) 
+                        continue;
                     if ((relationLookup)[a.source] == null) 
                         (relationLookup)[a.source] = new Array();
                     ((relationLookup)[a.source]).push(a);
