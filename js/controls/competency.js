@@ -91,13 +91,16 @@ Vue.component('competency', {
                 if (this.visible && app.assertions.length != this.assertionCounter) {
                     this.assertionCounter = app.assertions.length;
                     this.competentStateNew = null;
+                    var assertions = [];
+                    for (var i = 0;i < app.assertions.length;i++)
+                        if (this.competency.isId(app.assertions[i].competency))
+                            assertions.push(app.assertions[i]);
                     var eah = new EcAsyncHelper();
-                    eah.each(app.assertions, function (assertion, callback) {
+                    eah.each(assertions, function (assertion, callback) {
                         if (assertion == null) {
                             callback();
                             return;
                         }
-                        if (me.competency.isId(assertion.competency)) {
                             assertion.getSubjectAsync(function (subject) {
                                 if (me.subject == subject.toPem()) {
                                     assertion.getAgentAsync(function (agent) {
@@ -121,8 +124,6 @@ Vue.component('competency', {
                                 } else
                                     callback();
                             }, callback);
-                        } else
-                            callback();
                     }, function (assertions) {
                         if (me.competentStateNew == null) me.competentStateNew = false;
                         me.competentState = me.competentStateNew;
@@ -141,10 +142,13 @@ Vue.component('competency', {
                 if (this.visible && app.assertions.length != this.assertionCounterIncompetent) {
                     this.assertionCounterIncompetent = app.assertions.length;
                     this.incompetentStateNew = null;
+                    var assertions = [];
+                    for (var i = 0;i < app.assertions.length;i++)
+                        if (this.competency.isId(app.assertions[i].competency))
+                            assertions.push(app.assertions[i]);
                     var eah = new EcAsyncHelper();
-                    eah.each(app.assertions, function (assertion, callback) {
+                    eah.each(assertions, function (assertion, callback) {
                         if (assertion == null) return;
-                        if (me.competency.isId(assertion.competency)) {
                             assertion.getSubjectAsync(function (subject) {
                                 if (me.subject == subject.toPem()) {
                                     assertion.getAgentAsync(function (agent) {
@@ -166,8 +170,6 @@ Vue.component('competency', {
                                 } else
                                     callback();
                             }, callback);
-                        } else
-                            callback();
                     }, function (assertions) {
                         if (me.incompetentStateNew == null) me.incompetentStateNew = false;
                         me.incompetentState = me.incompetentStateNew;

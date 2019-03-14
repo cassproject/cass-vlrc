@@ -105,7 +105,7 @@ Vue.component('framework', {
                 this.computedStateActual = null;
                 this.computedStateAssertionLength = app.assertions.length
                 var hash = this.computedStateAssertionLength + app.assertions.length + this.uri;
-                console.log("Started processing: " + new Date().getTime() +" "+ hash);
+                console.log("Started processing: " + new Date() +" "+ hash);
                 var assertions = [];
                 new EcAsyncHelper().each(app.assertions, function (a, done) {
                     a.getSubjectAsync(function (subject) {
@@ -118,10 +118,12 @@ Vue.component('framework', {
                     frameworkGraph.addFramework(EcFramework.getBlocking(me.uri), repo, function () {
                         frameworkGraph.processAssertionsBoolean(assertions, function () {
                             if (hash == me.computedStateAssertionLength + app.assertions.length + me.uri) {
+                                for (var key in frameworkGraph.metaVerticies)
+                                    delete frameworkGraph.metaVerticies[key].framework;
                                 me.computedStateActual = frameworkGraph;
-                                console.log("Finished processing (overwrite): " + new Date().getTime() +" "+ hash);
+                                console.log("Finished processing (overwrite): " + new Date() +" "+ hash);
                             } else
-                                console.log("Finished processing (abort): " + new Date().getTime() +" "+ hash);
+                                console.log("Finished processing (abort): " + new Date() +" "+ hash);
                         }, console.error);
                     }, console.error);
                 });
