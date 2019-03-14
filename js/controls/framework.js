@@ -5,16 +5,21 @@
  * @property competencyUri - Only show the tree under this URI, if present.
  */
 Vue.component('framework', {
-    props: ['uri', 'subject','subjectperson','competencyUri'],
+    props: ['uri', 'subject', 'subjectperson', 'competencyUri'],
     data: function () {
         return {
-            competency: null
+            competency: null,
+            computedStateActual: null,
+            computedStateAssertionLength: -1,
+            visible: false,
+            once: false
         }
     },
     computed: {
         competencies: {
             get: function () {
                 var me = this;
+                if (!this.once) return null;
                 if (this.uri == null) return null;
                 if (this.competency != null)
                     return this.competency;
@@ -39,7 +44,8 @@ Vue.component('framework', {
                                 var a = null;
                                 try {
                                     a = EcAlignment.getBlocking(f.relation[i]);
-                                } catch (e) {}
+                                } catch (e) {
+                                }
                                 if (a != null) {
                                     if (a.relationType == Relation.NARROWS) {
                                         if (r[a.target] == null) continue;
@@ -89,17 +95,59 @@ Vue.component('framework', {
         },
         permalink: function () {
             return window.location.origin + window.location.pathname + "?frameworkId=" + EcRemoteLinkedData.trimVersionFromUrl(this.uri);
+        },
+        computedState: function () {
+            var me = this;
+            if (!this.visible) return;
+            if (this.competencies == null) return;
+            var uri = this.uri;
+            if (this.computedStateAssertionLength != app.assertions.length) {
+                this.computedStateActual = null;
+                this.computedStateAssertionLength = app.assertions.length
+                var hash = this.computedStateAssertionLength + app.assertions.length + this.uri;
+                console.log("Started processing: " + new Date().getTime() +" "+ hash);
+                var assertions = [];
+                new EcAsyncHelper().each(app.assertions, function (a, done) {
+                    a.getSubjectAsync(function (subject) {
+                        if (subject.toPem() == me.subject)
+                            assertions.push(a);
+                        done();
+                    }, done);
+                }, function (as) {
+                    var frameworkGraph = new EcFrameworkGraph();
+                    frameworkGraph.addFramework(EcFramework.getBlocking(me.uri), repo, function () {
+                        frameworkGraph.processAssertionsBoolean(assertions, function () {
+                            if (hash == me.computedStateAssertionLength + app.assertions.length + me.uri) {
+                                me.computedStateActual = frameworkGraph;
+                                console.log("Finished processing (overwrite): " + new Date().getTime() +" "+ hash);
+                            } else
+                                console.log("Finished processing (abort): " + new Date().getTime() +" "+ hash);
+                        }, console.error);
+                    }, console.error);
+                });
+            }
+            return this.computedStateActual;
         }
     },
     watch: {
         uri: function (newUri, oldUri) {
             this.competency = null;
+            this.computedStateAssertionLength = -1;
+            this.once = false;
             console.log(this.uri);
         }
     },
-    template: '<div>' +
-        '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
-        '<div class="frameworkNameAndDescription">{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
-        '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subjectPerson="subjectperson" :frameworkUri="uri" :subject="subject"></competency></ul>' +
-        '<div v-else><br>Loading Framework...</div></div>'
+    methods: {
+        initialize: function (isVisible, entry) {
+            this.visible = isVisible;
+            if (isVisible && this.once != true) {
+                this.once = true;
+            }
+        }
+    },
+    template: '<div  v-observe-visibility="{callback: initialize}">' +
+    '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
+    '<div class="frameworkNameAndDescription">{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
+    '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subjectPerson="subjectperson" :frameworkUri="uri" :computedState="computedState" :subject="subject"></competency></ul>' +
+    '<div v-else><br>Loading Framework...</div></div>'
 });

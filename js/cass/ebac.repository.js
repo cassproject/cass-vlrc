@@ -1488,7 +1488,7 @@ EcRepository = stjs.extend(EcRepository, null, [], function(constructor, prototy
      *  @memberOf EcRepository
      *  @method multiget
      */
-    prototype.multiget = function(urls, success, failure, cachedValues) {
+    prototype.multiget = function(urls, success, failure) {
         if (urls == null || urls.length == 0) {
             if (failure != null) {
                 failure("");

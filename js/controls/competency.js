@@ -1,6 +1,6 @@
 var topicCompetencies = {};
 Vue.component('competency', {
-    props: ['uri', 'hasChild', 'parentCompetent', 'subject','frameworkUri','subjectPerson'],
+    props: ['uri', 'hasChild', 'parentCompetent', 'subject', 'frameworkUri', 'subjectPerson', 'computedState'],
     data: function () {
         return {
             counter: 0,
@@ -18,34 +18,56 @@ Vue.component('competency', {
         };
     },
     computed: {
-        estimatedCompetenceTrue:{
-            get: function(){
+        estimatedCompetenceTrue: {
+            get: function () {
                 if (this.competencyObj == null) return null;
-                if (this.estimatedCompetenceValue != null)
-                    return this.estimatedCompetenceValue == "TRUE";
-                if (this.visible)
-                    this.getEstimatedCompetence();
+                if (this.computedState == null) return null;
+                var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
+                if (msc != null)
+                    if (msc.negativeAssertion == null && msc.positiveAssertion != null) {
+                        this.estimatedCompetenceTitle = "The system believes you hold this competency. Click for details.";
+                        return true;
+                    }
+                return null;
             }
         },
-        estimatedCompetenceFalse:{
-            get: function(){
+        estimatedCompetenceFalse: {
+            get: function () {
                 if (this.competencyObj == null) return null;
-                if (this.estimatedCompetenceValue != null)
-                    return this.estimatedCompetenceValue == "FALSE";
+                if (this.computedState == null) return null;
+                var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
+                if (msc != null)
+                    if (msc.negativeAssertion != null && msc.positiveAssertion == null) {
+                        this.estimatedCompetenceTitle = "The system believes you do not hold this competency. Click for details.";
+                        return true;
+                    }
+                return null;
             }
         },
-        estimatedCompetenceIndeterminant:{
-            get: function(){
+        estimatedCompetenceIndeterminant: {
+            get: function () {
                 if (this.competencyObj == null) return null;
-                if (this.estimatedCompetenceValue != null)
-                    return this.estimatedCompetenceValue == "INDETERMINANT";
+                if (this.computedState == null) return null;
+                var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
+                if (msc != null)
+                    if (msc.negativeAssertion != null && msc.positiveAssertion != null) {
+                        this.estimatedCompetenceTitle = "There is conflicting evidence that you hold this competency. Click for details.";
+                        return true;
+                    }
+                return null;
             }
         },
-        estimatedCompetenceUnknown:{
-            get: function(){
+        estimatedCompetenceUnknown: {
+            get: function () {
                 if (this.competencyObj == null) return null;
-                if (this.estimatedCompetenceValue != null)
-                    return this.estimatedCompetenceValue == "UNKNOWN";
+                if (this.computedState == null) return null;
+                var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
+                if (msc != null)
+                    if (msc.negativeAssertion == null && msc.positiveAssertion == null) {
+                        this.estimatedCompetenceTitle = "It is not known if you hold this competency. Click for details.";
+                        return true;
+                    }
+                return null;
             }
         },
         competency: {
@@ -184,15 +206,15 @@ Vue.component('competency', {
                 return this.competent || this.parentCompetent;
             }
         },
-        isGoal:{
-            get: function(){
+        isGoal: {
+            get: function () {
                 if (this.competency == null) return false;
                 if (this.subjectPerson.seeks == null) return false;
-                for (var i = 0;i < this.subjectPerson.seeks.length;i++)
+                for (var i = 0; i < this.subjectPerson.seeks.length; i++)
                     if (this.subjectPerson.seeks[i].itemOffered != null)
                         if (this.subjectPerson.seeks[i].itemOffered.serviceOutput != null)
-                        if (this.competency.isId(this.subjectPerson.seeks[i].itemOffered.serviceOutput.competency))
-                            return true;
+                            if (this.competency.isId(this.subjectPerson.seeks[i].itemOffered.serviceOutput.competency))
+                                return true;
                 return false;
             }
         },
@@ -224,16 +246,16 @@ Vue.component('competency', {
         },
         makeGoalPhrase: {
             get: function () {
-                return "By selecting this, I would like to add this to " + (app.subject == app.me ? "my" : app.subjectName+"'s") + " goals.";
+                return "By selecting this, I would like to add this to " + (app.subject == app.me ? "my" : app.subjectName + "'s") + " goals.";
             }
         },
         unmakeGoalPhrase: {
             get: function () {
-                return "By selecting this, I would like to remove this from " + (app.subject == app.me ? "my" : app.subjectName+"'s") + " goals.";
+                return "By selecting this, I would like to remove this from " + (app.subject == app.me ? "my" : app.subjectName + "'s") + " goals.";
             }
         },
         canEditSubject: {
-            get: function(){
+            get: function () {
                 if (this.subjectPerson == null) return false;
                 if (EcIdentityManager.ids.length == 0) return false;
                 return this.subjectPerson.canEdit(EcIdentityManager.ids[0].ppk.toPk());
@@ -263,10 +285,6 @@ Vue.component('competency', {
             this.competentState = null;
             this.incompetentState = null;
             this.estimatedCompetenceValue = null;
-        },
-        parentCompetent: function(newVal,oldVal){
-            var me = this;
-            setTimeout(function(){me.getEstimatedCompetence();},2000);
         }
     },
     methods: {
@@ -319,7 +337,7 @@ Vue.component('competency', {
                         me.estimatedCompetenceTitle = "There is conflicting evidence that you hold this competency. Click to recompute. ";
                     else if (me.estimatedCompetenceValue == "UNKNOWN")
                         me.estimatedCompetenceTitle = "It is not known if you hold this competency. Click to recompute. ";
-                    me.estimatedCompetenceTitle += "\n\nReasoning:"+app.explain(success);
+                    me.estimatedCompetenceTitle += "\n\nReasoning:" + app.explain(success);
                 },
                 function (ask) {
                     console.log(ask);
@@ -352,7 +370,7 @@ Vue.component('competency', {
                 a.setNegative(false); //This is an assertion that an individual *can* do something, not that they *cannot*.
                 a.setConfidence(1.0);
                 EcRepository.save(a, function () {
-                    me.competentState = null;me.getEstimatedCompetence();
+                    me.competentState = null;
                 }, console.error);
             });
         },
@@ -379,7 +397,7 @@ Vue.component('competency', {
                                                     for (var delIndex = 0; delIndex < app.assertions.length; delIndex++)
                                                         if (app.assertions[delIndex].id == assertion.id)
                                                             app.assertions.splice(delIndex, 1);
-                                                    me.competentState = null;me.getEstimatedCompetence();
+                                                    me.competentState = null;
                                                 }, console.error);
                                             } else
                                                 assertion.getNegativeAsync(function (negative) {
@@ -388,7 +406,7 @@ Vue.component('competency', {
                                                             for (var delIndex = 0; delIndex < app.assertions.length; delIndex++)
                                                                 if (app.assertions[delIndex].id == assertion.id)
                                                                     app.assertions.splice(delIndex, 1);
-                                                            me.competentState = null;me.getEstimatedCompetence();
+                                                            me.competentState = null;
                                                         }, console.error);
                                                     }
                                                 }, console.error);
@@ -419,7 +437,7 @@ Vue.component('competency', {
                 a.setNegative(true); //This is an assertion that an individual *cannot* do something, not that they *can*.
                 a.setConfidence(1.0);
                 EcRepository.save(a, function () {
-                    me.incompetentState = null;me.getEstimatedCompetence();
+                    me.incompetentState = null;
                 }, console.error);
             });
         },
@@ -447,7 +465,7 @@ Vue.component('competency', {
                                                         EcRepository._delete(assertion, function () {
                                                             for (var delIndex = 0; delIndex < app.assertions.length; delIndex++)
                                                                 if (app.assertions[delIndex].id == assertion.id)
-                                                                    app.assertions.splice(delIndex, 1);me.getEstimatedCompetence();
+                                                                    app.assertions.splice(delIndex, 1);
                                                             me.incompetentState = null;
                                                         }, console.error);
                                                     }
@@ -469,13 +487,13 @@ Vue.component('competency', {
             d.itemOffered.serviceOutput.competency = this.competencyObj.shortId();
             d.itemOffered.serviceOutput.framework = this.frameworkUri;
             this.subjectPerson.seeks.push(d);
-            EcRepository.save(this.subjectPerson,function(){},console.error);
+            EcRepository.save(this.subjectPerson, function () {
+            }, console.error);
         },
         unmakeGoal: function (evt, after) {
             this.goalState = null;
             var needsSave = false;
-            for (var i = 0;i < this.subjectPerson.seeks.length;i++)
-            {
+            for (var i = 0; i < this.subjectPerson.seeks.length; i++) {
                 if (this.subjectPerson.seeks[i].itemOffered == null) continue;
                 if (this.subjectPerson.seeks[i].itemOffered.serviceOutput == null) continue;
                 if (this.competency.isId(this.subjectPerson.seeks[i].itemOffered.serviceOutput.competency)) {
@@ -484,7 +502,8 @@ Vue.component('competency', {
                 }
             }
             if (needsSave)
-                EcRepository.save(this.subjectPerson,function(){},console.error);
+                EcRepository.save(this.subjectPerson, function () {
+                }, console.error);
         }
     },
     template: '<li class="competency" v-observe-visibility="{callback: initialize}" :id="uri">' +
@@ -497,22 +516,24 @@ Vue.component('competency', {
     '<button class="inline" v-if="incompetent == false" v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
     ' </span> ' +
     '<a href="#" v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> ' +
-    '<span v-if="canEditSubject">'+
+    '<span v-if="canEditSubject">' +
     '<button class="inline" v-if="isGoal == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="isGoal == false" v-on:click="makeGoal" :title="makeGoalPhrase"><i class="mdi mdi-bullseye" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="isGoal == true" v-on:click="unmakeGoal" :title="unmakeGoalPhrase"><i class="mdi mdi-bullseye-arrow" style="color:green;" aria-hidden="true"></i></button>' +
-    '</span>'+
-    '</span>'+
-    '<span v-if="subject">'+
-    '<button class="inline" v-if="estimatedCompetenceValue == null" v-on:click="getEstimatedCompetence" ><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
+    '</span>' +
+    '</span>' +
+    '<span v-if="subject">' +
+    '<span v-if="frameworkUri">' +
+    '<button class="inline" v-if="computedState == null" v-on:click="getEstimatedCompetence" ><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
     '<button class="inline" v-if="estimatedCompetenceUnknown" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-help-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceIndeterminant" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-flash-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceTrue" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-check-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceFalse" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-diameter-variant" aria-hidden="true"></i></button>' +
-    '</span>'+
+    '<button class="inline" v-if="estimatedCompetenceIndeterminant" style="color:purple;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-flash-circle" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="estimatedCompetenceTrue" style="color:green;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-check-circle" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="estimatedCompetenceFalse" style="color:red;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-diameter-variant" aria-hidden="true"></i></button>' +
+    '</span>' +
+    '</span>' +
     '<span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
     '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
     '<assertion v-for="item in assertionsByOthers" v-bind:key="item.id" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
-    '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :frameworkUri="frameworkUri" :subjectPerson="subjectPerson" :subject="subject"></competency></ul>' +
+    '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :frameworkUri="frameworkUri" :computedState="computedState" :subjectPerson="subjectPerson" :subject="subject"></competency></ul>' +
     '</li>'
 });

@@ -2097,6 +2097,138 @@ PapDependencyDefinitions = stjs.extend(PapDependencyDefinitions, null, [], funct
         this.dependencyDefinitionMap = dependencyDefinitionMap;
     };
 }, {dependencyDefinitionMap: {name: "Map", arguments: [null, "PapDependencyDefinitionBase"]}}, {});
+var EcFrameworkGraph = function() {
+    EcDirectedGraph.call(this);
+    this.metaVerticies = new Object();
+    this.metaEdges = new Object();
+};
+EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(constructor, prototype) {
+    prototype.metaVerticies = null;
+    prototype.metaEdges = null;
+    prototype.addFramework = function(framework, repo, success, failure) {
+        var me = this;
+        repo.multiget(framework.competency.concat(framework.relation), function(data) {
+            var competencyTemplate = new EcCompetency();
+            var alignmentTemplate = new EcAlignment();
+            for (var i = 0; i < data.length; i++) {
+                var d = data[i];
+                if (d.isAny(competencyTemplate.getTypes())) {
+                    var c = EcCompetency.getBlocking(d.id);
+                    me.addCompetency(c);
+                    me.addToMetaStateArray(me.getMetaStateCompetency(c), "framework", framework);
+                } else if (d.isAny(alignmentTemplate.getTypes())) {
+                    var alignment = EcAlignment.getBlocking(d.id);
+                    me.addRelation(alignment);
+                    me.addToMetaStateArray(me.getMetaStateAlignment(alignment), "framework", framework);
+                }
+            }
+            success();
+        }, failure);
+    };
+    prototype.processAssertionsBoolean = function(assertions, success, failure) {
+        var me = this;
+        var eah = new EcAsyncHelper();
+        eah.each(assertions, function(assertion, done) {
+            var competency = EcCompetency.getBlocking(assertion.competency);
+            if (!me.containsVertex(competency)) {
+                done();
+                return;
+            }
+            assertion.getNegativeAsync(function(negative) {
+                me.processAssertionsBooleanPerAssertion(assertion, negative, competency, done, new Array());
+            }, eah.failWithCallback(failure, done));
+        }, function(strings) {
+            success();
+        });
+    };
+    prototype.processAssertionsBooleanPerAssertion = function(assertion, negative, competency, done, visited) {
+        var me = this;
+        if (EcArray.has(visited, competency)) {
+            done();
+            return;
+        }
+        visited.push(competency);
+        if (negative) {
+            var metaState = this.getMetaStateCompetency(competency);
+            this.addToMetaStateArray(metaState, "negativeAssertion", assertion);
+            new EcAsyncHelper().each(me.getOutEdges(competency), function(alignment, callback0) {
+                if (alignment.relationType == Relation.NARROWS) 
+                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
+                 else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
+                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
+                 else 
+                    callback0();
+            }, function(strings) {
+                new EcAsyncHelper().each(me.getInEdges(competency), function(alignment, callback0) {
+                    if (alignment.relationType == Relation.REQUIRES) 
+                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
+                     else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
+                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
+                     else 
+                        callback0();
+                }, function(strings) {
+                    done();
+                });
+            });
+        } else {
+            var metaState = this.getMetaStateCompetency(competency);
+            this.addToMetaStateArray(metaState, "positiveAssertion", assertion);
+            new EcAsyncHelper().each(me.getInEdges(competency), function(alignment, callback0) {
+                if (alignment.relationType == Relation.NARROWS) 
+                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
+                 else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
+                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
+                 else 
+                    callback0();
+            }, function(strings) {
+                new EcAsyncHelper().each(me.getOutEdges(competency), function(alignment, callback0) {
+                    if (alignment.relationType == Relation.REQUIRES) 
+                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
+                     else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
+                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
+                     else 
+                        callback0();
+                }, function(strings) {
+                    done();
+                });
+            });
+        }
+    };
+    prototype.addToMetaStateArray = function(metaState, key, value) {
+        if ((metaState)[key] == null) 
+            (metaState)[key] = new Array();
+        ((metaState)[key]).push(value);
+    };
+    prototype.getMetaStateCompetency = function(c) {
+        if (this.containsVertex(c) == false) 
+            return null;
+        if (this.metaVerticies[c.shortId()] == null) 
+            this.metaVerticies[c.shortId()] = new Object();
+        return this.metaVerticies[c.shortId()];
+    };
+    prototype.getMetaStateAlignment = function(a) {
+        if (this.containsEdge(a) == false) 
+            return null;
+        if (this.metaEdges[a.shortId()] == null) 
+            this.metaEdges[a.shortId()] = new Object();
+        return this.metaEdges[a.shortId()];
+    };
+    prototype.addCompetency = function(competency) {
+        return this.addVertex(competency);
+    };
+    prototype.addRelation = function(alignment) {
+        return this.addEdge(alignment, EcCompetency.getBlocking(alignment.source), EcCompetency.getBlocking(alignment.target));
+    };
+    prototype.addHyperEdge = function(edge, vertices) {
+         throw new RuntimeException("Don't do this.");
+    };
+    prototype.getEdgeType = function(edge) {
+        return edge.relationType;
+    };
+    prototype.getDefaultEdgeType = function() {
+        return EcAlignment.NARROWS;
+    };
+}, {metaVerticies: {name: "Map", arguments: [null, "Object"]}, metaEdges: {name: "Map", arguments: [null, "Object"]}, edges: {name: "Array", arguments: [{name: "Triple", arguments: ["V", "V", "E"]}]}, verticies: {name: "Array", arguments: ["V"]}}, {});
 var NodePacketGraph = function() {
     this.nodePacketList = new Array();
     this.nodePacketMap = {};
@@ -3928,9 +4060,7 @@ FrameworkCollapser = stjs.extend(FrameworkCollapser, null, [], function(construc
             var fc = this;
             repo.multiget(this.buildFrameworkUrlLookups(), function(rlda) {
                 fc.continueFrameworkCollapse(rlda);
-            }, fc.failureCallback, function(rlda) {
-                fc.continueFrameworkCollapse(rlda);
-            });
+            }, fc.failureCallback);
         }
     };
 }, {framework: "EcFramework", competencyArray: {name: "Array", arguments: ["EcCompetency"]}, competencyNodeMap: {name: "Map", arguments: [null, "Node"]}, relationArray: {name: "Array", arguments: ["EcAlignment"]}, frameworkNodeGraph: "NodeGraph", collapsedFrameworkNodePacketGraph: "NodePacketGraph", successCallback: {name: "Callback2", arguments: [null, "NodePacketGraph"]}, failureCallback: {name: "Callback1", arguments: [null]}}, {});
