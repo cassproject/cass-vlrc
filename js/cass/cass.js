@@ -30849,13 +30849,7 @@ EcArray = stjs.extend(EcArray, null, [], function(constructor, prototype) {
      *  @method setAdd
      */
     constructor.setAdd = function(a, o) {
-        var inThere = false;
-        for (var i = 0; i < a.length; i++) 
-            if (a[i] == o) {
-                inThere = true;
-                break;
-            }
-        if (!inThere) 
+        if (!EcArray.has(a, o)) 
             a.push(o);
     };
     /**
@@ -30867,10 +30861,8 @@ EcArray = stjs.extend(EcArray, null, [], function(constructor, prototype) {
      *  @method setAdd
      */
     constructor.setRemove = function(a, o) {
-        for (var i = 0; i < a.length; i++) 
-             while (a[i] == o){
-                a.splice(i, 1);
-            }
+         while (EcArray.has(a, o))
+            a.splice(EcArray.indexOf(a, o), 1);
     };
     /**
      *  Returns true if the array has the value already.
@@ -74668,10 +74660,18 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
         return this.metaEdges[a.shortId()];
     };
     prototype.addCompetency = function(competency) {
+        if (competency == null) 
+            return false;
         return this.addVertex(competency);
     };
     prototype.addRelation = function(alignment) {
-        return this.addEdge(alignment, EcCompetency.getBlocking(alignment.source), EcCompetency.getBlocking(alignment.target));
+        if (alignment == null) 
+            return false;
+        var source = EcCompetency.getBlocking(alignment.source);
+        var target = EcCompetency.getBlocking(alignment.target);
+        if (source == null || target == null) 
+            return false;
+        return this.addEdge(alignment, source, target);
     };
     prototype.addHyperEdge = function(edge, vertices) {
          throw new RuntimeException("Don't do this.");

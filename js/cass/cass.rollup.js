@@ -2214,10 +2214,18 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
         return this.metaEdges[a.shortId()];
     };
     prototype.addCompetency = function(competency) {
+        if (competency == null) 
+            return false;
         return this.addVertex(competency);
     };
     prototype.addRelation = function(alignment) {
-        return this.addEdge(alignment, EcCompetency.getBlocking(alignment.source), EcCompetency.getBlocking(alignment.target));
+        if (alignment == null) 
+            return false;
+        var source = EcCompetency.getBlocking(alignment.source);
+        var target = EcCompetency.getBlocking(alignment.target);
+        if (source == null || target == null) 
+            return false;
+        return this.addEdge(alignment, source, target);
     };
     prototype.addHyperEdge = function(edge, vertices) {
          throw new RuntimeException("Don't do this.");

@@ -103,13 +103,7 @@ EcArray = stjs.extend(EcArray, null, [], function(constructor, prototype) {
      *  @method setAdd
      */
     constructor.setAdd = function(a, o) {
-        var inThere = false;
-        for (var i = 0; i < a.length; i++) 
-            if (a[i] == o) {
-                inThere = true;
-                break;
-            }
-        if (!inThere) 
+        if (!EcArray.has(a, o)) 
             a.push(o);
     };
     /**
@@ -121,10 +115,8 @@ EcArray = stjs.extend(EcArray, null, [], function(constructor, prototype) {
      *  @method setAdd
      */
     constructor.setRemove = function(a, o) {
-        for (var i = 0; i < a.length; i++) 
-             while (a[i] == o){
-                a.splice(i, 1);
-            }
+         while (EcArray.has(a, o))
+            a.splice(EcArray.indexOf(a, o), 1);
     };
     /**
      *  Returns true if the array has the value already.
