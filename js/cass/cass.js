@@ -74641,6 +74641,8 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
         }
     };
     prototype.addToMetaStateArray = function(metaState, key, value) {
+        if (metaState == null) 
+            return;
         if ((metaState)[key] == null) 
             (metaState)[key] = new Array();
         ((metaState)[key]).push(value);
