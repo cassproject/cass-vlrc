@@ -103,7 +103,7 @@ function startVlrc() {
                 }
                 return evidenceString;
             },
-            explain: function (packet, tab, prev,prev2) {
+            explain: function (packet, tab, prev, prev2) {
                 var because = "";
                 if (tab == null) {
                     tab = 0;
@@ -126,7 +126,7 @@ function startVlrc() {
                         because += " with " + eqp.positive.length + " positive assertion.";
                     if (eqp.negative.length > 0)
                         because += " with " + eqp.negative.length + " negative assertion.";
-                    because += this.explain(eqp, tab, null,packet);
+                    because += this.explain(eqp, tab, null, packet);
                 }
                 for (var i = 0; i < packet.subPackets.length; i++) {
                     var eqp = packet.subPackets[i];
@@ -146,7 +146,7 @@ function startVlrc() {
                         }
                     else
                         because += (prev2 !== undefined ? ("\"" + prev2.competency[0].getName() + "\" ") : "\"" + packet.competency[0].getName() + "\" ") + eqp.type._name.replace("RELATION_", "").toLowerCase();
-                    because += this.explain(eqp, tab + 1, packet,prev);
+                    because += this.explain(eqp, tab + 1, packet, prev);
                 }
                 return because;
             }
@@ -224,6 +224,6 @@ function startVlrc() {
 }
 
 window.addEventListener("beforeunload", function (e) {
-	console.log("Saving assertions to localstorage.");
-	localStorage.setItem("assertions", LZString.compress(JSON.stringify(app.assertions)));
+    console.log("Saving assertions to localstorage.");
+    localStorage.setItem("assertions", LZString.compress(JSON.stringify(app.assertions)));
 }, false);
