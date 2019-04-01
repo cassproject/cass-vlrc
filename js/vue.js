@@ -16,17 +16,39 @@ function startVlrc() {
         created: function () {
             $("#app").show();
             this.identities = EcIdentityManager.ids;
-            var assertions = localStorage.getItem("assertions");
-            if (assertions != null) {
-                assertions = JSON.parse(LZString.decompress(assertions));
-                if (assertions == null)
-                    assertions = [];
-                for (var i = 0; i < assertions.length; i++) {
-                    var a = new EcAssertion();
-                    a.copyFrom(assertions[i]);
-                    assertions[i] = a;
-                }
-                this.assertions = assertions;
+            var assertions = [];
+            var request = indexedDB.open("assertions", 1);
+
+            request.onerror = console.error;
+            request.onsuccess = function (event) {
+                var db = event.target.result;
+                var objectStore = db.transaction("assertions").objectStore("assertions");
+
+                objectStore.openCursor().onsuccess = function (event) {
+                    var cursor = event.target.result;
+                    if (cursor) {
+                        var a = new EcAssertion();
+                        a.copyFrom(cursor.value);
+                        assertions.push(a);
+                        cursor.continue();
+                    }
+                    else {
+                        var eah = new EcAsyncHelper();
+                        eah.each(assertions, function (assertion, callback) {
+                                assertion.getAssertionDateAsync(function (date) {
+                                    assertion.assertionDateDecrypted = date;
+                                    callback();
+                                }, callback)
+                            },
+                            function (assertions) {
+                                assertions = assertions.sort(function (a, b) {
+                                    return b.assertionDateDecrypted - a.assertionDateDecrypted;
+                                });
+                                app.assertions = assertions;
+                                console.log("Finished loading assertions. " + app.assertions.length + " loaded.");
+                            });
+                    }
+                };
             }
             EcAssertion.search(repo, "*", function (assertions) {
                 var eah = new EcAsyncHelper();
@@ -41,6 +63,7 @@ function startVlrc() {
                             return b.assertionDateDecrypted - a.assertionDateDecrypted;
                         });
                         app.assertions = assertions;
+                        app.saveAssertionsToIndexedDb();
                     });
             }, console.error, {
                 size: 5000
@@ -49,6 +72,45 @@ function startVlrc() {
         methods: {
             searchGoogle: function () {
                 window.open("https://google.com/search?q=" + app.selectedCompetency.getName(), "lernnit");
+            },
+
+            saveAssertionToIndexedDb: function (a) {
+                console.log("Saving assertion to indexedDB.");
+                var request = indexedDB.open("assertions", 1);
+
+                request.onerror = console.error;
+                request.onupgradeneeded = function (event) {
+                    var db = event.target.result;
+                    db.createObjectStore("assertions", {keyPath: "id"});
+                };
+                request.onsuccess = function (event) {
+                    var db = event.target.result;
+                    var assertionStore = db.transaction("assertions", "readwrite").objectStore("assertions");
+                    assertionStore.put(a);
+                };
+            }
+            ,
+            saveAssertionsToIndexedDb: function () {
+                console.log("Saving assertions to indexedDB.");
+                var request = indexedDB.open("assertions", 1);
+
+                request.onerror = console.error;
+                request.onupgradeneeded = function (event) {
+                    var db = event.target.result;
+
+                    db.createObjectStore("assertions", {keyPath: "id"});
+                };
+                request.onsuccess = function (event) {
+                    var db = event.target.result;
+
+                    var assertionStore = db.transaction("assertions", "readwrite").objectStore("assertions");
+                    assertionStore.clear().onsuccess = function (event) {
+                        app.assertions.forEach(function (assertion) {
+                            assertionStore.put(assertion);
+                        });
+                    }
+                };
+                localStorage.removeItem("assertions");
             },
             addResource: function () {
                 var c = new CreativeWork();
@@ -152,8 +214,6 @@ function startVlrc() {
             }
         },
         watch: {
-            assertions: function (newAssertions, oldAssertions) {
-            },
             inputUrl: function (newUrl) {
                 var me = this;
                 EcRemote.getExpectingObject("https://api.urlmeta.org/", "?url=" + newUrl, function (success) {
@@ -222,8 +282,3 @@ function startVlrc() {
         }
     });
 }
-
-window.addEventListener("beforeunload", function (e) {
-    console.log("Saving assertions to localstorage.");
-    localStorage.setItem("assertions", LZString.compress(JSON.stringify(app.assertions)));
-}, false);
