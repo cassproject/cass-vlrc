@@ -738,11 +738,11 @@ EcEncryptedValue = stjs.extend(EcEncryptedValue, EbacEncryptedValue, [], functio
         if (this.reader == null) {
             this.reader = new Array();
         }
-        for (var i = 0; i < this.reader.length; i++) {
-            if (this.reader[i] == pem) {
+        if (EcArray.has(this.reader, pem)) 
+            return;
+        if (this.owner != null) 
+            if (EcArray.has(this.owner, pem)) 
                 return;
-            }
-        }
         EcArray.setAdd(this.reader, pem);
         var payloadSecret = this.decryptSecret();
         if (payloadSecret == null) {
@@ -779,9 +779,9 @@ EcEncryptedValue = stjs.extend(EcEncryptedValue, EbacEncryptedValue, [], functio
     /**
      *  Adds a reader to the object, if the reader does not exist.
      * 
-     *  @param {EcPk} newReader PK of the new reader.
-     *  @param {Callback0} success   Callback triggered after successful encryption
-     *  @param {Callback1<String>}   failure Callback triggered if error during secret decryption
+     *  @param {EcPk}              newReader PK of the new reader.
+     *  @param {Callback0}         success   Callback triggered after successful encryption
+     *  @param {Callback1<String>} failure Callback triggered if error during secret decryption
      *  @memberOf EcEncryptedValue
      *  @method addReaderAsync
      */
@@ -808,9 +808,9 @@ EcEncryptedValue = stjs.extend(EcEncryptedValue, EbacEncryptedValue, [], functio
     /**
      *  Removes a reader from the object, if the reader does exist.
      * 
-     *  @param {EcPk} oldReader PK of the old reader.
-     *  @param {Callback0} success   Callback triggered after successful encryption
-     *  @param {Callback1<String>}   failure Callback triggered if error during secret decryption
+     *  @param {EcPk}              oldReader PK of the old reader.
+     *  @param {Callback0}         success   Callback triggered after successful encryption
+     *  @param {Callback1<String>} failure Callback triggered if error during secret decryption
      *  @memberOf EcEncryptedValue
      *  @method removeReaderAsync
      */
@@ -879,6 +879,13 @@ EcRepository = stjs.extend(EcRepository, null, [], function(constructor, prototy
      *  @static
      */
     constructor.get = function(url, success, failure) {
+<<<<<<< HEAD
+=======
+        if (url == null) {
+            failure("URL is null. Cannot EcRepository.get");
+            return;
+        }
+>>>>>>> master
         if (url.toLowerCase().indexOf("http") != 0) {
             failure("URL does not begin with http. Cannot EcRepository.get");
             return;
