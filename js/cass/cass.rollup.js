@@ -1913,7 +1913,6 @@ RollupRulePacketGenerator = stjs.extend(RollupRulePacketGenerator, null, [], fun
             this.buildQueryTree(rollupIp);
         return rollupIp;
     };
-<<<<<<< HEAD
     constructor.OperationType = stjs.enumeration("AND", "OR");
 }, {queries: {name: "Array", arguments: [null]}, queryOperations: {name: "Array", arguments: [{name: "Enum", arguments: ["RollupRulePacketGenerator.OperationType"]}]}, ip: "InquiryPacket", ep: "AssertionProcessor"}, {});
 if (!stjs.mainCallDisabled) 
@@ -1931,47 +1930,6 @@ OpenBadgeCoprocessor = stjs.extend(OpenBadgeCoprocessor, AssertionCoprocessor, [
             return;
         }
         var assertions = new Array();
-=======
-}, {dependencyDefinitionMap: {name: "Map", arguments: [null, "PapDependencyDefinitionBase"]}}, {});
-var EcFrameworkGraph = function() {
-    EcDirectedGraph.call(this);
-    this.metaVerticies = new Object();
-    this.metaEdges = new Object();
-    this.competencyMap = new Object();
-    this.edgeMap = new Object();
-    this.dontTryAnyMore = new Object();
-    this.frameworks = new Array();
-};
-EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(constructor, prototype) {
-    prototype.metaVerticies = null;
-    prototype.metaEdges = null;
-    prototype.competencyMap = null;
-    prototype.edgeMap = null;
-    prototype.dontTryAnyMore = null;
-    prototype.frameworks = null;
-    prototype.addFramework = function(framework, repo, success, failure) {
-        this.frameworks.push(framework);
-        var me = this;
-        repo.multiget(framework.competency.concat(framework.relation), function(data) {
-            var competencyTemplate = new EcCompetency();
-            var alignmentTemplate = new EcAlignment();
-            for (var i = 0; i < data.length; i++) {
-                var d = data[i];
-                if (d.isAny(competencyTemplate.getTypes())) {
-                    var c = EcCompetency.getBlocking(d.id);
-                    me.addCompetency(c);
-                    me.addToMetaStateArray(me.getMetaStateCompetency(c), "framework", framework);
-                } else if (d.isAny(alignmentTemplate.getTypes())) {
-                    var alignment = EcAlignment.getBlocking(d.id);
-                    me.addRelation(alignment);
-                    me.addToMetaStateArray(me.getMetaStateAlignment(alignment), "framework", framework);
-                }
-            }
-            success();
-        }, failure);
-    };
-    prototype.processAssertionsBoolean = function(assertions, success, failure) {
->>>>>>> master
         var me = this;
         var eah = new EcAsyncHelper();
         eah.each(me.assertionProcessor.repositories, function(currentRepository, callback0) {
@@ -2120,7 +2078,6 @@ NodeGraph = stjs.extend(NodeGraph, null, [], function(constructor, prototype) {
     prototype.getRelationListForNode = function(n) {
         return this.relationMap[n.getId()];
     };
-<<<<<<< HEAD
     prototype.getNarrowsIsRequiredByEqualsRelationListForNode = function(n) {
         var retList = new Array();
         if (this.relationMap[n.getId()] != null) {
@@ -2165,65 +2122,6 @@ NodeGraph = stjs.extend(NodeGraph, null, [], function(constructor, prototype) {
         if (this.relationMap[n.getId()] == null) 
             return false;
         return true;
-=======
-    prototype.getMetaStateCompetency = function(c) {
-        var result = this.metaVerticies[c.shortId()];
-        if (result == null) {
-            if (this.containsVertex(c) == false) 
-                return null;
-            if (this.metaVerticies[c.shortId()] == null) 
-                this.metaVerticies[c.shortId()] = result = new Object();
-        }
-        return result;
-    };
-    prototype.getMetaStateAlignment = function(a) {
-        var result = this.metaEdges[a.shortId()];
-        if (result == null) {
-            if (this.containsEdge(a) == false) 
-                return null;
-            if (this.metaEdges[a.shortId()] == null) 
-                this.metaEdges[a.shortId()] = result = new Object();
-        }
-        return result;
-    };
-    prototype.containsVertex = function(competency) {
-        return (this.competencyMap)[competency.shortId()] != null;
-    };
-    prototype.containsEdge = function(competency) {
-        return (this.edgeMap)[competency.shortId()] != null;
-    };
-    prototype.addCompetency = function(competency) {
-        if (competency == null) 
-            return false;
-        if (this.containsVertex(competency)) 
-            return false;
-        (this.competencyMap)[competency.shortId()] = competency;
-        (this.competencyMap)[competency.id] = competency;
-        return this.addVertex(competency);
-    };
-    prototype.addRelation = function(alignment) {
-        if (alignment == null) 
-            return false;
-        if (this.containsEdge(alignment)) 
-            return false;
-        var source = (this.competencyMap)[alignment.source];
-        if (source == null && (this.dontTryAnyMore)[alignment.source] != null) 
-            return false;
-        if (source == null) 
-            source = EcCompetency.getBlocking(alignment.source);
-        if (source == null) 
-            (this.dontTryAnyMore)[alignment.source] = "";
-        var target = (this.competencyMap)[alignment.target];
-        if (target == null && (this.dontTryAnyMore)[alignment.target] != null) 
-            return false;
-        if (target == null) 
-            target = EcCompetency.getBlocking(alignment.target);
-        if (target == null) 
-            (this.dontTryAnyMore)[alignment.target] = "";
-        if (source == null || target == null) 
-            return false;
-        return this.addEdgeUnsafely(alignment, source, target);
->>>>>>> master
     };
     prototype.doesRelationAlreadyExist = function(nodeRelation, nodeRelationList) {
         var nr;
@@ -2294,11 +2192,7 @@ NodeGraph = stjs.extend(NodeGraph, null, [], function(constructor, prototype) {
         }
         return ret;
     };
-<<<<<<< HEAD
 }, {nodeList: {name: "Array", arguments: ["Node"]}, nodeMap: {name: "Map", arguments: [null, "Node"]}, relationList: {name: "Array", arguments: ["NodeRelation"]}, relationMap: {name: "Map", arguments: [null, {name: "Array", arguments: ["NodeRelation"]}]}}, {});
-=======
-}, {metaVerticies: {name: "Map", arguments: [null, "Object"]}, metaEdges: {name: "Map", arguments: [null, "Object"]}, competencyMap: "Object", edgeMap: "Object", dontTryAnyMore: "Object", frameworks: {name: "Array", arguments: ["EcFramework"]}, edges: {name: "Array", arguments: [{name: "Triple", arguments: ["V", "V", "E"]}]}, verticies: {name: "Array", arguments: ["V"]}}, {});
->>>>>>> master
 var NodePacketGraph = function() {
     this.nodePacketList = new Array();
     this.nodePacketMap = {};
@@ -2715,6 +2609,7 @@ var EcFrameworkGraph = function() {
     this.competencyMap = new Object();
     this.edgeMap = new Object();
     this.dontTryAnyMore = new Object();
+    this.frameworks = new Array();
 };
 EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(constructor, prototype) {
     prototype.metaVerticies = null;
@@ -2722,7 +2617,9 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
     prototype.competencyMap = null;
     prototype.edgeMap = null;
     prototype.dontTryAnyMore = null;
+    prototype.frameworks = null;
     prototype.addFramework = function(framework, repo, success, failure) {
+        this.frameworks.push(framework);
         var me = this;
         repo.multiget(framework.competency.concat(framework.relation), function(data) {
             var competencyTemplate = new EcCompetency();
@@ -2885,7 +2782,7 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
     prototype.getDefaultEdgeType = function() {
         return EcAlignment.NARROWS;
     };
-}, {metaVerticies: {name: "Map", arguments: [null, "Object"]}, metaEdges: {name: "Map", arguments: [null, "Object"]}, competencyMap: "Object", edgeMap: "Object", dontTryAnyMore: "Object", edges: {name: "Array", arguments: [{name: "Triple", arguments: ["V", "V", "E"]}]}, verticies: {name: "Array", arguments: ["V"]}}, {});
+}, {metaVerticies: {name: "Map", arguments: [null, "Object"]}, metaEdges: {name: "Map", arguments: [null, "Object"]}, competencyMap: "Object", edgeMap: "Object", dontTryAnyMore: "Object", frameworks: {name: "Array", arguments: ["EcFramework"]}, edges: {name: "Array", arguments: [{name: "Triple", arguments: ["V", "V", "E"]}]}, verticies: {name: "Array", arguments: ["V"]}}, {});
 var CompetencyGraphBuilder = function() {
     this.repositories = new Array();
     this.subjects = new Array();
@@ -3793,10 +3690,118 @@ TestGraphBuilder = stjs.extend(TestGraphBuilder, null, [], function(constructor,
         graph.createImpliedRelations();
         return graph;
     };
-<<<<<<< HEAD
 }, {}, {});
-=======
-}, {competencyIndex: {name: "Map", arguments: [null, null]}, values: {name: "Array", arguments: [null]}, dependencies: {name: "Map", arguments: [null, {name: "Map", arguments: [null, {name: "Array", arguments: ["PapDependency"]}]}]}, assertions: {name: "Map", arguments: [null, {name: "Array", arguments: ["PapAssertion"]}]}, dependencyDefs: "PapDependencyDefinitions", settings: "PapSettings", inputGraph: "CompetencyGraph", competencyNetwork: "PapCompetencyNetwork", competencePrediction: "PapNetworkPrediction"}, {});
+var CyclicGraphCollapser = function() {};
+CyclicGraphCollapser = stjs.extend(CyclicGraphCollapser, null, [], function(constructor, prototype) {
+    prototype.nodesProcessed = null;
+    prototype.visitedNodes = null;
+    prototype.buildNarrowsIsRequiredByEqualsMap = function(graph) {
+        var relationMap = new NodeRelationMap();
+        var n;
+        var nodeList = graph.getNodeList();
+        for (var i = 0; i < nodeList.length; i++) {
+            n = nodeList[i];
+            relationMap.addNodeRelations(n, graph.getNarrowsIsRequiredByEqualsRelationListForNode(n));
+        }
+        return relationMap;
+    };
+    prototype.buildBroadensRequiresEqualsMap = function(graph) {
+        var relationMap = new NodeRelationMap();
+        var n;
+        var nodeList = graph.getNodeList();
+        for (var i = 0; i < nodeList.length; i++) {
+            n = nodeList[i];
+            relationMap.addNodeRelations(n, graph.getBroadensRequiresEqualsRelationListForNode(n));
+        }
+        return relationMap;
+    };
+    prototype.mergeEquivalentNodes = function(relationMap, npg) {
+        var nodeList = relationMap.getNodeList();
+        var nodeRelations;
+        var nr;
+        for (var i = 0; i < nodeList.length; i++) {
+            nodeRelations = relationMap.getRelationsForNode(nodeList[i]);
+            for (var j = 0; j < nodeRelations.length; j++) {
+                nr = nodeRelations[j];
+                if (nr.getType() == RelationType.RELATION_TYPE.IS_EQUIVALENT_TO) {
+                    npg.mergeNodePackets(npg.getNodePacketForNode(nr.getSource()), npg.getNodePacketForNode(nr.getTarget()));
+                }
+            }
+        }
+    };
+    prototype.mergeCyclicNodes = function(startCycleNode, npg) {
+        var startingIdx = ArrayUtil.arrayLastIndexOf(this.visitedNodes, startCycleNode);
+        var partOfCycleNode;
+        for (var i = startingIdx + 1; i < this.visitedNodes.length; i++) {
+            partOfCycleNode = this.visitedNodes[i];
+            if (partOfCycleNode != startCycleNode) {
+                npg.mergeNodePackets(npg.getNodePacketForNode(startCycleNode), npg.getNodePacketForNode(partOfCycleNode));
+            }
+        }
+    };
+    prototype.findCycles = function(n, relationMap, npg) {
+        if (ArrayUtil.arrayContains(this.visitedNodes, n)) {
+            this.mergeCyclicNodes(n, npg);
+        } else {
+            this.nodesProcessed.push(n);
+            var relationsToVisit = relationMap.getRelationsForNode(n);
+            if (relationsToVisit == null || relationsToVisit.length == 0) 
+                return;
+             else {
+                this.visitedNodes.push(n);
+                var nr;
+                for (var i = 0; i < relationsToVisit.length; i++) {
+                    nr = relationsToVisit[i];
+                    this.findCycles(nr.getTarget(), relationMap, npg);
+                }
+                this.visitedNodes = ArrayUtil.arrayRemove(this.visitedNodes, n);
+            }
+        }
+    };
+    prototype.startFindCycles = function(relationMap, npg) {
+        var nodeList = relationMap.getNodeList();
+        for (var i = 0; i < nodeList.length; i++) {
+            this.visitedNodes = new Array();
+            this.findCycles(nodeList[i], relationMap, npg);
+        }
+    };
+    prototype.buildNodePacketGraph = function(relationMap) {
+        var npg = new NodePacketGraph();
+        npg.initNodePacketGraph(relationMap.getNodeList());
+        this.mergeEquivalentNodes(relationMap, npg);
+        this.nodesProcessed = new Array();
+        this.startFindCycles(relationMap, npg);
+        return npg;
+    };
+    prototype.mergeNodePacketGraphs = function(nirbeNpg, breNpg) {
+        var mergedNpg = nirbeNpg;
+        var np;
+        var nodePacketList = breNpg.getNodePacketList();
+        for (var i = 0; i < nodePacketList.length; i++) {
+            np = nodePacketList[i];
+            if (np.getNodeCount() > 1) {
+                var targetNodePacket = mergedNpg.getNodePacketForNode(np.getNodeList()[0]);
+                for (var j = 1; j < np.getNodeList().length; j++) {
+                    mergedNpg.mergeNodePackets(targetNodePacket, mergedNpg.getNodePacketForNode(np.getNodeList()[j]));
+                }
+            }
+        }
+        return mergedNpg;
+    };
+    prototype.collapseGraph = function(graph) {
+        try {
+            var nirbeNrm = this.buildNarrowsIsRequiredByEqualsMap(graph);
+            var nirbeNpg = this.buildNodePacketGraph(nirbeNrm);
+            var breNrm = this.buildBroadensRequiresEqualsMap(graph);
+            var breNpg = this.buildNodePacketGraph(breNrm);
+            var finalNodePacketGraph = this.mergeNodePacketGraphs(nirbeNpg, breNpg);
+            finalNodePacketGraph.buildPacketRelationsFromNodeRelations(graph.getRelationList());
+            return finalNodePacketGraph;
+        }catch (e) {
+             throw e;
+        }
+    };
+}, {nodesProcessed: {name: "Array", arguments: ["Node"]}, visitedNodes: {name: "Array", arguments: ["Node"]}}, {});
 /**
  *  Processor used in determining all the competencies a for which a user has assertions.
  *  Utilizes EcFrameworkGraph
@@ -4013,118 +4018,6 @@ ProfileProcessor = stjs.extend(ProfileProcessor, null, [], function(constructor,
         this.fetchProfileAssertions();
     };
 }, {profilePkPems: {name: "Array", arguments: [null]}, repo: "EcRepository", successCallback: "Callback0", failureCallback: {name: "Callback1", arguments: [null]}, assertedFrameworkGraphs: {name: "Array", arguments: ["EcFrameworkGraph"]}, unfilteredAssertionList: {name: "Array", arguments: ["EcAssertion"]}, profileAssertions: {name: "Array", arguments: ["EcAssertion"]}, addedAssertionIds: {name: "Array", arguments: [null]}, assertionCompetencies: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
-var CyclicGraphCollapser = function() {};
-CyclicGraphCollapser = stjs.extend(CyclicGraphCollapser, null, [], function(constructor, prototype) {
-    prototype.nodesProcessed = null;
-    prototype.visitedNodes = null;
-    prototype.buildNarrowsIsRequiredByEqualsMap = function(graph) {
-        var relationMap = new NodeRelationMap();
-        var n;
-        var nodeList = graph.getNodeList();
-        for (var i = 0; i < nodeList.length; i++) {
-            n = nodeList[i];
-            relationMap.addNodeRelations(n, graph.getNarrowsIsRequiredByEqualsRelationListForNode(n));
-        }
-        return relationMap;
-    };
-    prototype.buildBroadensRequiresEqualsMap = function(graph) {
-        var relationMap = new NodeRelationMap();
-        var n;
-        var nodeList = graph.getNodeList();
-        for (var i = 0; i < nodeList.length; i++) {
-            n = nodeList[i];
-            relationMap.addNodeRelations(n, graph.getBroadensRequiresEqualsRelationListForNode(n));
-        }
-        return relationMap;
-    };
-    prototype.mergeEquivalentNodes = function(relationMap, npg) {
-        var nodeList = relationMap.getNodeList();
-        var nodeRelations;
-        var nr;
-        for (var i = 0; i < nodeList.length; i++) {
-            nodeRelations = relationMap.getRelationsForNode(nodeList[i]);
-            for (var j = 0; j < nodeRelations.length; j++) {
-                nr = nodeRelations[j];
-                if (nr.getType() == RelationType.RELATION_TYPE.IS_EQUIVALENT_TO) {
-                    npg.mergeNodePackets(npg.getNodePacketForNode(nr.getSource()), npg.getNodePacketForNode(nr.getTarget()));
-                }
-            }
-        }
-    };
-    prototype.mergeCyclicNodes = function(startCycleNode, npg) {
-        var startingIdx = ArrayUtil.arrayLastIndexOf(this.visitedNodes, startCycleNode);
-        var partOfCycleNode;
-        for (var i = startingIdx + 1; i < this.visitedNodes.length; i++) {
-            partOfCycleNode = this.visitedNodes[i];
-            if (partOfCycleNode != startCycleNode) {
-                npg.mergeNodePackets(npg.getNodePacketForNode(startCycleNode), npg.getNodePacketForNode(partOfCycleNode));
-            }
-        }
-    };
-    prototype.findCycles = function(n, relationMap, npg) {
-        if (ArrayUtil.arrayContains(this.visitedNodes, n)) {
-            this.mergeCyclicNodes(n, npg);
-        } else {
-            this.nodesProcessed.push(n);
-            var relationsToVisit = relationMap.getRelationsForNode(n);
-            if (relationsToVisit == null || relationsToVisit.length == 0) 
-                return;
-             else {
-                this.visitedNodes.push(n);
-                var nr;
-                for (var i = 0; i < relationsToVisit.length; i++) {
-                    nr = relationsToVisit[i];
-                    this.findCycles(nr.getTarget(), relationMap, npg);
-                }
-                this.visitedNodes = ArrayUtil.arrayRemove(this.visitedNodes, n);
-            }
-        }
-    };
-    prototype.startFindCycles = function(relationMap, npg) {
-        var nodeList = relationMap.getNodeList();
-        for (var i = 0; i < nodeList.length; i++) {
-            this.visitedNodes = new Array();
-            this.findCycles(nodeList[i], relationMap, npg);
-        }
-    };
-    prototype.buildNodePacketGraph = function(relationMap) {
-        var npg = new NodePacketGraph();
-        npg.initNodePacketGraph(relationMap.getNodeList());
-        this.mergeEquivalentNodes(relationMap, npg);
-        this.nodesProcessed = new Array();
-        this.startFindCycles(relationMap, npg);
-        return npg;
-    };
-    prototype.mergeNodePacketGraphs = function(nirbeNpg, breNpg) {
-        var mergedNpg = nirbeNpg;
-        var np;
-        var nodePacketList = breNpg.getNodePacketList();
-        for (var i = 0; i < nodePacketList.length; i++) {
-            np = nodePacketList[i];
-            if (np.getNodeCount() > 1) {
-                var targetNodePacket = mergedNpg.getNodePacketForNode(np.getNodeList()[0]);
-                for (var j = 1; j < np.getNodeList().length; j++) {
-                    mergedNpg.mergeNodePackets(targetNodePacket, mergedNpg.getNodePacketForNode(np.getNodeList()[j]));
-                }
-            }
-        }
-        return mergedNpg;
-    };
-    prototype.collapseGraph = function(graph) {
-        try {
-            var nirbeNrm = this.buildNarrowsIsRequiredByEqualsMap(graph);
-            var nirbeNpg = this.buildNodePacketGraph(nirbeNrm);
-            var breNrm = this.buildBroadensRequiresEqualsMap(graph);
-            var breNpg = this.buildNodePacketGraph(breNrm);
-            var finalNodePacketGraph = this.mergeNodePacketGraphs(nirbeNpg, breNpg);
-            finalNodePacketGraph.buildPacketRelationsFromNodeRelations(graph.getRelationList());
-            return finalNodePacketGraph;
-        }catch (e) {
-             throw e;
-        }
-    };
-}, {nodesProcessed: {name: "Array", arguments: ["Node"]}, visitedNodes: {name: "Array", arguments: ["Node"]}}, {});
 var CombinatorAssertionProcessor = function() {
     AssertionProcessor.call(this);
 };

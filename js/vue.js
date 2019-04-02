@@ -18,8 +18,8 @@ function startVlrc() {
             this.identities = EcIdentityManager.ids;
             var assertions = [];
             var request = indexedDB.open("assertions", 1);
-
             request.onerror = console.error;
+            request.onupgradeneeded = this.indexedDbCreate;
             request.onsuccess = function (event) {
                 var db = event.target.result;
                 var objectStore = db.transaction("assertions").objectStore("assertions");
@@ -50,39 +50,46 @@ function startVlrc() {
                     }
                 };
             }
-            EcAssertion.search(repo, "*", function (assertions) {
-                var eah = new EcAsyncHelper();
-                eah.each(assertions, function (assertion, callback) {
-                        assertion.getAssertionDateAsync(function (date) {
-                            assertion.assertionDateDecrypted = date;
-                            callback();
-                        }, callback)
-                    },
-                    function (assertions) {
-                        assertions = assertions.sort(function (a, b) {
-                            return b.assertionDateDecrypted - a.assertionDateDecrypted;
-                        });
-                        app.assertions = assertions;
-                        app.saveAssertionsToIndexedDb();
-                    });
-            }, console.error, {
-                size: 5000
-            });
         },
         methods: {
             searchGoogle: function () {
                 window.open("https://google.com/search?q=" + app.selectedCompetency.getName(), "lernnit");
             },
 
+            searchForAssertions: function(count){
+                EcAssertion.search(repo, "\""+this.me+"\"", function (assertions) {
+                    var eah = new EcAsyncHelper();
+                    eah.each(assertions, function (assertion, callback) {
+                            if (assertion.assertionDateDecrypted != null)
+                                callback();
+                            else
+                            assertion.getAssertionDateAsync(function (date) {
+                                assertion.assertionDateDecrypted = date;
+                                callback();
+                            }, callback)
+                        },
+                        function (assertions) {
+                            assertions = assertions.sort(function (a, b) {
+                                return b.assertionDateDecrypted - a.assertionDateDecrypted;
+                            });
+                            app.assertions = assertions;
+                            app.saveAssertionsToIndexedDb();
+                        });
+                }, console.error, {
+                    sort: '[ { "@version": {"order" : "desc" , "missing" : "_last"}} ]',
+                    size: count
+                });
+            },
+            indexedDbCreate: function(event){
+                var db = event.target.result;
+                db.createObjectStore("assertions", {keyPath: "id"});
+            },
             saveAssertionToIndexedDb: function (a) {
                 console.log("Saving assertion to indexedDB.");
                 var request = indexedDB.open("assertions", 1);
 
                 request.onerror = console.error;
-                request.onupgradeneeded = function (event) {
-                    var db = event.target.result;
-                    db.createObjectStore("assertions", {keyPath: "id"});
-                };
+                request.onupgradeneeded = this.indexedDbCreate;
                 request.onsuccess = function (event) {
                     var db = event.target.result;
                     var assertionStore = db.transaction("assertions", "readwrite").objectStore("assertions");
@@ -95,11 +102,7 @@ function startVlrc() {
                 var request = indexedDB.open("assertions", 1);
 
                 request.onerror = console.error;
-                request.onupgradeneeded = function (event) {
-                    var db = event.target.result;
-
-                    db.createObjectStore("assertions", {keyPath: "id"});
-                };
+                request.onupgradeneeded = this.indexedDbCreate;
                 request.onsuccess = function (event) {
                     var db = event.target.result;
 
@@ -214,6 +217,9 @@ function startVlrc() {
             }
         },
         watch: {
+            me: function(newMe,oldMe){
+                this.searchForAssertions(5000);
+            },
             inputUrl: function (newUrl) {
                 var me = this;
                 EcRemote.getExpectingObject("https://api.urlmeta.org/", "?url=" + newUrl, function (success) {

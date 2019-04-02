@@ -35639,7 +35639,6 @@ define(['require', 'module', './aes', './md', './prng', './util'], function() {
 /**
  *  @author Fritz
  */
-<<<<<<< HEAD
 var EcCrypto = function() {};
 EcCrypto = stjs.extend(EcCrypto, null, [], function(constructor, prototype) {
     constructor.caching = false;
@@ -35648,298 +35647,6 @@ EcCrypto = stjs.extend(EcCrypto, null, [], function(constructor, prototype) {
         var m = forge.md.md5.create();
         m.update(s);
         return m.digest().toHex();
-=======
-var EcDirectedGraph = function() {
-    this.edges = new Array();
-    this.verticies = new Array();
-};
-EcDirectedGraph = stjs.extend(EcDirectedGraph, null, [Graph], function(constructor, prototype) {
-    prototype.edges = null;
-    prototype.verticies = null;
-    prototype.getEdges = function() {
-        var results = new Array();
-        for (var i = 0; i < this.edges.length; i++) 
-            results[i] = this.edges[i].edge;
-        return results;
-    };
-    prototype.getVertices = function() {
-        var results = new Array();
-        for (var i = 0; i < this.verticies.length; i++) 
-            results[i] = this.verticies[i];
-        return results;
-    };
-    prototype.containsVertex = function(vertex) {
-        for (var i = 0; i < this.verticies.length; i++) 
-            if (vertex.equals(this.verticies[i])) 
-                return true;
-        return false;
-    };
-    prototype.containsEdge = function(edge) {
-        for (var i = 0; i < this.edges.length; i++) 
-            if (edge.equals(this.edges[i].edge)) 
-                return true;
-        return false;
-    };
-    prototype.getEdgeCount = function() {
-        return this.edges.length;
-    };
-    prototype.getVertexCount = function() {
-        return this.verticies.length;
-    };
-    prototype.getNeighbors = function(vertex) {
-        var results = new Array();
-        for (var i = 0; i < this.edges.length; i++) {
-            if (vertex.equals(this.edges[i].source)) 
-                results.push(this.edges[i].destination);
-             else if (vertex.equals(this.edges[i].destination)) 
-                results.push(this.edges[i].source);
-        }
-        EcArray.removeDuplicates(results);
-        return results;
-    };
-    prototype.getIncidentEdges = function(vertex) {
-        var results = new Array();
-        for (var i = 0; i < this.edges.length; i++) {
-            if (vertex.equals(this.edges[i].source)) 
-                results.push(this.edges[i].edge);
-             else if (vertex.equals(this.edges[i].destination)) 
-                results.push(this.edges[i].edge);
-        }
-        EcArray.removeDuplicates(results);
-        return results;
-    };
-    prototype.getIncidentVertices = function(edge) {
-        var results = new Array();
-        for (var i = 0; i < this.edges.length; i++) {
-            if (edge.equals(this.edges[i].edge)) {
-                results.push(this.edges[i].source);
-                results.push(this.edges[i].destination);
-            }
-        }
-        EcArray.removeDuplicates(results);
-        return results;
-    };
-    prototype.findEdge = function(v1, v2) {
-        for (var i = 0; i < this.edges.length; i++) {
-            if (v1.equals(this.edges[i].source) && v2.equals(this.edges[i].destination)) 
-                return this.edges[i].edge;
-            if (v1.equals(this.edges[i].destination) && v2.equals(this.edges[i].source)) 
-                return this.edges[i].edge;
-        }
-        return null;
-    };
-    prototype.findEdgeSet = function(v1, v2) {
-        var results = new Array();
-        for (var i = 0; i < this.edges.length; i++) {
-            if (v1.equals(this.edges[i].source) && v2.equals(this.edges[i].destination)) 
-                results.push(this.edges[i].edge);
-            if (v1.equals(this.edges[i].destination) && v2.equals(this.edges[i].source)) 
-                results.push(this.edges[i].edge);
-        }
-        return results;
-    };
-    prototype.addVertex = function(vertex) {
-        this.verticies.push(vertex);
-        return true;
-    };
-    prototype.addVertexSafely = function(vertex) {
-        if (EcArray.has(this.verticies, vertex)) 
-            return false;
-        this.verticies.push(vertex);
-        return true;
-    };
-    prototype.removeVertex = function(vertex) {
-        var indexOf = EcArray.indexOf(this.verticies, vertex);
-        if (indexOf != -1) {
-            for (var i = 0; i < this.edges.length; i++) {
-                if (this.edges[i].source.equals(vertex) || this.edges[i].destination.equals(vertex)) {
-                    this.edges.splice(i, 1);
-                    i--;
-                }
-            }
-            this.verticies.splice(indexOf, 1);
-            return true;
-        }
-        return false;
-    };
-    prototype.removeEdge = function(edge) {
-        var success = false;
-        for (var i = 0; i < this.edges.length; i++) {
-            if (this.edges[i].edge.equals(edge)) {
-                this.edges.splice(i, 1);
-                i--;
-                success = true;
-            }
-        }
-        return success;
-    };
-    prototype.isNeighbor = function(v1, v2) {
-        for (var i = 0; i < this.edges.length; i++) {
-            if (v1.equals(this.edges[i].source) && v2.equals(this.edges[i].destination)) 
-                return true;
-             else if (v1.equals(this.edges[i].destination) && v2.equals(this.edges[i].source)) 
-                return true;
-        }
-        return false;
-    };
-    prototype.isIncident = function(vertex, edge) {
-        for (var i = 0; i < this.edges.length; i++) {
-            if ((vertex.equals(this.edges[i].source) || vertex.equals(this.edges[i].destination)) && edge.equals(this.edges[i].edge)) 
-                return true;
-        }
-        return false;
-    };
-    prototype.degree = function(vertex) {
-        var count = 0;
-        for (var i = 0; i < this.edges.length; i++) {
-            if (vertex.equals(this.edges[i].source) || vertex.equals(this.edges[i].destination)) 
-                count++;
-        }
-        return count;
-    };
-    prototype.getNeighborCount = function(vertex) {
-        return this.getNeighbors(vertex).length;
-    };
-    prototype.getIncidentCount = function(edge) {
-        return this.getIncidentVertices(edge).length;
-    };
-    prototype.getEdgeType = function(edge) {};
-    prototype.getDefaultEdgeType = function() {};
-    prototype.getEdgesOfType = function(edge_type) {
-        var results = new Array();
-        for (var i = 0; i < this.edges.length; i++) {
-            if (this.getEdgeType(this.edges[i].edge) == edge_type) 
-                results.push(this.edges[i].edge);
-        }
-        return results;
-    };
-    prototype.getEdgeCountOfType = function(edge_type) {
-        return this.getEdgesOfType(edge_type).length;
-    };
-    prototype.getInEdges = function(vertex) {
-        var results = new Array();
-        for (var i = 0; i < this.edges.length; i++) {
-            if (vertex.equals(this.edges[i].destination)) 
-                results.push(this.edges[i].edge);
-        }
-        EcArray.removeDuplicates(results);
-        return results;
-    };
-    prototype.getOutEdges = function(vertex) {
-        var results = new Array();
-        for (var i = 0; i < this.edges.length; i++) {
-            if (vertex.equals(this.edges[i].source)) 
-                results.push(this.edges[i].edge);
-        }
-        EcArray.removeDuplicates(results);
-        return results;
-    };
-    prototype.inDegree = function(vertex) {
-        return this.getInEdges(vertex).length;
-    };
-    prototype.outDegree = function(vertex) {
-        return this.getOutEdges(vertex).length;
-    };
-    prototype.getSource = function(directed_edge) {
-        for (var i = 0; i < this.edges.length; i++) {
-            if (directed_edge.equals(this.edges[i].edge)) 
-                return this.edges[i].source;
-        }
-        return null;
-    };
-    prototype.getDest = function(directed_edge) {
-        for (var i = 0; i < this.edges.length; i++) {
-            if (directed_edge.equals(this.edges[i].edge)) 
-                return this.edges[i].destination;
-        }
-        return null;
-    };
-    prototype.getPredecessors = function(vertex) {
-        var results = new Array();
-        for (var i = 0; i < this.edges.length; i++) {
-            if (vertex.equals(this.edges[i].destination)) 
-                results.push(this.edges[i].source);
-        }
-        EcArray.removeDuplicates(results);
-        return results;
-    };
-    prototype.getSuccessors = function(vertex) {
-        var results = new Array();
-        for (var i = 0; i < this.edges.length; i++) {
-            if (vertex.equals(this.edges[i].source)) 
-                results.push(this.edges[i].destination);
-        }
-        EcArray.removeDuplicates(results);
-        return results;
-    };
-    prototype.isPredecessor = function(v1, v2) {
-        for (var i = 0; i < this.edges.length; i++) {
-            if (v1.equals(this.edges[i].destination)) 
-                if (v2.equals(this.edges[i].source)) 
-                    return true;
-        }
-        return false;
-    };
-    prototype.isSuccessor = function(v1, v2) {
-        for (var i = 0; i < this.edges.length; i++) {
-            if (v2.equals(this.edges[i].destination)) 
-                if (v1.equals(this.edges[i].source)) 
-                    return true;
-        }
-        return false;
-    };
-    prototype.getPredecessorCount = function(vertex) {
-        return this.getPredecessors(vertex).length;
-    };
-    prototype.getSuccessorCount = function(vertex) {
-        return this.getSuccessors(vertex).length;
-    };
-    prototype.isSource = function(vertex, edge) {
-        for (var i = 0; i < this.edges.length; i++) {
-            if (edge.equals(this.edges[i].edge)) 
-                if (vertex.equals(this.edges[i].source)) 
-                    return true;
-        }
-        return false;
-    };
-    prototype.isDest = function(vertex, edge) {
-        for (var i = 0; i < this.edges.length; i++) {
-            if (edge.equals(this.edges[i].edge)) 
-                if (vertex.equals(this.edges[i].destination)) 
-                    return true;
-        }
-        return false;
-    };
-    prototype.addEdge = function(e, v1, v2) {
-        this.addVertexSafely(v1);
-        this.addVertexSafely(v2);
-        var t = new Triple();
-        t.source = v1;
-        t.destination = v2;
-        t.edge = e;
-        this.edges.push(t);
-        return true;
-    };
-    prototype.addEdgeUnsafely = function(e, v1, v2) {
-        var t = new Triple();
-        t.source = v1;
-        t.destination = v2;
-        t.edge = e;
-        this.edges.push(t);
-        return true;
-    };
-    prototype.addEdgeSafely = function(e, v1, v2) {
-        this.addVertexSafely(v1);
-        this.addVertexSafely(v2);
-        var t = new Triple();
-        t.source = v1;
-        t.destination = v2;
-        t.edge = e;
-        if (EcArray.has(this.edges, t)) 
-            return false;
-        this.edges.push(t);
-        return true;
->>>>>>> master
     };
     constructor.sha256 = function(s) {
         var m = forge.md.sha256.create();
@@ -43863,7 +43570,6 @@ Organization = stjs.extend(Organization, Thing, [], function(constructor, protot
      *  @property faxNumber
      *  @type Text
      */
-<<<<<<< HEAD
     prototype.faxNumber = null;
     /**
      *  Schema.org/areaServed
@@ -43874,30 +43580,6 @@ Organization = stjs.extend(Organization, Thing, [], function(constructor, protot
      */
     prototype.areaServed = null;
 }, {serviceArea: "GeoShape", address: "PostalAddress", funder: "Person", memberOf: "Organization", subOrganization: "Organization", hasOfferCatalog: "OfferCatalog", reviews: "Review", members: "Organization", aggregateRating: "AggregateRating", makesOffer: "Offer", contactPoints: "ContactPoint", seeks: "Demand", member: "Organization", founders: "Person", alumni: "Person", events: "Event", logo: "ImageObject", employees: "Person", department: "Organization", contactPoint: "ContactPoint", parentOrganization: "Organization", employee: "Person", numberOfEmployees: "QuantitativeValue", hasPOS: "Place", review: "Review", foundingLocation: "Place", owns: "OwnershipInfo", event: "Event", founder: "Person", sponsor: "Organization", location: "PostalAddress", brand: "Organization", areaServed: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-    prototype.performer = null;
-}, {about: "Thing", funder: "Person", workFeatured: "CreativeWork", audience: "Audience", actor: "Person", performers: "Organization", contributor: "Organization", organizer: "Person", attendees: "Person", aggregateRating: "AggregateRating", subEvent: "Event", subEvents: "Event", offers: "Offer", attendee: "Organization", workPerformed: "CreativeWork", eventStatus: "EventStatusType", director: "Person", superEvent: "Event", duration: "Duration", translator: "Person", inLanguage: "Language", review: "Review", sponsor: "Organization", location: "PostalAddress", recordedIn: "CreativeWork", composer: "Organization", performer: "Person", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Schema.org/Residence
- *  The place where a person lives.
- * 
- *  @author schema.org
- *  @class Residence
- *  @module org.schema
- *  @extends Place
- */
-var Residence = /**
- *  Constructor, automatically sets @context and @type.
- * 
- *  @constructor
- */
-function() {
-    Place.call(this);
-    this.context = "http://schema.org/";
-    this.type = "Residence";
-};
-Residence = stjs.extend(Residence, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 /**
  *  Schema.org/Action
  *  An action performed by a direct agent and indirect participants upon a direct object. Optionally happens at a location with the help of an inanimate instrument. The execution of the action may produce a result. Specific action sub-type documentation specifies the exact expectation of each argument/role.\n\nSee also [blog post](http://blog.schema.org/2014/04/announcing-schemaorg-actions.html) and [Actions overview document](schema:docs/actions.html).
@@ -43957,52 +43639,7 @@ Action = stjs.extend(Action, Thing, [], function(constructor, prototype) {
      *  @property startTime
      *  @type DateTime
      */
-<<<<<<< HEAD
     prototype.startTime = null;
-=======
-    prototype.permittedUsage = null;
-}, {floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Schema.org/LandmarksOrHistoricalBuildings
- *  An historical landmark or building.
- * 
- *  @author schema.org
- *  @class LandmarksOrHistoricalBuildings
- *  @module org.schema
- *  @extends Place
- */
-var LandmarksOrHistoricalBuildings = /**
- *  Constructor, automatically sets @context and @type.
- * 
- *  @constructor
- */
-function() {
-    Place.call(this);
-    this.context = "http://schema.org/";
-    this.type = "LandmarksOrHistoricalBuildings";
-};
-LandmarksOrHistoricalBuildings = stjs.extend(LandmarksOrHistoricalBuildings, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Schema.org/CivicStructure
- *  A public structure, such as a town hall or concert hall.
- * 
- *  @author schema.org
- *  @class CivicStructure
- *  @module org.schema
- *  @extends Place
- */
-var CivicStructure = /**
- *  Constructor, automatically sets @context and @type.
- * 
- *  @constructor
- */
-function() {
-    Place.call(this);
-    this.context = "http://schema.org/";
-    this.type = "CivicStructure";
-};
-CivicStructure = stjs.extend(CivicStructure, Place, [], function(constructor, prototype) {
->>>>>>> master
     /**
      *  Schema.org/endTime
      *  The endTime of something. For a reserved event or service (e.g. FoodEstablishmentReservation), the time that it is expected to end. For actions that span a period of time, when the action was performed. e.g. John wrote a book from January to *December*.\n\nNote that Event uses startDate/endDate instead of startTime/endTime, even when describing dates with times. This situation may be clarified in future revisions.
@@ -44010,112 +43647,7 @@ CivicStructure = stjs.extend(CivicStructure, Place, [], function(constructor, pr
      *  @property endTime
      *  @type DateTime
      */
-<<<<<<< HEAD
     prototype.endTime = null;
-=======
-    prototype.openingHours = null;
-}, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Schema.org/Landform
- *  A landform or physical feature.  Landform elements include mountains, plains, lakes, rivers, seascape and oceanic waterbody interface features such as bays, peninsulas, seas and so forth, including sub-aqueous terrain features such as submersed mountain ranges, volcanoes, and the great ocean basins.
- * 
- *  @author schema.org
- *  @class Landform
- *  @module org.schema
- *  @extends Place
- */
-var Landform = /**
- *  Constructor, automatically sets @context and @type.
- * 
- *  @constructor
- */
-function() {
-    Place.call(this);
-    this.context = "http://schema.org/";
-    this.type = "Landform";
-};
-Landform = stjs.extend(Landform, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Schema.org/AdministrativeArea
- *  A geographical region, typically under the jurisdiction of a particular government.
- * 
- *  @author schema.org
- *  @class AdministrativeArea
- *  @module org.schema
- *  @extends Place
- */
-var AdministrativeArea = /**
- *  Constructor, automatically sets @context and @type.
- * 
- *  @constructor
- */
-function() {
-    Place.call(this);
-    this.context = "http://schema.org/";
-    this.type = "AdministrativeArea";
-};
-AdministrativeArea = stjs.extend(AdministrativeArea, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Schema.org/TouristAttraction
- *  A tourist attraction.
- * 
- *  @author schema.org
- *  @class TouristAttraction
- *  @module org.schema
- *  @extends Place
- */
-var TouristAttraction = /**
- *  Constructor, automatically sets @context and @type.
- * 
- *  @constructor
- */
-function() {
-    Place.call(this);
-    this.context = "http://schema.org/";
-    this.type = "TouristAttraction";
-};
-TouristAttraction = stjs.extend(TouristAttraction, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Schema.org/Quantity
- *  Quantities such as distance, time, mass, weight, etc. Particular instances of say Mass are entities like '3 Kg' or '4 milligrams'.
- * 
- *  @author schema.org
- *  @class Quantity
- *  @module org.schema
- *  @extends Intangible
- */
-var Quantity = /**
- *  Constructor, automatically sets @context and @type.
- * 
- *  @constructor
- */
-function() {
-    Intangible.call(this);
-    this.context = "http://schema.org/";
-    this.type = "Quantity";
-};
-Quantity = stjs.extend(Quantity, Intangible, [], null, {identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Schema.org/OrderItem
- *  An order item is a line of an order. It includes the quantity and shipping details of a bought offer.
- * 
- *  @author schema.org
- *  @class OrderItem
- *  @module org.schema
- *  @extends Intangible
- */
-var OrderItem = /**
- *  Constructor, automatically sets @context and @type.
- * 
- *  @constructor
- */
-function() {
-    Intangible.call(this);
-    this.context = "http://schema.org/";
-    this.type = "OrderItem";
-};
-OrderItem = stjs.extend(OrderItem, Intangible, [], function(constructor, prototype) {
->>>>>>> master
     /**
      *  Schema.org/participant
      *  Other co-agents that participated in the action indirectly. e.g. John wrote a book with *Steve*.
@@ -44524,7 +44056,7 @@ Accommodation = stjs.extend(Accommodation, Place, [], function(constructor, prot
      *  @type Text
      */
     prototype.permittedUsage = null;
-}, {floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/LandmarksOrHistoricalBuildings
  *  An historical landmark or building.
@@ -44544,7 +44076,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "LandmarksOrHistoricalBuildings";
 };
-LandmarksOrHistoricalBuildings = stjs.extend(LandmarksOrHistoricalBuildings, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+LandmarksOrHistoricalBuildings = stjs.extend(LandmarksOrHistoricalBuildings, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/TouristAttraction
  *  A tourist attraction.
@@ -44564,7 +44096,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "TouristAttraction";
 };
-TouristAttraction = stjs.extend(TouristAttraction, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+TouristAttraction = stjs.extend(TouristAttraction, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Landform
  *  A landform or physical feature.  Landform elements include mountains, plains, lakes, rivers, seascape and oceanic waterbody interface features such as bays, peninsulas, seas and so forth, including sub-aqueous terrain features such as submersed mountain ranges, volcanoes, and the great ocean basins.
@@ -44584,7 +44116,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Landform";
 };
-Landform = stjs.extend(Landform, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+Landform = stjs.extend(Landform, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/CivicStructure
  *  A public structure, such as a town hall or concert hall.
@@ -44613,7 +44145,7 @@ CivicStructure = stjs.extend(CivicStructure, Place, [], function(constructor, pr
      *  @type Text
      */
     prototype.openingHours = null;
-}, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/AdministrativeArea
  *  A geographical region, typically under the jurisdiction of a particular government.
@@ -44633,7 +44165,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "AdministrativeArea";
 };
-AdministrativeArea = stjs.extend(AdministrativeArea, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+AdministrativeArea = stjs.extend(AdministrativeArea, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Residence
  *  The place where a person lives.
@@ -44653,7 +44185,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Residence";
 };
-Residence = stjs.extend(Residence, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+Residence = stjs.extend(Residence, Place, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Menu
  *  A structured representation of food or drink items available from a FoodEstablishment.
@@ -46141,6 +45673,35 @@ DataCatalog = stjs.extend(DataCatalog, CreativeWork, [], function(constructor, p
      */
     prototype.dataset = null;
 }, {dataset: "Dataset", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+/**
+ *  Schema.org/Map
+ *  A map.
+ * 
+ *  @author schema.org
+ *  @class Map
+ *  @module org.schema
+ *  @extends CreativeWork
+ */
+var SchemaMap = /**
+ *  Constructor, automatically sets @context and @type.
+ * 
+ *  @constructor
+ */
+function() {
+    CreativeWork.call(this);
+    this.context = "http://schema.org/";
+    this.type = "Map";
+};
+SchemaMap = stjs.extend(SchemaMap, CreativeWork, [], function(constructor, prototype) {
+    /**
+     *  Schema.org/mapType
+     *  Indicates the kind of Map, from the MapCategoryType Enumeration.
+     * 
+     *  @property mapType
+     *  @type MapCategoryType
+     */
+    prototype.mapType = null;
+}, {mapType: "MapCategoryType", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Article
  *  An article, such as a news article or piece of investigative report. Newspapers and magazines have articles of many different types and this is intended to cover them all.\n\nSee also [blog post](http://blog.schema.org/2014/09/schemaorg-support-for-bibliographic_2.html).
@@ -47941,42 +47502,8 @@ DigitalDocumentPermission = stjs.extend(DigitalDocumentPermission, Intangible, [
     prototype.permissionType = null;
 }, {grantee: "ContactPoint", permissionType: "DigitalDocumentPermissionType", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
-<<<<<<< HEAD
  *  Schema.org/Language
  *  Natural languages such as Spanish, Tamil, Hindi, English, etc. Formal language code tags expressed in [BCP 47](https://en.wikipedia.org/wiki/IETF_language_tag) can be used via the [[alternateName]] property. The Language type previously also covered programming languages such as Scheme and Lisp, which are now best represented using [[ComputerLanguage]].
-=======
- *  Schema.org/Map
- *  A map.
- * 
- *  @author schema.org
- *  @class Map
- *  @module org.schema
- *  @extends CreativeWork
- */
-var SchemaMap = /**
- *  Constructor, automatically sets @context and @type.
- * 
- *  @constructor
- */
-function() {
-    CreativeWork.call(this);
-    this.context = "http://schema.org/";
-    this.type = "Map";
-};
-SchemaMap = stjs.extend(SchemaMap, CreativeWork, [], function(constructor, prototype) {
-    /**
-     *  Schema.org/mapType
-     *  Indicates the kind of Map, from the MapCategoryType Enumeration.
-     * 
-     *  @property mapType
-     *  @type MapCategoryType
-     */
-    prototype.mapType = null;
-}, {mapType: "MapCategoryType", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Schema.org/MenuSection
- *  A sub-grouping of food or drink items in a menu. E.g. courses (such as 'Dinner', 'Breakfast', etc.), specific type of dishes (such as 'Meat', 'Vegan', 'Drinks', etc.), or some other classification made by the menu provider.
->>>>>>> master
  * 
  *  @author schema.org
  *  @class Language
@@ -52013,11 +51540,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "TheaterEvent";
 };
-<<<<<<< HEAD
 TheaterEvent = stjs.extend(TheaterEvent, Event, [], null, {about: "Thing", funder: "Person", workFeatured: "CreativeWork", audience: "Audience", actor: "Person", performers: "Organization", contributor: "Organization", organizer: "Person", attendees: "Person", aggregateRating: "AggregateRating", subEvent: "Event", subEvents: "Event", offers: "Offer", attendee: "Organization", workPerformed: "CreativeWork", eventStatus: "EventStatusType", director: "Person", superEvent: "Event", duration: "Duration", translator: "Person", inLanguage: "Language", review: "Review", sponsor: "Organization", location: "PostalAddress", recordedIn: "CreativeWork", composer: "Organization", performer: "Person", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-GatedResidenceCommunity = stjs.extend(GatedResidenceCommunity, Residence, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 /**
  *  Schema.org/Apartment
  *  An apartment (in American English) or flat (in British English) is a self-contained housing unit (a type of residential real estate) that occupies only part of a building (Source: Wikipedia, the free encyclopedia, see <a href="http://en.wikipedia.org/wiki/Apartment">http://en.wikipedia.org/wiki/Apartment</a>).
@@ -52037,7 +51560,6 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Apartment";
 };
-<<<<<<< HEAD
 Apartment = stjs.extend(Apartment, Accommodation, [], function(constructor, prototype) {
     /**
      *  Schema.org/occupancy
@@ -52057,10 +51579,7 @@ Apartment = stjs.extend(Apartment, Accommodation, [], function(constructor, prot
      *  @type Number
      */
     prototype.numberOfRooms = null;
-}, {occupancy: "QuantitativeValue", floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-ApartmentComplex = stjs.extend(ApartmentComplex, Residence, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+}, {occupancy: "QuantitativeValue", floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/CampingPitch
  *  A camping pitch is an individual place for overnight stay in the outdoors, typically being part of a larger camping site.
@@ -52154,7 +51673,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Room";
 };
-Room = stjs.extend(Room, Accommodation, [], null, {floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+Room = stjs.extend(Room, Accommodation, [], null, {floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/House
  *  A house is a building or structure that has the ability to be occupied for habitation by humans or other creatures (Source: Wikipedia, the free encyclopedia, see <a href="http://en.wikipedia.org/wiki/House">http://en.wikipedia.org/wiki/House</a>).
@@ -52204,11 +51723,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Mountain";
 };
-<<<<<<< HEAD
-Mountain = stjs.extend(Mountain, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Room = stjs.extend(Room, Accommodation, [], null, {floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Mountain = stjs.extend(Mountain, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Volcano
  *  A volcano, like Fuji san.
@@ -52228,30 +51743,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Volcano";
 };
-<<<<<<< HEAD
-Volcano = stjs.extend(Volcano, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Apartment = stjs.extend(Apartment, Accommodation, [], function(constructor, prototype) {
-    /**
-     *  Schema.org/occupancy
-     *  The allowed total occupancy for the accommodation in persons (including infants etc). For individual accommodations, this is not necessarily the legal maximum but defines the permitted usage as per the contractual agreement (e.g. a double room used by a single person).
-     *  Typical unit code(s): C62 for person
-     * 
-     *  @property occupancy
-     *  @type QuantitativeValue
-     */
-    prototype.occupancy = null;
-    /**
-     *  Schema.org/numberOfRooms
-     *  The number of rooms (excluding bathrooms and closets) of the acccommodation or lodging business.
-     *  Typical unit code(s): ROM for room or C62 for no unit. The type of room can be put in the unitText property of the QuantitativeValue.
-     * 
-     *  @property numberOfRooms
-     *  @type Number
-     */
-    prototype.numberOfRooms = null;
-}, {occupancy: "QuantitativeValue", floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Volcano = stjs.extend(Volcano, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/BodyOfWater
  *  A body of water, such as a sea, ocean, or lake.
@@ -52271,7 +51763,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "BodyOfWater";
 };
-BodyOfWater = stjs.extend(BodyOfWater, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+BodyOfWater = stjs.extend(BodyOfWater, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Continent
  *  One of the continents (for example, Europe or Africa).
@@ -52291,7 +51783,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Continent";
 };
-Continent = stjs.extend(Continent, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+Continent = stjs.extend(Continent, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Cemetery
  *  A graveyard.
@@ -52311,11 +51803,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Cemetery";
 };
-<<<<<<< HEAD
-Cemetery = stjs.extend(Cemetery, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-PoliceStation = stjs.extend(PoliceStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Cemetery = stjs.extend(Cemetery, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Museum
  *  A museum.
@@ -52335,11 +51823,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Museum";
 };
-<<<<<<< HEAD
-Museum = stjs.extend(Museum, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Bridge = stjs.extend(Bridge, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Museum = stjs.extend(Museum, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/ParkingFacility
  *  A parking lot or other parking facility.
@@ -52359,11 +51843,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "ParkingFacility";
 };
-<<<<<<< HEAD
-ParkingFacility = stjs.extend(ParkingFacility, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-SubwayStation = stjs.extend(SubwayStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+ParkingFacility = stjs.extend(ParkingFacility, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Zoo
  *  A zoo.
@@ -52383,11 +51863,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Zoo";
 };
-<<<<<<< HEAD
-Zoo = stjs.extend(Zoo, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-BusStation = stjs.extend(BusStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Zoo = stjs.extend(Zoo, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/BusStation
  *  A bus station.
@@ -52407,11 +51883,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "BusStation";
 };
-<<<<<<< HEAD
-BusStation = stjs.extend(BusStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-GovernmentBuilding = stjs.extend(GovernmentBuilding, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+BusStation = stjs.extend(BusStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/BusStop
  *  A bus stop.
@@ -52451,7 +51923,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Playground";
 };
-Playground = stjs.extend(Playground, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+Playground = stjs.extend(Playground, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/MovieTheater
  *  A movie theater.
@@ -52480,7 +51952,7 @@ MovieTheater = stjs.extend(MovieTheater, CivicStructure, [], function(constructo
      *  @type Number
      */
     prototype.screenCount = null;
-}, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/TrainStation
  *  A train station.
@@ -52500,7 +51972,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "TrainStation";
 };
-TrainStation = stjs.extend(TrainStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+TrainStation = stjs.extend(TrainStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Hospital
  *  A hospital.
@@ -52520,7 +51992,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Hospital";
 };
-Hospital = stjs.extend(Hospital, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+Hospital = stjs.extend(Hospital, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Beach
  *  Beach.
@@ -52560,11 +52032,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "EventVenue";
 };
-<<<<<<< HEAD
-EventVenue = stjs.extend(EventVenue, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-TaxiStand = stjs.extend(TaxiStand, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+EventVenue = stjs.extend(EventVenue, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Aquarium
  *  Aquarium.
@@ -52584,11 +52052,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Aquarium";
 };
-<<<<<<< HEAD
-Aquarium = stjs.extend(Aquarium, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Campground = stjs.extend(Campground, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Aquarium = stjs.extend(Aquarium, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/MusicVenue
  *  A music venue.
@@ -52608,11 +52072,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "MusicVenue";
 };
-<<<<<<< HEAD
-MusicVenue = stjs.extend(MusicVenue, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Park = stjs.extend(Park, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+MusicVenue = stjs.extend(MusicVenue, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Campground
  *  A camping site, campsite, or campground is a place used for overnight stay in the outdoors. In British English a campsite is an area, usually divided into a number of pitches, where people can camp overnight using tents or camper vans or caravans; this British English use of the word is synonymous with the American English expression campground. In American English the term campsite generally means an area where an individual, family, group, or military unit can pitch a tent or parks a camper; a campground may contain many campsites (Source: Wikipedia, the free encyclopedia, see <a href="http://en.wikipedia.org/wiki/Campsite">http://en.wikipedia.org/wiki/Campsite</a>).
@@ -52634,11 +52094,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Campground";
 };
-<<<<<<< HEAD
-Campground = stjs.extend(Campground, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Cemetery = stjs.extend(Cemetery, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Campground = stjs.extend(Campground, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Park
  *  A park.
@@ -52658,11 +52114,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Park";
 };
-<<<<<<< HEAD
-Park = stjs.extend(Park, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-TrainStation = stjs.extend(TrainStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Park = stjs.extend(Park, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Crematorium
  *  A crematorium.
@@ -52682,20 +52134,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Crematorium";
 };
-<<<<<<< HEAD
-Crematorium = stjs.extend(Crematorium, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-MovieTheater = stjs.extend(MovieTheater, CivicStructure, [], function(constructor, prototype) {
-    /**
-     *  Schema.org/screenCount
-     *  The number of screens in the movie theater.
-     * 
-     *  @property screenCount
-     *  @type Number
-     */
-    prototype.screenCount = null;
-}, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Crematorium = stjs.extend(Crematorium, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/RVPark
  *  A place offering space for "Recreational Vehicles", Caravans, mobile homes and the like.
@@ -52715,11 +52154,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "RVPark";
 };
-<<<<<<< HEAD
-RVPark = stjs.extend(RVPark, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Hospital = stjs.extend(Hospital, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+RVPark = stjs.extend(RVPark, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/PoliceStation
  *  A police station.
@@ -52739,11 +52174,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "PoliceStation";
 };
-<<<<<<< HEAD
-PoliceStation = stjs.extend(PoliceStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-PerformingArtsTheater = stjs.extend(PerformingArtsTheater, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+PoliceStation = stjs.extend(PoliceStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/PerformingArtsTheater
  *  A theater or other performing art center.
@@ -52763,28 +52194,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "PerformingArtsTheater";
 };
-<<<<<<< HEAD
-PerformingArtsTheater = stjs.extend(PerformingArtsTheater, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Airport = stjs.extend(Airport, CivicStructure, [], function(constructor, prototype) {
-    /**
-     *  Schema.org/iataCode
-     *  IATA identifier for an airline or airport.
-     * 
-     *  @property iataCode
-     *  @type Text
-     */
-    prototype.iataCode = null;
-    /**
-     *  Schema.org/icaoCode
-     *  ICAO identifier for an airport.
-     * 
-     *  @property icaoCode
-     *  @type Text
-     */
-    prototype.icaoCode = null;
-}, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+PerformingArtsTheater = stjs.extend(PerformingArtsTheater, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/FireStation
  *  A fire station. With firemen.
@@ -52824,11 +52234,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Bridge";
 };
-<<<<<<< HEAD
-Bridge = stjs.extend(Bridge, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-EventVenue = stjs.extend(EventVenue, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Bridge = stjs.extend(Bridge, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/PlaceOfWorship
  *  Place of worship, such as a church, synagogue, or mosque.
@@ -52850,33 +52256,8 @@ function() {
 };
 PlaceOfWorship = stjs.extend(PlaceOfWorship, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
-<<<<<<< HEAD
  *  Schema.org/Airport
  *  An airport.
-=======
- *  Schema.org/MusicVenue
- *  A music venue.
- * 
- *  @author schema.org
- *  @class MusicVenue
- *  @module org.schema
- *  @extends CivicStructure
- */
-var MusicVenue = /**
- *  Constructor, automatically sets @context and @type.
- * 
- *  @constructor
- */
-function() {
-    CivicStructure.call(this);
-    this.context = "http://schema.org/";
-    this.type = "MusicVenue";
-};
-MusicVenue = stjs.extend(MusicVenue, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Schema.org/Museum
- *  A museum.
->>>>>>> master
  * 
  *  @author schema.org
  *  @class Airport
@@ -52893,7 +52274,6 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Airport";
 };
-<<<<<<< HEAD
 Airport = stjs.extend(Airport, CivicStructure, [], function(constructor, prototype) {
     /**
      *  Schema.org/iataCode
@@ -52911,10 +52291,7 @@ Airport = stjs.extend(Airport, CivicStructure, [], function(constructor, prototy
      *  @type Text
      */
     prototype.icaoCode = null;
-}, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Museum = stjs.extend(Museum, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+}, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/SubwayStation
  *  A subway station.
@@ -52934,11 +52311,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "SubwayStation";
 };
-<<<<<<< HEAD
-SubwayStation = stjs.extend(SubwayStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Crematorium = stjs.extend(Crematorium, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+SubwayStation = stjs.extend(SubwayStation, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/GovernmentBuilding
  *  A government building.
@@ -52958,11 +52331,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "GovernmentBuilding";
 };
-<<<<<<< HEAD
-GovernmentBuilding = stjs.extend(GovernmentBuilding, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Playground = stjs.extend(Playground, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+GovernmentBuilding = stjs.extend(GovernmentBuilding, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/TaxiStand
  *  A taxi stand.
@@ -52982,11 +52351,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "TaxiStand";
 };
-<<<<<<< HEAD
-TaxiStand = stjs.extend(TaxiStand, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Zoo = stjs.extend(Zoo, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+TaxiStand = stjs.extend(TaxiStand, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Country
  *  A country.
@@ -53006,11 +52371,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Country";
 };
-<<<<<<< HEAD
-Country = stjs.extend(Country, AdministrativeArea, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-RVPark = stjs.extend(RVPark, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Country = stjs.extend(Country, AdministrativeArea, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/State
  *  A state or province of a country.
@@ -53030,11 +52391,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "State";
 };
-<<<<<<< HEAD
-State = stjs.extend(State, AdministrativeArea, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-ParkingFacility = stjs.extend(ParkingFacility, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+State = stjs.extend(State, AdministrativeArea, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/City
  *  A city or town.
@@ -53054,11 +52411,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "City";
 };
-<<<<<<< HEAD
-City = stjs.extend(City, AdministrativeArea, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Aquarium = stjs.extend(Aquarium, CivicStructure, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+City = stjs.extend(City, AdministrativeArea, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/GatedResidenceCommunity
  *  Residence type: Gated community.
@@ -53078,11 +52431,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "GatedResidenceCommunity";
 };
-<<<<<<< HEAD
-GatedResidenceCommunity = stjs.extend(GatedResidenceCommunity, Residence, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Continent = stjs.extend(Continent, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+GatedResidenceCommunity = stjs.extend(GatedResidenceCommunity, Residence, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/ApartmentComplex
  *  Residence type: Apartment complex.
@@ -53102,11 +52451,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "ApartmentComplex";
 };
-<<<<<<< HEAD
-ApartmentComplex = stjs.extend(ApartmentComplex, Residence, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Volcano = stjs.extend(Volcano, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+ApartmentComplex = stjs.extend(ApartmentComplex, Residence, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/RadioSeason
  *  Season dedicated to radio broadcast and associated online delivery.
@@ -53126,11 +52471,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "RadioSeason";
 };
-<<<<<<< HEAD
 RadioSeason = stjs.extend(RadioSeason, CreativeWorkSeason, [], null, {actor: "Person", partOfSeries: "CreativeWorkSeries", trailer: "VideoObject", episodes: "Episode", director: "Person", productionCompany: "Organization", episode: "Episode", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-BodyOfWater = stjs.extend(BodyOfWater, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 /**
  *  Schema.org/NoteDigitalDocument
  *  A file containing a note, primarily for the author.
@@ -53150,11 +52491,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "NoteDigitalDocument";
 };
-<<<<<<< HEAD
 NoteDigitalDocument = stjs.extend(NoteDigitalDocument, DigitalDocument, [], null, {hasDigitalDocumentPermission: "DigitalDocumentPermission", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Mountain = stjs.extend(Mountain, Landform, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 /**
  *  Schema.org/SpreadsheetDigitalDocument
  *  A spreadsheet file.
@@ -53174,11 +52511,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "SpreadsheetDigitalDocument";
 };
-<<<<<<< HEAD
 SpreadsheetDigitalDocument = stjs.extend(SpreadsheetDigitalDocument, DigitalDocument, [], null, {hasDigitalDocumentPermission: "DigitalDocumentPermission", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-City = stjs.extend(City, AdministrativeArea, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 /**
  *  Schema.org/TextDigitalDocument
  *  A file composed primarily of text.
@@ -53198,11 +52531,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "TextDigitalDocument";
 };
-<<<<<<< HEAD
 TextDigitalDocument = stjs.extend(TextDigitalDocument, DigitalDocument, [], null, {hasDigitalDocumentPermission: "DigitalDocumentPermission", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Country = stjs.extend(Country, AdministrativeArea, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 /**
  *  Schema.org/PresentationDigitalDocument
  *  A file containing slides or used for a presentation.
@@ -53222,11 +52551,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "PresentationDigitalDocument";
 };
-<<<<<<< HEAD
 PresentationDigitalDocument = stjs.extend(PresentationDigitalDocument, DigitalDocument, [], null, {hasDigitalDocumentPermission: "DigitalDocumentPermission", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-State = stjs.extend(State, AdministrativeArea, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 /**
  *  Schema.org/RadioClip
  *  A short radio program or a segment/part of a radio program.
@@ -60688,7 +60013,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "MeetingRoom";
 };
-MeetingRoom = stjs.extend(MeetingRoom, Room, [], null, {floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+MeetingRoom = stjs.extend(MeetingRoom, Room, [], null, {floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/HotelRoom
  *  A hotel room is a single room in a hotel.
@@ -60729,7 +60054,7 @@ HotelRoom = stjs.extend(HotelRoom, Room, [], function(constructor, prototype) {
      *  @type BedDetails
      */
     prototype.bed = null;
-}, {occupancy: "QuantitativeValue", bed: "BedDetails", floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {occupancy: "QuantitativeValue", bed: "BedDetails", floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/SingleFamilyResidence
  *  Residence type: Single-family home.
@@ -60788,30 +60113,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Canal";
 };
-<<<<<<< HEAD
-Canal = stjs.extend(Canal, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-HotelRoom = stjs.extend(HotelRoom, Room, [], function(constructor, prototype) {
-    /**
-     *  Schema.org/occupancy
-     *  The allowed total occupancy for the accommodation in persons (including infants etc). For individual accommodations, this is not necessarily the legal maximum but defines the permitted usage as per the contractual agreement (e.g. a double room used by a single person).
-     *  Typical unit code(s): C62 for person
-     * 
-     *  @property occupancy
-     *  @type QuantitativeValue
-     */
-    prototype.occupancy = null;
-    /**
-     *  Schema.org/bed
-     *  The type of bed or beds included in the accommodation. For the single case of just one bed of a certain type, you use bed directly with a text.
-     *  If you want to indicate the quantity of a certain kind of bed, use an instance of BedDetails. For more detailed information, use the amenityFeature property.
-     * 
-     *  @property bed
-     *  @type BedDetails
-     */
-    prototype.bed = null;
-}, {occupancy: "QuantitativeValue", bed: "BedDetails", floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Canal = stjs.extend(Canal, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/SeaBodyOfWater
  *  A sea (for example, the Caspian sea).
@@ -60831,11 +60133,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "SeaBodyOfWater";
 };
-<<<<<<< HEAD
-SeaBodyOfWater = stjs.extend(SeaBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-MeetingRoom = stjs.extend(MeetingRoom, Room, [], null, {floorSize: "QuantitativeValue", amenityFeature: "LocationFeatureSpecification", photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+SeaBodyOfWater = stjs.extend(SeaBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Pond
  *  A pond.
@@ -60855,11 +60153,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Pond";
 };
-<<<<<<< HEAD
-Pond = stjs.extend(Pond, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-LegislativeBuilding = stjs.extend(LegislativeBuilding, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Pond = stjs.extend(Pond, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/LakeBodyOfWater
  *  A lake (for example, Lake Pontrachain).
@@ -60879,11 +60173,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "LakeBodyOfWater";
 };
-<<<<<<< HEAD
-LakeBodyOfWater = stjs.extend(LakeBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-CityHall = stjs.extend(CityHall, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+LakeBodyOfWater = stjs.extend(LakeBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/OceanBodyOfWater
  *  An ocean (for example, the Pacific).
@@ -60903,11 +60193,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "OceanBodyOfWater";
 };
-<<<<<<< HEAD
-OceanBodyOfWater = stjs.extend(OceanBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-DefenceEstablishment = stjs.extend(DefenceEstablishment, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+OceanBodyOfWater = stjs.extend(OceanBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/RiverBodyOfWater
  *  A river (for example, the broad majestic Shannon).
@@ -60927,11 +60213,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "RiverBodyOfWater";
 };
-<<<<<<< HEAD
-RiverBodyOfWater = stjs.extend(RiverBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Courthouse = stjs.extend(Courthouse, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+RiverBodyOfWater = stjs.extend(RiverBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Reservoir
  *  A reservoir of water, typically an artificially created lake, like the Lake Kariba reservoir.
@@ -60951,11 +60233,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Reservoir";
 };
-<<<<<<< HEAD
-Reservoir = stjs.extend(Reservoir, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Embassy = stjs.extend(Embassy, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Reservoir = stjs.extend(Reservoir, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Waterfall
  *  A waterfall, like Niagara.
@@ -60975,7 +60253,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Waterfall";
 };
-Waterfall = stjs.extend(Waterfall, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+Waterfall = stjs.extend(Waterfall, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/BuddhistTemple
  *  A Buddhist temple.
@@ -60995,11 +60273,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "BuddhistTemple";
 };
-<<<<<<< HEAD
-BuddhistTemple = stjs.extend(BuddhistTemple, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-HinduTemple = stjs.extend(HinduTemple, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+BuddhistTemple = stjs.extend(BuddhistTemple, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Church
  *  A church.
@@ -61019,11 +60293,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Church";
 };
-<<<<<<< HEAD
-Church = stjs.extend(Church, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Synagogue = stjs.extend(Synagogue, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Church = stjs.extend(Church, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Mosque
  *  A mosque.
@@ -61063,11 +60333,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Synagogue";
 };
-<<<<<<< HEAD
-Synagogue = stjs.extend(Synagogue, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-BuddhistTemple = stjs.extend(BuddhistTemple, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Synagogue = stjs.extend(Synagogue, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/CatholicChurch
  *  A Catholic church.
@@ -61087,11 +60353,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "CatholicChurch";
 };
-<<<<<<< HEAD
-CatholicChurch = stjs.extend(CatholicChurch, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Church = stjs.extend(Church, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+CatholicChurch = stjs.extend(CatholicChurch, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/HinduTemple
  *  A Hindu temple.
@@ -61111,11 +60373,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "HinduTemple";
 };
-<<<<<<< HEAD
-HinduTemple = stjs.extend(HinduTemple, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-CatholicChurch = stjs.extend(CatholicChurch, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+HinduTemple = stjs.extend(HinduTemple, PlaceOfWorship, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/DefenceEstablishment
  *  A defence establishment, such as an army or navy base.
@@ -61135,11 +60393,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "DefenceEstablishment";
 };
-<<<<<<< HEAD
-DefenceEstablishment = stjs.extend(DefenceEstablishment, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-OceanBodyOfWater = stjs.extend(OceanBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+DefenceEstablishment = stjs.extend(DefenceEstablishment, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/CityHall
  *  A city hall.
@@ -61159,11 +60413,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "CityHall";
 };
-<<<<<<< HEAD
-CityHall = stjs.extend(CityHall, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Canal = stjs.extend(Canal, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+CityHall = stjs.extend(CityHall, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Embassy
  *  An embassy.
@@ -61183,11 +60433,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Embassy";
 };
-<<<<<<< HEAD
-Embassy = stjs.extend(Embassy, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Reservoir = stjs.extend(Reservoir, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Embassy = stjs.extend(Embassy, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/LegislativeBuilding
  *  A legislative building&#x2014;for example, the state capitol.
@@ -61207,11 +60453,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "LegislativeBuilding";
 };
-<<<<<<< HEAD
-LegislativeBuilding = stjs.extend(LegislativeBuilding, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Waterfall = stjs.extend(Waterfall, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+LegislativeBuilding = stjs.extend(LegislativeBuilding, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/Courthouse
  *  A courthouse.
@@ -61231,11 +60473,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Courthouse";
 };
-<<<<<<< HEAD
-Courthouse = stjs.extend(Courthouse, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "Object", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-Pond = stjs.extend(Pond, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
+Courthouse = stjs.extend(Courthouse, GovernmentBuilding, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Schema.org/ImageGallery
  *  Web page type: Image gallery page.
@@ -61295,11 +60533,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "Barcode";
 };
-<<<<<<< HEAD
 Barcode = stjs.extend(Barcode, ImageObject, [], null, {thumbnail: "ImageObject", height: "Distance", regionsAllowed: "Place", width: "Distance", associatedArticle: "NewsArticle", productionCompany: "Organization", duration: "Duration", encodesCreativeWork: "CreativeWork", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-LakeBodyOfWater = stjs.extend(LakeBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 /**
  *  Schema.org/DiscussionForumPosting
  *  A posting to a discussion forum.
@@ -61319,11 +60553,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "DiscussionForumPosting";
 };
-<<<<<<< HEAD
 DiscussionForumPosting = stjs.extend(DiscussionForumPosting, SocialMediaPosting, [], null, {sharedContent: "CreativeWork", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-SeaBodyOfWater = stjs.extend(SeaBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 /**
  *  Schema.org/BlogPosting
  *  A blog post.
@@ -61343,11 +60573,7 @@ function() {
     this.context = "http://schema.org/";
     this.type = "BlogPosting";
 };
-<<<<<<< HEAD
 BlogPosting = stjs.extend(BlogPosting, SocialMediaPosting, [], null, {sharedContent: "CreativeWork", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-RiverBodyOfWater = stjs.extend(RiverBodyOfWater, BodyOfWater, [], null, {photo: "ImageObject", address: "PostalAddress", openingHoursSpecification: "OpeningHoursSpecification", containedInPlace: "Place", reviews: "Review", aggregateRating: "AggregateRating", photos: "Photograph", hasMap: "SchemaMap", additionalProperty: "PropertyValue", events: "Event", specialOpeningHoursSpecification: "OpeningHoursSpecification", amenityFeature: "LocationFeatureSpecification", logo: "ImageObject", geo: "GeoCoordinates", review: "Review", event: "Event", containsPlace: "Place", containedIn: "Place", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 /**
  *  Schema.org/APIReference
  *  Reference documentation for application programming interfaces (APIs).
@@ -66187,117 +65413,7 @@ AssertionEnvelope = stjs.extend(AssertionEnvelope, CreativeWork, [], function(co
                     return false;
         return true;
     };
-<<<<<<< HEAD
 }, {assertion: {name: "Array", arguments: ["Assertion"]}, codebook: {name: "Array", arguments: ["AssertionCodebook"]}, contributor: "Object", reviews: "Review", audience: "Audience", timeRequired: "Duration", publication: "PublicationEvent", contentLocation: "Place", temporalCoverage: "Object", isBasedOn: "Object", fileFormat: "Object", interactionStatistic: "InteractionCounter", recordedAt: "Event", isPartOf: "CreativeWork", exampleOfWork: "CreativeWork", dateCreated: "Object", releasedEvent: "PublicationEvent", publisher: "Object", encoding: "MediaObject", creator: "Object", hasPart: "CreativeWork", license: "Object", translator: "Object", offers: "Offer", schemaVersion: "Object", review: "Review", position: "Object", genre: "Object", character: "Person", producer: "Object", editor: "Person", locationCreated: "Place", about: "Thing", audio: "AudioObject", encodings: "MediaObject", funder: "Object", accountablePerson: "Person", material: "Object", author: "Object", sourceOrganization: "Organization", sponsor: "Object", provider: "Object", copyrightHolder: "Object", comment: "Comment", spatialCoverage: "Place", aggregateRating: "AggregateRating", educationalAlignment: "AlignmentObject", video: "VideoObject", version: "Object", mainEntity: "Thing", associatedMedia: "MediaObject", workExample: "CreativeWork", mentions: "Thing", citation: "Object", dateModified: "Object", inLanguage: "Object", isBasedOnUrl: "Object", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-=======
-}, {assertion: {name: "Array", arguments: ["Assertion"]}, codebook: {name: "Array", arguments: ["AssertionCodebook"]}, about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-var EcQuiz = function() {
-    CreativeWork.call(this);
-    this.type = "Quiz";
-    this.context = "http://schema.eduworks.com/0.1/";
-};
-EcQuiz = stjs.extend(EcQuiz, CreativeWork, [], function(constructor, prototype) {
-    constructor.myType = "http://schema.eduworks.com/0.1/Quiz";
-    prototype.duration = null;
-    prototype.question = null;
-    /**
-     *  Searches a repository for quizzes that match the search query
-     * 
-     *  @param {EcRepository}          repo Repository to search using the query
-     *  @param {String}                query Query string to pass to the search web service
-     *  @param {Callback1<Array<Quiz>> success Callback triggered after
-     *                                 completing the search, returns the results
-     *  @param {Callback1<String>}     failure Callback triggered if error searching
-     *  @param {Object}                paramObj Parameter object for search
-     *  @param start
-     *  @param size
-     *  @memberOf Quiz
-     *  @method search
-     *  @static
-     */
-    constructor.search = function(repo, query, success, failure, paramObj) {
-        var queryAdd = "";
-        queryAdd = new EcQuiz().getSearchStringByType();
-        if (query == null || query == "") {
-            query = queryAdd;
-        } else {
-            query = "(" + query + ") AND " + queryAdd;
-        }
-        repo.searchWithParams(query, paramObj, null, function(p1) {
-            if (success != null) {
-                var ret = [];
-                for (var i = 0; i < p1.length; i++) {
-                    var comp = new EcQuiz();
-                    if (p1[i].isAny(comp.getTypes())) {
-                        comp.copyFrom(p1[i]);
-                    } else if (p1[i].isA(EcEncryptedValue.myType)) {
-                        var val = new EcEncryptedValue();
-                        val.copyFrom(p1[i]);
-                        if (val.isAnEncrypted(EcQuiz.myType)) {
-                            var obj = val.decryptIntoObject();
-                            comp.copyFrom(obj);
-                            EcEncryptedValue.encryptOnSave(comp.id, true);
-                        }
-                    }
-                    ret[i] = comp;
-                }
-                success(ret);
-            }
-        }, failure);
-    };
-}, {question: {name: "Array", arguments: [null]}, about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-var EcCreativeWork = function() {
-    CreativeWork.call(this);
-};
-EcCreativeWork = stjs.extend(EcCreativeWork, CreativeWork, [], function(constructor, prototype) {
-    /**
-     *  Searches a repository for creative works that match the search query
-     * 
-     *  @param {EcRepository}                    repo
-     *                                           Repository to search using the query
-     *  @param {String}                          query
-     *                                           Query string to pass to the search web service
-     *  @param {Callback1<Array<EcCreativeWork>> success
-     *                                           Callback triggered after completing the search, returns the results
-     *  @param {Callback1<String>}               failure
-     *                                           Callback triggered if error searching
-     *  @param {Object}                          paramObj
-     *                                           Parameter object for search
-     *  @memberOf EcCreativeWork
-     *  @method search
-     *  @static
-     */
-    constructor.search = function(repo, query, success, failure, paramObj) {
-        var queryAdd = "";
-        queryAdd = new EcCreativeWork().getSearchStringByType();
-        if (query == null || query == "") 
-            query = queryAdd;
-         else 
-            query = "(" + query + ") AND " + queryAdd;
-        repo.searchWithParams(query, paramObj, null, function(p1) {
-            if (success != null) {
-                var ret = [];
-                for (var i = 0; i < p1.length; i++) {
-                    var comp = new EcCreativeWork();
-                    if (p1[i].isAny(comp.getTypes())) {
-                        comp.copyFrom(p1[i]);
-                    } else if (p1[i].isA(EcEncryptedValue.myType)) {
-                        var val = new EcEncryptedValue();
-                        val.copyFrom(p1[i]);
-                        if (val.isAnEncrypted(new EcCreativeWork().getFullType())) {
-                            var obj = val.decryptIntoObject();
-                            comp.copyFrom(obj);
-                            EcEncryptedValue.encryptOnSave(comp.id, true);
-                        }
-                    }
-                    ret[i] = comp;
-                }
-                success(ret);
-            }
-        }, failure);
-    };
-}, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
 var EcAnswer = function() {
     Answer.call(this);
 };
@@ -66585,71 +65701,6 @@ EcQuiz = stjs.extend(EcQuiz, CreativeWork, [], function(constructor, prototype) 
         }, failure);
     };
 }, {question: {name: "Array", arguments: [null]}, about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-var EcPerson = function() {
-    Person.call(this);
-};
-EcPerson = stjs.extend(EcPerson, Person, [], function(constructor, prototype) {
-    /**
-     *  Searches a repository for persons that match the search query
-     * 
-     *  @param {EcRepository}          repo Repository to search using the query
-     *  @param {String}                query Query string to pass to the search web service
-     *  @param {Callback1<Array<Quiz>> success Callback triggered after
-     *                                 completing the search, returns the results
-     *  @param {Callback1<String>}     failure Callback triggered if error searching
-     *  @param {Object}                paramObj Parameter object for search
-     *  @memberOf EcPerson
-     *  @method search
-     *  @static
-     */
-    constructor.search = function(repo, query, success, failure, paramObj) {
-        var queryAdd = "";
-        queryAdd = new Person().getSearchStringByType();
-        if (query == null || query == "") 
-            query = queryAdd;
-         else 
-            query = "(" + query + ") AND " + queryAdd;
-        repo.searchWithParams(query, paramObj, null, function(p1) {
-            if (success != null) {
-                var ret = [];
-                for (var i = 0; i < p1.length; i++) {
-                    var comp = new EcPerson();
-                    if (p1[i].isAny(comp.getTypes())) {
-                        comp.copyFrom(p1[i]);
-                    } else if (p1[i].isA(EcEncryptedValue.myType)) {
-                        var val = new EcEncryptedValue();
-                        val.copyFrom(p1[i]);
-                        if (val.isAnEncrypted(new EcPerson().getFullType())) {
-                            var obj = val.decryptIntoObject();
-                            comp.copyFrom(obj);
-                            EcEncryptedValue.encryptOnSave(comp.id, true);
-                        }
-                    }
-                    ret[i] = comp;
-                }
-                success(ret);
-            }
-        }, failure);
-    };
-    /**
-     *  Attempts to find and return the person's fingerprint from the id.
-     * 
-     *  @return {String}
-     *  @method getFingerprintFromId
-     */
-    prototype.getFingerprintFromId = function() {
-        return this.getGuid();
-    };
-    /**
-     *  Attempts to find and return the person's fingerprint from the id.
-     * 
-     *  @return {String}
-     *  @method getFingerprintFromId
-     */
-    prototype.getFingerprint = function() {
-        return this.getGuid();
-    };
-}, {address: "PostalAddress", spouse: "Person", funder: "Person", colleagues: "Person", memberOf: "Organization", height: "Distance", workLocation: "ContactPoint", netWorth: "PriceSpecification", children: "Person", hasOfferCatalog: "OfferCatalog", deathPlace: "Place", birthPlace: "Place", parents: "Person", alumniOf: "EducationalOrganization", homeLocation: "ContactPoint", makesOffer: "Offer", contactPoints: "ContactPoint", seeks: "Demand", sibling: "Person", performerIn: "Event", siblings: "Person", weight: "QuantitativeValue", contactPoint: "ContactPoint", hasPOS: "Place", parent: "Person", owns: "OwnershipInfo", affiliation: "Organization", sponsor: "Organization", brand: "Organization", nationality: "Country", relatedTo: "Person", follows: "Person", knows: "Person", worksFor: "Organization", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 var EcOrganization = function() {
     Organization.call(this);
 };
@@ -69399,13 +68450,10 @@ EcRepository = stjs.extend(EcRepository, null, [], function(constructor, prototy
      *  @static
      */
     constructor.get = function(url, success, failure) {
-<<<<<<< HEAD
-=======
         if (url == null) {
             failure("URL is null. Cannot EcRepository.get");
             return;
         }
->>>>>>> master
         if (url.toLowerCase().indexOf("http") != 0) {
             failure("URL does not begin with http. Cannot EcRepository.get");
             return;
@@ -71269,6 +70317,9 @@ var EcAssertion = function() {
     Assertion.call(this);
 };
 EcAssertion = stjs.extend(EcAssertion, Assertion, [], function(constructor, prototype) {
+    prototype.equals = function(obj) {
+        return this.isId((obj).id);
+    };
     constructor.get = function(id, success, failure) {
         EcRepository.get(id, function(p1) {
             var assertion = new EcAssertion();
@@ -72603,6 +71654,9 @@ EcFramework = stjs.extend(EcFramework, Framework, [], function(constructor, prot
     constructor.relDone = {};
     constructor.levelDone = {};
     constructor.template = null;
+    prototype.equals = function(obj) {
+        return this.isId((obj).id);
+    };
     /**
      *  Retrieves a framework from the server, specified by the ID
      * 
@@ -75738,400 +74792,6 @@ NodeGraph = stjs.extend(NodeGraph, null, [], function(constructor, prototype) {
         return ret;
     };
 }, {nodeList: {name: "Array", arguments: ["Node"]}, nodeMap: {name: "Map", arguments: [null, "Node"]}, relationList: {name: "Array", arguments: ["NodeRelation"]}, relationMap: {name: "Map", arguments: [null, {name: "Array", arguments: ["NodeRelation"]}]}}, {});
-<<<<<<< HEAD
-=======
-var CompetencyGraph = function(includeAssertions) {
-    this.nodes = new Array();
-    this.edges = new Array();
-    this.positiveAssertions = new Array();
-    this.negativeAssertions = new Array();
-    this.nodeMap = {};
-    this.edgeMap = {};
-    this.includeAssertions = includeAssertions;
-};
-CompetencyGraph = stjs.extend(CompetencyGraph, null, [], function(constructor, prototype) {
-    constructor.NARROWS_RELATION_TEXT = "narrows";
-    constructor.BROADENS_RELATION_TEXT = "broadens";
-    constructor.REQUIRES_RELATION_TEXT = "requires";
-    constructor.IS_REQUIRED_BY_RELATION_TEXT = "isRequiredBy";
-    constructor.IS_EQUIVALENT_TO_RELATION_TEXT = "isEquivalentTo";
-    constructor.EDGE_MAP_FIELD_DELIMETER = " -------||||||------- ";
-    constructor.CleanGraph = function(nodes, edges) {
-        this.nodes = nodes;
-        this.edges = edges;
-    };
-    constructor.CleanGraph = stjs.extend(constructor.CleanGraph, null, [], function(constructor, prototype) {
-        prototype.nodes = null;
-        prototype.edges = null;
-    }, {nodes: {name: "Array", arguments: [null]}, edges: {name: "Array", arguments: ["CgEdge"]}}, {});
-    constructor.CleanGraphWithAssertions = function(nodes, edges, positiveAssertions, negativeAssertions) {
-        this.nodes = nodes;
-        this.edges = edges;
-        this.positiveAssertions = positiveAssertions;
-        this.negativeAssertions = negativeAssertions;
-    };
-    constructor.CleanGraphWithAssertions = stjs.extend(constructor.CleanGraphWithAssertions, null, [], function(constructor, prototype) {
-        prototype.nodes = null;
-        prototype.edges = null;
-        prototype.positiveAssertions = null;
-        prototype.negativeAssertions = null;
-    }, {nodes: {name: "Array", arguments: [null]}, edges: {name: "Array", arguments: ["CgEdge"]}, positiveAssertions: {name: "Array", arguments: ["SimpleAssertion"]}, negativeAssertions: {name: "Array", arguments: ["SimpleAssertion"]}}, {});
-    prototype.nodes = null;
-    prototype.edges = null;
-    prototype.positiveAssertions = null;
-    prototype.negativeAssertions = null;
-    prototype.nodeMap = null;
-    prototype.edgeMap = null;
-    prototype.includeAssertions = false;
-    prototype.addNode = function(id) {
-        if (!this.graphContainsNode(id)) {
-            this.nodes.push(id);
-            this.nodeMap[id] = id;
-        }
-    };
-    prototype.getEdgeKey = function(source, target, relationType) {
-        return source + CompetencyGraph.EDGE_MAP_FIELD_DELIMETER + target + CompetencyGraph.EDGE_MAP_FIELD_DELIMETER + relationType;
-    };
-    prototype.addEdge = function(source, target, relationType) {
-        if (!this.graphContainsEdge(source, target, relationType)) {
-            this.edges.push(new CgEdge(source, target, relationType));
-            var edgeKey = this.getEdgeKey(source, target, relationType);
-            this.edgeMap[edgeKey] = edgeKey;
-        }
-    };
-    prototype.addPositiveAssertion = function(simpleAssertion) {
-        if (simpleAssertion != null) 
-            this.positiveAssertions.push(simpleAssertion);
-    };
-    prototype.addNegativeAssertion = function(simpleAssertion) {
-        if (simpleAssertion != null) 
-            this.negativeAssertions.push(simpleAssertion);
-    };
-    prototype.graphContainsNode = function(nodeId) {
-        if (this.nodeMap[nodeId] == null) 
-            return false;
-        return true;
-    };
-    prototype.graphContainsEdge = function(source, target, relationType) {
-        if (this.edgeMap[this.getEdgeKey(source, target, relationType)] == null) 
-            return false;
-        return true;
-    };
-    prototype.createImpliedRelationships = function() {
-        var edgesToAdd = new Array();
-        var e;
-        for (var i = 0; i < this.edges.length; i++) {
-            e = this.edges[i];
-            if (e.getRelation().equalsIgnoreCase(CompetencyGraph.NARROWS_RELATION_TEXT)) {
-                edgesToAdd.push(new CgEdge(e.getTarget(), e.getSource(), CompetencyGraph.BROADENS_RELATION_TEXT));
-            } else if (e.getRelation().equalsIgnoreCase(CompetencyGraph.REQUIRES_RELATION_TEXT)) {
-                edgesToAdd.push(new CgEdge(e.getTarget(), e.getSource(), CompetencyGraph.IS_REQUIRED_BY_RELATION_TEXT));
-            } else if (e.getRelation().equalsIgnoreCase(CompetencyGraph.IS_EQUIVALENT_TO_RELATION_TEXT)) {
-                edgesToAdd.push(new CgEdge(e.getTarget(), e.getSource(), CompetencyGraph.IS_EQUIVALENT_TO_RELATION_TEXT));
-            }
-        }
-        var ne;
-        for (var i = 0; i < edgesToAdd.length; i++) {
-            ne = edgesToAdd[i];
-            this.addEdge(ne.getSource(), ne.getTarget(), ne.getRelation());
-        }
-    };
-    prototype.getJsonString = function() {
-        if (this.includeAssertions) 
-            return JSON.stringify(new CompetencyGraph.CleanGraphWithAssertions(this.nodes, this.edges, this.positiveAssertions, this.negativeAssertions));
-         else 
-            return JSON.stringify(new CompetencyGraph.CleanGraph(this.nodes, this.edges));
-    };
-    prototype.getNodes = function() {
-        return this.nodes;
-    };
-    prototype.setNodes = function(nodes) {
-        this.nodes = nodes;
-    };
-    prototype.getEdges = function() {
-        return this.edges;
-    };
-    prototype.setEdges = function(edges) {
-        this.edges = edges;
-    };
-    prototype.getPositiveAssertions = function() {
-        return this.positiveAssertions;
-    };
-    prototype.setPositiveAssertions = function(positiveAssertions) {
-        this.positiveAssertions = positiveAssertions;
-    };
-    prototype.getNegativeAssertions = function() {
-        return this.negativeAssertions;
-    };
-    prototype.setNegativeAssertions = function(negativeAssertions) {
-        this.negativeAssertions = negativeAssertions;
-    };
-}, {nodes: {name: "Array", arguments: [null]}, edges: {name: "Array", arguments: ["CgEdge"]}, positiveAssertions: {name: "Array", arguments: ["SimpleAssertion"]}, negativeAssertions: {name: "Array", arguments: ["SimpleAssertion"]}, nodeMap: {name: "Map", arguments: [null, null]}, edgeMap: {name: "Map", arguments: [null, null]}}, {});
-var PapDependencyDefinitions = function() {
-    this.dependencyDefinitionMap = {};
-};
-PapDependencyDefinitions = stjs.extend(PapDependencyDefinitions, null, [], function(constructor, prototype) {
-    constructor.DEFAULT_WEIGHT = 1.0;
-    constructor.DEFAULT_LEAK = 0.0;
-    constructor.DEFAULT_REVERSE = false;
-    constructor.DEFAULT_NARROWS_BASE_CLASS = "broadens";
-    constructor.DEFAULT_NARROWS_REVERSE = true;
-    constructor.DEFAULT_NARROWS_WEIGHT = 0.9;
-    constructor.DEFAULT_NARROWS_LEAK = 0.0;
-    constructor.DEFAULT_NARROWS_KEY = "narrows";
-    constructor.DEFAULT_ENABLES_BASE_CLASS = "isSufficientFor";
-    constructor.DEFAULT_ENABLES_REVERSE = true;
-    constructor.DEFAULT_ENABLES_WEIGHT = 0.9;
-    constructor.DEFAULT_ENABLES_LEAK = 0.0;
-    constructor.DEFAULT_ENABLES_KEY = "enables";
-    constructor.DEFAULT_REQUIRES_BASE_CLASS = "isRequiredBy";
-    constructor.DEFAULT_REQUIRES_REVERSE = false;
-    constructor.DEFAULT_REQUIRES_WEIGHT = 0.9;
-    constructor.DEFAULT_REQUIRES_LEAK = 0.0;
-    constructor.DEFAULT_REQUIRES_KEY = "requires";
-    prototype.dependencyDefinitionMap = null;
-    /**
-     *  Pulled default values from CruncherAssertionProcessor
-     *      dependencyDefs = new JSONObject();
-     * 
-     *      JSONObject narrows = new JSONObject();
-     *      narrows.put("class","broadens");
-     *      narrows.put("reverse",true);
-     *      narrows.put("weight",0.9);
-     *      dependencyDefs.put("narrows",narrows);
-     * 
-     *      JSONObject enables = new JSONObject();
-     *      enables.put("class","isSufficientFor");
-     *      enables.put("weight",0.9);
-     *      enables.put("reverse",true);
-     *      dependencyDefs.put("enables",enables);
-     * 
-     *      JSONObject requires = new JSONObject();
-     *      requires.put("class","isRequiredBy");
-     *      requires.put("weight",0.9);
-     *      dependencyDefs.put("requires",requires);
-     */
-    prototype.initDefaultDefinitions = function() {
-        var narrowsDepDef = new PapDependencyDefinitionBase(PapDependencyDefinitions.DEFAULT_NARROWS_BASE_CLASS, PapDependencyDefinitions.DEFAULT_NARROWS_REVERSE, PapDependencyDefinitions.DEFAULT_NARROWS_WEIGHT, PapDependencyDefinitions.DEFAULT_NARROWS_LEAK);
-        var enablesDepDef = new PapDependencyDefinitionBase(PapDependencyDefinitions.DEFAULT_ENABLES_BASE_CLASS, PapDependencyDefinitions.DEFAULT_ENABLES_REVERSE, PapDependencyDefinitions.DEFAULT_ENABLES_WEIGHT, PapDependencyDefinitions.DEFAULT_ENABLES_LEAK);
-        var requiresDepDef = new PapDependencyDefinitionBase(PapDependencyDefinitions.DEFAULT_REQUIRES_BASE_CLASS, PapDependencyDefinitions.DEFAULT_REQUIRES_REVERSE, PapDependencyDefinitions.DEFAULT_REQUIRES_WEIGHT, PapDependencyDefinitions.DEFAULT_REQUIRES_LEAK);
-        this.addDependencyDefinition(PapDependencyDefinitions.DEFAULT_NARROWS_KEY, narrowsDepDef);
-        this.addDependencyDefinition(PapDependencyDefinitions.DEFAULT_ENABLES_KEY, enablesDepDef);
-        this.addDependencyDefinition(PapDependencyDefinitions.DEFAULT_REQUIRES_KEY, requiresDepDef);
-    };
-    prototype.getWeightForType = function(depType) {
-        var base = this.dependencyDefinitionMap[depType];
-        if (base == null) 
-            return PapDependencyDefinitions.DEFAULT_WEIGHT;
-         else 
-            return base.getWeight();
-    };
-    prototype.getLeakForType = function(depType) {
-        var base = this.dependencyDefinitionMap[depType];
-        if (base == null) 
-            return PapDependencyDefinitions.DEFAULT_LEAK;
-         else 
-            return base.getLeak();
-    };
-    prototype.getReverseForType = function(depType) {
-        var base = this.dependencyDefinitionMap[depType];
-        if (base == null) 
-            return PapDependencyDefinitions.DEFAULT_REVERSE;
-         else 
-            return base.getReverse();
-    };
-    prototype.addDependencyDefinition = function(relationshipName, definition) {
-        this.getDependencyDefinitionMap()[relationshipName] = definition;
-    };
-    prototype.getDependencyDefinitionMap = function() {
-        return this.dependencyDefinitionMap;
-    };
-    prototype.setDependencyDefinitionMap = function(dependencyDefinitionMap) {
-        this.dependencyDefinitionMap = dependencyDefinitionMap;
-    };
-}, {dependencyDefinitionMap: {name: "Map", arguments: [null, "PapDependencyDefinitionBase"]}}, {});
-var EcFrameworkGraph = function() {
-    EcDirectedGraph.call(this);
-    this.metaVerticies = new Object();
-    this.metaEdges = new Object();
-    this.competencyMap = new Object();
-    this.edgeMap = new Object();
-    this.dontTryAnyMore = new Object();
-    this.frameworks = new Array();
-};
-EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(constructor, prototype) {
-    prototype.metaVerticies = null;
-    prototype.metaEdges = null;
-    prototype.competencyMap = null;
-    prototype.edgeMap = null;
-    prototype.dontTryAnyMore = null;
-    prototype.frameworks = null;
-    prototype.addFramework = function(framework, repo, success, failure) {
-        this.frameworks.push(framework);
-        var me = this;
-        repo.multiget(framework.competency.concat(framework.relation), function(data) {
-            var competencyTemplate = new EcCompetency();
-            var alignmentTemplate = new EcAlignment();
-            for (var i = 0; i < data.length; i++) {
-                var d = data[i];
-                if (d.isAny(competencyTemplate.getTypes())) {
-                    var c = EcCompetency.getBlocking(d.id);
-                    me.addCompetency(c);
-                    me.addToMetaStateArray(me.getMetaStateCompetency(c), "framework", framework);
-                } else if (d.isAny(alignmentTemplate.getTypes())) {
-                    var alignment = EcAlignment.getBlocking(d.id);
-                    me.addRelation(alignment);
-                    me.addToMetaStateArray(me.getMetaStateAlignment(alignment), "framework", framework);
-                }
-            }
-            success();
-        }, failure);
-    };
-    prototype.processAssertionsBoolean = function(assertions, success, failure) {
-        var me = this;
-        var eah = new EcAsyncHelper();
-        eah.each(assertions, function(assertion, done) {
-            var competency = EcCompetency.getBlocking(assertion.competency);
-            if (!me.containsVertex(competency)) {
-                done();
-                return;
-            }
-            assertion.getNegativeAsync(function(negative) {
-                me.processAssertionsBooleanPerAssertion(assertion, negative, competency, done, new Array());
-            }, eah.failWithCallback(failure, done));
-        }, function(strings) {
-            success();
-        });
-    };
-    prototype.processAssertionsBooleanPerAssertion = function(assertion, negative, competency, done, visited) {
-        var me = this;
-        if (EcArray.has(visited, competency)) {
-            done();
-            return;
-        }
-        visited.push(competency);
-        if (negative) {
-            var metaState = this.getMetaStateCompetency(competency);
-            this.addToMetaStateArray(metaState, "negativeAssertion", assertion);
-            new EcAsyncHelper().each(me.getOutEdges(competency), function(alignment, callback0) {
-                if (alignment.relationType == Relation.NARROWS) 
-                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
-                 else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
-                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
-                 else 
-                    callback0();
-            }, function(strings) {
-                new EcAsyncHelper().each(me.getInEdges(competency), function(alignment, callback0) {
-                    if (alignment.relationType == Relation.REQUIRES) 
-                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
-                     else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
-                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
-                     else 
-                        callback0();
-                }, function(strings) {
-                    done();
-                });
-            });
-        } else {
-            var metaState = this.getMetaStateCompetency(competency);
-            this.addToMetaStateArray(metaState, "positiveAssertion", assertion);
-            new EcAsyncHelper().each(me.getInEdges(competency), function(alignment, callback0) {
-                if (alignment.relationType == Relation.NARROWS) 
-                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
-                 else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
-                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
-                 else 
-                    callback0();
-            }, function(strings) {
-                new EcAsyncHelper().each(me.getOutEdges(competency), function(alignment, callback0) {
-                    if (alignment.relationType == Relation.REQUIRES) 
-                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
-                     else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
-                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
-                     else 
-                        callback0();
-                }, function(strings) {
-                    done();
-                });
-            });
-        }
-    };
-    prototype.addToMetaStateArray = function(metaState, key, value) {
-        if (metaState == null) 
-            return;
-        if ((metaState)[key] == null) 
-            (metaState)[key] = new Array();
-        ((metaState)[key]).push(value);
-    };
-    prototype.getMetaStateCompetency = function(c) {
-        var result = this.metaVerticies[c.shortId()];
-        if (result == null) {
-            if (this.containsVertex(c) == false) 
-                return null;
-            if (this.metaVerticies[c.shortId()] == null) 
-                this.metaVerticies[c.shortId()] = result = new Object();
-        }
-        return result;
-    };
-    prototype.getMetaStateAlignment = function(a) {
-        var result = this.metaEdges[a.shortId()];
-        if (result == null) {
-            if (this.containsEdge(a) == false) 
-                return null;
-            if (this.metaEdges[a.shortId()] == null) 
-                this.metaEdges[a.shortId()] = result = new Object();
-        }
-        return result;
-    };
-    prototype.containsVertex = function(competency) {
-        return (this.competencyMap)[competency.shortId()] != null;
-    };
-    prototype.containsEdge = function(competency) {
-        return (this.edgeMap)[competency.shortId()] != null;
-    };
-    prototype.addCompetency = function(competency) {
-        if (competency == null) 
-            return false;
-        if (this.containsVertex(competency)) 
-            return false;
-        (this.competencyMap)[competency.shortId()] = competency;
-        (this.competencyMap)[competency.id] = competency;
-        return this.addVertex(competency);
-    };
-    prototype.addRelation = function(alignment) {
-        if (alignment == null) 
-            return false;
-        if (this.containsEdge(alignment)) 
-            return false;
-        var source = (this.competencyMap)[alignment.source];
-        if (source == null && (this.dontTryAnyMore)[alignment.source] != null) 
-            return false;
-        if (source == null) 
-            source = EcCompetency.getBlocking(alignment.source);
-        if (source == null) 
-            (this.dontTryAnyMore)[alignment.source] = "";
-        var target = (this.competencyMap)[alignment.target];
-        if (target == null && (this.dontTryAnyMore)[alignment.target] != null) 
-            return false;
-        if (target == null) 
-            target = EcCompetency.getBlocking(alignment.target);
-        if (target == null) 
-            (this.dontTryAnyMore)[alignment.target] = "";
-        if (source == null || target == null) 
-            return false;
-        return this.addEdgeUnsafely(alignment, source, target);
-    };
-    prototype.addHyperEdge = function(edge, vertices) {
-         throw new RuntimeException("Don't do this.");
-    };
-    prototype.getEdgeType = function(edge) {
-        return edge.relationType;
-    };
-    prototype.getDefaultEdgeType = function() {
-        return EcAlignment.NARROWS;
-    };
-}, {metaVerticies: {name: "Map", arguments: [null, "Object"]}, metaEdges: {name: "Map", arguments: [null, "Object"]}, competencyMap: "Object", edgeMap: "Object", dontTryAnyMore: "Object", frameworks: {name: "Array", arguments: ["EcFramework"]}, edges: {name: "Array", arguments: [{name: "Triple", arguments: ["V", "V", "E"]}]}, verticies: {name: "Array", arguments: ["V"]}}, {});
->>>>>>> master
 var NodePacketGraph = function() {
     this.nodePacketList = new Array();
     this.nodePacketMap = {};
@@ -76548,6 +75208,7 @@ var EcFrameworkGraph = function() {
     this.competencyMap = new Object();
     this.edgeMap = new Object();
     this.dontTryAnyMore = new Object();
+    this.frameworks = new Array();
 };
 EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(constructor, prototype) {
     prototype.metaVerticies = null;
@@ -76555,7 +75216,9 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
     prototype.competencyMap = null;
     prototype.edgeMap = null;
     prototype.dontTryAnyMore = null;
+    prototype.frameworks = null;
     prototype.addFramework = function(framework, repo, success, failure) {
+        this.frameworks.push(framework);
         var me = this;
         repo.multiget(framework.competency.concat(framework.relation), function(data) {
             var competencyTemplate = new EcCompetency();
@@ -76718,7 +75381,7 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
     prototype.getDefaultEdgeType = function() {
         return EcAlignment.NARROWS;
     };
-}, {metaVerticies: {name: "Map", arguments: [null, "Object"]}, metaEdges: {name: "Map", arguments: [null, "Object"]}, competencyMap: "Object", edgeMap: "Object", dontTryAnyMore: "Object", edges: {name: "Array", arguments: [{name: "Triple", arguments: ["V", "V", "E"]}]}, verticies: {name: "Array", arguments: ["V"]}}, {});
+}, {metaVerticies: {name: "Map", arguments: [null, "Object"]}, metaEdges: {name: "Map", arguments: [null, "Object"]}, competencyMap: "Object", edgeMap: "Object", dontTryAnyMore: "Object", frameworks: {name: "Array", arguments: ["EcFramework"]}, edges: {name: "Array", arguments: [{name: "Triple", arguments: ["V", "V", "E"]}]}, verticies: {name: "Array", arguments: ["V"]}}, {});
 var CompetencyGraphBuilder = function() {
     this.repositories = new Array();
     this.subjects = new Array();
@@ -77508,7 +76171,6 @@ TestGraphBuilder = stjs.extend(TestGraphBuilder, null, [], function(constructor,
         graph.addRelation(nodeG, nodeH, RelationType.RELATION_TYPE.IS_REQUIRED_BY);
         graph.addRelation(nodeH, nodeE, RelationType.RELATION_TYPE.IS_REQUIRED_BY);
     };
-<<<<<<< HEAD
     constructor.buildTest4 = function(graph) {
         var nodeA = new Node("A");
         var nodeB = new Node("B");
@@ -77628,8 +76290,117 @@ TestGraphBuilder = stjs.extend(TestGraphBuilder, null, [], function(constructor,
         return graph;
     };
 }, {}, {});
-=======
-}, {competencyIndex: {name: "Map", arguments: [null, null]}, values: {name: "Array", arguments: [null]}, dependencies: {name: "Map", arguments: [null, {name: "Map", arguments: [null, {name: "Array", arguments: ["PapDependency"]}]}]}, assertions: {name: "Map", arguments: [null, {name: "Array", arguments: ["PapAssertion"]}]}, dependencyDefs: "PapDependencyDefinitions", settings: "PapSettings", inputGraph: "CompetencyGraph", competencyNetwork: "PapCompetencyNetwork", competencePrediction: "PapNetworkPrediction"}, {});
+var CyclicGraphCollapser = function() {};
+CyclicGraphCollapser = stjs.extend(CyclicGraphCollapser, null, [], function(constructor, prototype) {
+    prototype.nodesProcessed = null;
+    prototype.visitedNodes = null;
+    prototype.buildNarrowsIsRequiredByEqualsMap = function(graph) {
+        var relationMap = new NodeRelationMap();
+        var n;
+        var nodeList = graph.getNodeList();
+        for (var i = 0; i < nodeList.length; i++) {
+            n = nodeList[i];
+            relationMap.addNodeRelations(n, graph.getNarrowsIsRequiredByEqualsRelationListForNode(n));
+        }
+        return relationMap;
+    };
+    prototype.buildBroadensRequiresEqualsMap = function(graph) {
+        var relationMap = new NodeRelationMap();
+        var n;
+        var nodeList = graph.getNodeList();
+        for (var i = 0; i < nodeList.length; i++) {
+            n = nodeList[i];
+            relationMap.addNodeRelations(n, graph.getBroadensRequiresEqualsRelationListForNode(n));
+        }
+        return relationMap;
+    };
+    prototype.mergeEquivalentNodes = function(relationMap, npg) {
+        var nodeList = relationMap.getNodeList();
+        var nodeRelations;
+        var nr;
+        for (var i = 0; i < nodeList.length; i++) {
+            nodeRelations = relationMap.getRelationsForNode(nodeList[i]);
+            for (var j = 0; j < nodeRelations.length; j++) {
+                nr = nodeRelations[j];
+                if (nr.getType() == RelationType.RELATION_TYPE.IS_EQUIVALENT_TO) {
+                    npg.mergeNodePackets(npg.getNodePacketForNode(nr.getSource()), npg.getNodePacketForNode(nr.getTarget()));
+                }
+            }
+        }
+    };
+    prototype.mergeCyclicNodes = function(startCycleNode, npg) {
+        var startingIdx = ArrayUtil.arrayLastIndexOf(this.visitedNodes, startCycleNode);
+        var partOfCycleNode;
+        for (var i = startingIdx + 1; i < this.visitedNodes.length; i++) {
+            partOfCycleNode = this.visitedNodes[i];
+            if (partOfCycleNode != startCycleNode) {
+                npg.mergeNodePackets(npg.getNodePacketForNode(startCycleNode), npg.getNodePacketForNode(partOfCycleNode));
+            }
+        }
+    };
+    prototype.findCycles = function(n, relationMap, npg) {
+        if (ArrayUtil.arrayContains(this.visitedNodes, n)) {
+            this.mergeCyclicNodes(n, npg);
+        } else {
+            this.nodesProcessed.push(n);
+            var relationsToVisit = relationMap.getRelationsForNode(n);
+            if (relationsToVisit == null || relationsToVisit.length == 0) 
+                return;
+             else {
+                this.visitedNodes.push(n);
+                var nr;
+                for (var i = 0; i < relationsToVisit.length; i++) {
+                    nr = relationsToVisit[i];
+                    this.findCycles(nr.getTarget(), relationMap, npg);
+                }
+                this.visitedNodes = ArrayUtil.arrayRemove(this.visitedNodes, n);
+            }
+        }
+    };
+    prototype.startFindCycles = function(relationMap, npg) {
+        var nodeList = relationMap.getNodeList();
+        for (var i = 0; i < nodeList.length; i++) {
+            this.visitedNodes = new Array();
+            this.findCycles(nodeList[i], relationMap, npg);
+        }
+    };
+    prototype.buildNodePacketGraph = function(relationMap) {
+        var npg = new NodePacketGraph();
+        npg.initNodePacketGraph(relationMap.getNodeList());
+        this.mergeEquivalentNodes(relationMap, npg);
+        this.nodesProcessed = new Array();
+        this.startFindCycles(relationMap, npg);
+        return npg;
+    };
+    prototype.mergeNodePacketGraphs = function(nirbeNpg, breNpg) {
+        var mergedNpg = nirbeNpg;
+        var np;
+        var nodePacketList = breNpg.getNodePacketList();
+        for (var i = 0; i < nodePacketList.length; i++) {
+            np = nodePacketList[i];
+            if (np.getNodeCount() > 1) {
+                var targetNodePacket = mergedNpg.getNodePacketForNode(np.getNodeList()[0]);
+                for (var j = 1; j < np.getNodeList().length; j++) {
+                    mergedNpg.mergeNodePackets(targetNodePacket, mergedNpg.getNodePacketForNode(np.getNodeList()[j]));
+                }
+            }
+        }
+        return mergedNpg;
+    };
+    prototype.collapseGraph = function(graph) {
+        try {
+            var nirbeNrm = this.buildNarrowsIsRequiredByEqualsMap(graph);
+            var nirbeNpg = this.buildNodePacketGraph(nirbeNrm);
+            var breNrm = this.buildBroadensRequiresEqualsMap(graph);
+            var breNpg = this.buildNodePacketGraph(breNrm);
+            var finalNodePacketGraph = this.mergeNodePacketGraphs(nirbeNpg, breNpg);
+            finalNodePacketGraph.buildPacketRelationsFromNodeRelations(graph.getRelationList());
+            return finalNodePacketGraph;
+        }catch (e) {
+             throw e;
+        }
+    };
+}, {nodesProcessed: {name: "Array", arguments: ["Node"]}, visitedNodes: {name: "Array", arguments: ["Node"]}}, {});
 /**
  *  Processor used in determining all the competencies a for which a user has assertions.
  *  Utilizes EcFrameworkGraph
@@ -77846,118 +76617,6 @@ ProfileProcessor = stjs.extend(ProfileProcessor, null, [], function(constructor,
         this.fetchProfileAssertions();
     };
 }, {profilePkPems: {name: "Array", arguments: [null]}, repo: "EcRepository", successCallback: "Callback0", failureCallback: {name: "Callback1", arguments: [null]}, assertedFrameworkGraphs: {name: "Array", arguments: ["EcFrameworkGraph"]}, unfilteredAssertionList: {name: "Array", arguments: ["EcAssertion"]}, profileAssertions: {name: "Array", arguments: ["EcAssertion"]}, addedAssertionIds: {name: "Array", arguments: [null]}, assertionCompetencies: {name: "Array", arguments: [null]}}, {});
->>>>>>> master
-var CyclicGraphCollapser = function() {};
-CyclicGraphCollapser = stjs.extend(CyclicGraphCollapser, null, [], function(constructor, prototype) {
-    prototype.nodesProcessed = null;
-    prototype.visitedNodes = null;
-    prototype.buildNarrowsIsRequiredByEqualsMap = function(graph) {
-        var relationMap = new NodeRelationMap();
-        var n;
-        var nodeList = graph.getNodeList();
-        for (var i = 0; i < nodeList.length; i++) {
-            n = nodeList[i];
-            relationMap.addNodeRelations(n, graph.getNarrowsIsRequiredByEqualsRelationListForNode(n));
-        }
-        return relationMap;
-    };
-    prototype.buildBroadensRequiresEqualsMap = function(graph) {
-        var relationMap = new NodeRelationMap();
-        var n;
-        var nodeList = graph.getNodeList();
-        for (var i = 0; i < nodeList.length; i++) {
-            n = nodeList[i];
-            relationMap.addNodeRelations(n, graph.getBroadensRequiresEqualsRelationListForNode(n));
-        }
-        return relationMap;
-    };
-    prototype.mergeEquivalentNodes = function(relationMap, npg) {
-        var nodeList = relationMap.getNodeList();
-        var nodeRelations;
-        var nr;
-        for (var i = 0; i < nodeList.length; i++) {
-            nodeRelations = relationMap.getRelationsForNode(nodeList[i]);
-            for (var j = 0; j < nodeRelations.length; j++) {
-                nr = nodeRelations[j];
-                if (nr.getType() == RelationType.RELATION_TYPE.IS_EQUIVALENT_TO) {
-                    npg.mergeNodePackets(npg.getNodePacketForNode(nr.getSource()), npg.getNodePacketForNode(nr.getTarget()));
-                }
-            }
-        }
-    };
-    prototype.mergeCyclicNodes = function(startCycleNode, npg) {
-        var startingIdx = ArrayUtil.arrayLastIndexOf(this.visitedNodes, startCycleNode);
-        var partOfCycleNode;
-        for (var i = startingIdx + 1; i < this.visitedNodes.length; i++) {
-            partOfCycleNode = this.visitedNodes[i];
-            if (partOfCycleNode != startCycleNode) {
-                npg.mergeNodePackets(npg.getNodePacketForNode(startCycleNode), npg.getNodePacketForNode(partOfCycleNode));
-            }
-        }
-    };
-    prototype.findCycles = function(n, relationMap, npg) {
-        if (ArrayUtil.arrayContains(this.visitedNodes, n)) {
-            this.mergeCyclicNodes(n, npg);
-        } else {
-            this.nodesProcessed.push(n);
-            var relationsToVisit = relationMap.getRelationsForNode(n);
-            if (relationsToVisit == null || relationsToVisit.length == 0) 
-                return;
-             else {
-                this.visitedNodes.push(n);
-                var nr;
-                for (var i = 0; i < relationsToVisit.length; i++) {
-                    nr = relationsToVisit[i];
-                    this.findCycles(nr.getTarget(), relationMap, npg);
-                }
-                this.visitedNodes = ArrayUtil.arrayRemove(this.visitedNodes, n);
-            }
-        }
-    };
-    prototype.startFindCycles = function(relationMap, npg) {
-        var nodeList = relationMap.getNodeList();
-        for (var i = 0; i < nodeList.length; i++) {
-            this.visitedNodes = new Array();
-            this.findCycles(nodeList[i], relationMap, npg);
-        }
-    };
-    prototype.buildNodePacketGraph = function(relationMap) {
-        var npg = new NodePacketGraph();
-        npg.initNodePacketGraph(relationMap.getNodeList());
-        this.mergeEquivalentNodes(relationMap, npg);
-        this.nodesProcessed = new Array();
-        this.startFindCycles(relationMap, npg);
-        return npg;
-    };
-    prototype.mergeNodePacketGraphs = function(nirbeNpg, breNpg) {
-        var mergedNpg = nirbeNpg;
-        var np;
-        var nodePacketList = breNpg.getNodePacketList();
-        for (var i = 0; i < nodePacketList.length; i++) {
-            np = nodePacketList[i];
-            if (np.getNodeCount() > 1) {
-                var targetNodePacket = mergedNpg.getNodePacketForNode(np.getNodeList()[0]);
-                for (var j = 1; j < np.getNodeList().length; j++) {
-                    mergedNpg.mergeNodePackets(targetNodePacket, mergedNpg.getNodePacketForNode(np.getNodeList()[j]));
-                }
-            }
-        }
-        return mergedNpg;
-    };
-    prototype.collapseGraph = function(graph) {
-        try {
-            var nirbeNrm = this.buildNarrowsIsRequiredByEqualsMap(graph);
-            var nirbeNpg = this.buildNodePacketGraph(nirbeNrm);
-            var breNrm = this.buildBroadensRequiresEqualsMap(graph);
-            var breNpg = this.buildNodePacketGraph(breNrm);
-            var finalNodePacketGraph = this.mergeNodePacketGraphs(nirbeNpg, breNpg);
-            finalNodePacketGraph.buildPacketRelationsFromNodeRelations(graph.getRelationList());
-            return finalNodePacketGraph;
-        }catch (e) {
-             throw e;
-        }
-    };
-}, {nodesProcessed: {name: "Array", arguments: ["Node"]}, visitedNodes: {name: "Array", arguments: ["Node"]}}, {});
 var CombinatorAssertionProcessor = function() {
     AssertionProcessor.call(this);
 };

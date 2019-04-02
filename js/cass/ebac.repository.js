@@ -879,13 +879,10 @@ EcRepository = stjs.extend(EcRepository, null, [], function(constructor, prototy
      *  @static
      */
     constructor.get = function(url, success, failure) {
-<<<<<<< HEAD
-=======
         if (url == null) {
             failure("URL is null. Cannot EcRepository.get");
             return;
         }
->>>>>>> master
         if (url.toLowerCase().indexOf("http") != 0) {
             failure("URL does not begin with http. Cannot EcRepository.get");
             return;
