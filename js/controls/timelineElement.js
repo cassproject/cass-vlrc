@@ -79,6 +79,18 @@ Vue.component('timelineElement', {
                 return "http://tinygraphs.com/spaceinvaders/" + this.subjectPerson.getGuid() + "?theme=base&numcolors=16&size=44&fmt=svg";
             }
         },
+        mine: {
+            get: function () {
+                if (this.uri == null) return null;
+                var assertion = this.assertion;
+                if (assertion != null) {
+                    if (assertion.owner == null || assertion.owner.length == 0)
+                        return true;
+                    return assertion.hasOwner(EcIdentityManager.ids[0].ppk.toPk());
+                } else
+                    return null;
+            }
+        },
         evidenceText: {
             get: function () {
                 if (this.evidence != null)
@@ -235,18 +247,24 @@ Vue.component('timelineElement', {
                 me.subjectPerson = p;
             });
         },
+        deleteMe: function () {
+            var resource = EcRepository.getBlocking(this.uri);
+            EcRepository._delete(resource, function () {
+            }, console.error);
+        },
     },
     template: '<div class="timelineElement" v-observe-visibility="{callback: initialize,once: true}">' +
     '<span v-if="ok"><div class="time" v-if="timestamp">{{ timeAgo }},</div>' +
     '<img style="vertical-align: sub;" v-if="fingerprintUrlAgent" :src="fingerprintUrlAgent" :title="agent"/><img style="vertical-align: sub;" v-if="fingerprintUrlSubject" :src="fingerprintUrlSubject" :title="subject"/> ' +
     '<div class="content">' +
+    '<div v-if="mine" v-on:click="deleteMe" title="Delete this claim." style="float:right;cursor:pointer;">X</div>' +
     '{{agent}} claimed {{subject}} ' +
     '<span v-if="negative">could not</span><span v-else>could</span>' +
     ' demonstrate ' +
     '<a href="#" v-on:click="gotoCompetency" :title="assertion.competency">' +
     '{{ competencyName }}' +
     '<span v-if="frameworkName"> in the subject area {{ frameworkName }}</span>' +
-    '</a> {{evidenceText}}.' +
+    '</a>{{evidenceText}}.' +
     '<br>' +
     '<small>{{ competencyDescription }}</small>' +
     '</div>' +
