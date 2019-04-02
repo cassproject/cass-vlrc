@@ -14,7 +14,9 @@ Vue.component('competency', {
             competencyObj: null,
             estimatedCompetenceValue: null,
             estimatedCompetenceTitle: null,
-            visible: false
+            visible: false,
+            iconAssertion: true,
+            hover: false
         };
     },
     computed: {
@@ -92,7 +94,7 @@ Vue.component('competency', {
                     this.assertionCounter = app.assertions.length;
                     this.competentStateNew = null;
                     var assertions = [];
-                    for (var i = 0;i < app.assertions.length;i++)
+                    for (var i = 0; i < app.assertions.length; i++)
                         if (this.competency.isId(app.assertions[i].competency))
                             assertions.push(app.assertions[i]);
                     var eah = new EcAsyncHelper();
@@ -101,29 +103,29 @@ Vue.component('competency', {
                             callback();
                             return;
                         }
-                            assertion.getSubjectAsync(function (subject) {
-                                if (me.subject == subject.toPem()) {
-                                    assertion.getAgentAsync(function (agent) {
-                                        if (app.me == agent.toPem()) {
-                                            if (assertion.negative != null)
-                                                assertion.getNegativeAsync(function (negative) {
-                                                    if (negative) ;
-                                                    else
-                                                        me.competentStateNew = true;
-                                                    callback();
-                                                });
-                                            else {
-                                                me.competentStateNew = true;
+                        assertion.getSubjectAsync(function (subject) {
+                            if (me.subject == subject.toPem()) {
+                                assertion.getAgentAsync(function (agent) {
+                                    if (app.me == agent.toPem()) {
+                                        if (assertion.negative != null)
+                                            assertion.getNegativeAsync(function (negative) {
+                                                if (negative);
+                                                else
+                                                    me.competentStateNew = true;
                                                 callback();
-                                            }
-                                        } else {
-                                            EcArray.setAdd(me.assertionsByOthers, assertion);
+                                            });
+                                        else {
+                                            me.competentStateNew = true;
                                             callback();
                                         }
-                                    }, callback);
-                                } else
-                                    callback();
-                            }, callback);
+                                    } else {
+                                        EcArray.setAdd(me.assertionsByOthers, assertion);
+                                        callback();
+                                    }
+                                }, callback);
+                            } else
+                                callback();
+                        }, callback);
                     }, function (assertions) {
                         if (me.competentStateNew == null) me.competentStateNew = false;
                         me.competentState = me.competentStateNew;
@@ -143,33 +145,33 @@ Vue.component('competency', {
                     this.assertionCounterIncompetent = app.assertions.length;
                     this.incompetentStateNew = null;
                     var assertions = [];
-                    for (var i = 0;i < app.assertions.length;i++)
+                    for (var i = 0; i < app.assertions.length; i++)
                         if (this.competency.isId(app.assertions[i].competency))
                             assertions.push(app.assertions[i]);
                     var eah = new EcAsyncHelper();
                     eah.each(assertions, function (assertion, callback) {
                         if (assertion == null) return;
-                            assertion.getSubjectAsync(function (subject) {
-                                if (me.subject == subject.toPem()) {
-                                    assertion.getAgentAsync(function (agent) {
-                                        if (app.me == agent.toPem()) {
-                                            if (assertion.negative != null)
-                                                assertion.getNegativeAsync(function (negative) {
-                                                    if (negative)
-                                                        me.incompetentStateNew = true;
-                                                    callback();
-                                                });
-                                            else {
+                        assertion.getSubjectAsync(function (subject) {
+                            if (me.subject == subject.toPem()) {
+                                assertion.getAgentAsync(function (agent) {
+                                    if (app.me == agent.toPem()) {
+                                        if (assertion.negative != null)
+                                            assertion.getNegativeAsync(function (negative) {
+                                                if (negative)
+                                                    me.incompetentStateNew = true;
                                                 callback();
-                                            }
-                                        } else {
-                                            EcArray.setAdd(me.assertionsByOthers, assertion);
+                                            });
+                                        else {
                                             callback();
                                         }
-                                    }, callback);
-                                } else
-                                    callback();
-                            }, callback);
+                                    } else {
+                                        EcArray.setAdd(me.assertionsByOthers, assertion);
+                                        callback();
+                                    }
+                                }, callback);
+                            } else
+                                callback();
+                        }, callback);
                     }, function (assertions) {
                         if (me.incompetentStateNew == null) me.incompetentStateNew = false;
                         me.incompetentState = me.incompetentStateNew;
@@ -256,6 +258,11 @@ Vue.component('competency', {
                 return "By selecting this, I would like to remove this from " + (app.subject == app.me ? "my" : app.subjectName + "'s") + " goals.";
             }
         },
+        otherClaimsPhrase: {
+            get: function () {
+                return "Others have made claims about " + (app.subject == app.me ? "you" : app.subjectName) + ". Click to expand.";
+            }
+        },
         canEditSubject: {
             get: function () {
                 if (this.subjectPerson == null) return false;
@@ -317,8 +324,7 @@ Vue.component('competency', {
             me.estimatedCompetenceValue = null;
             var ep = new PessimisticQuadnaryAssertionProcessor();
             ep.transferIndeterminateOptimistically = false;
-            ep.logFunction = function (data) {
-            };
+            ep.logFunction = function (data) {};
             ep.repositories.push(repo);
             var subject = new Array();
             subject.push(EcPk.fromPem(this.subject));
@@ -489,8 +495,7 @@ Vue.component('competency', {
             d.itemOffered.serviceOutput.competency = this.competencyObj.shortId();
             d.itemOffered.serviceOutput.framework = this.frameworkUri;
             this.subjectPerson.seeks.push(d);
-            EcRepository.save(this.subjectPerson, function () {
-            }, console.error);
+            EcRepository.save(this.subjectPerson, function () {}, console.error);
         },
         unmakeGoal: function (evt, after) {
             this.goalState = null;
@@ -504,38 +509,40 @@ Vue.component('competency', {
                 }
             }
             if (needsSave)
-                EcRepository.save(this.subjectPerson, function () {
-                }, console.error);
+                EcRepository.save(this.subjectPerson, function () {}, console.error);
         }
     },
-    template: '<li class="competency" v-observe-visibility="{callback: initialize}" :id="uri">' +
-    '<span v-if="subject != null">' +
-    '<button class="inline" v-if="competent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="competent == true" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="competent == false" v-on:click="claimCompetence" :title="claimCompetencePhrase"><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="incompetent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="incompetent == true" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="incompetent == false" v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
-    ' </span> ' +
-    '<a href="#" v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> ' +
-    '<span v-if="canEditSubject">' +
-    '<button class="inline" v-if="isGoal == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="isGoal == false" v-on:click="makeGoal" :title="makeGoalPhrase"><i class="mdi mdi-bullseye" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="isGoal == true" v-on:click="unmakeGoal" :title="unmakeGoalPhrase"><i class="mdi mdi-bullseye-arrow" style="color:green;" aria-hidden="true"></i></button>' +
-    '</span>' +
-    '</span>' +
-    '<span v-if="subject">' +
-    '<span v-if="frameworkUri">' +
-    '<button class="inline" v-if="computedState == null" v-on:click="getEstimatedCompetence" ><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceUnknown" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-help-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceIndeterminant" style="color:purple;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-flash-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceTrue" style="color:green;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-check-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceFalse" style="color:red;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-diameter-variant" aria-hidden="true"></i></button>' +
-    '</span>' +
-    '</span>' +
-    '<span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
-    '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
-    '<assertion v-for="item in assertionsByOthers" v-bind:key="item.id" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
-    '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :frameworkUri="frameworkUri" :computedState="computedState" :subjectPerson="subjectPerson" :subject="subject"></competency></ul>' +
-    '</li>'
+    template: '<li class="competency" v-on:mouseover="hover = true" v-on:mouseleave="hover = false" v-observe-visibility="{callback: initialize}" :id="uri">' +
+        '<span v-if="subject != null">' +
+        '<button class="inline" v-if="competent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="competent == true" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="competent == false" v-on:click="claimCompetence" :title="claimCompetencePhrase"><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="incompetent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="incompetent == true" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="incompetent == false" v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
+        ' </span> ' +
+        '<a href="#" v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> ' +
+        '<span v-if="canEditSubject">' +
+        '<button class="inline" v-if="isGoal == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="isGoal == false" v-on:click="makeGoal" :title="makeGoalPhrase"><i class="mdi mdi-bullseye" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="isGoal == true" v-on:click="unmakeGoal" :title="unmakeGoalPhrase"><i class="mdi mdi-bullseye-arrow" style="color:green;" aria-hidden="true"></i></button>' +
+        '</span>' +
+        '</span>' +
+        '<span v-if="subject">' +
+        '<span v-if="frameworkUri">' +
+        '<button class="inline" v-if="computedState == null" v-on:click="getEstimatedCompetence" ><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="estimatedCompetenceUnknown" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-help-circle" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="estimatedCompetenceIndeterminant" style="color:purple;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-flash-circle" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="estimatedCompetenceTrue" style="color:green;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-check-circle" aria-hidden="true"></i></button>' +
+        '<button class="inline" v-if="estimatedCompetenceFalse" style="color:red;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-diameter-variant" aria-hidden="true"></i></button>' +
+        '</span>' +
+        '</span>' +
+        '<span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
+        '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
+        '<div v-on:click="iconAssertion = !iconAssertion" class="assertions">' +
+        '<span v-if="iconAssertion && assertionsByOthers && assertionsByOthers.length > 0" :title="otherClaimsPhrase"><i class="mdi mdi-account-group mdi-18px" aria-hidden="true"/>: </span>'+
+        '<assertion :icon="iconAssertion" v-for="item in assertionsByOthers" v-bind:key="uri+item.id" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
+        '</div>' +
+        '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :frameworkUri="frameworkUri" :computedState="computedState" :subjectPerson="subjectPerson" :subject="subject"></competency></ul>' +
+        '</li>'
 });

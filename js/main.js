@@ -254,10 +254,18 @@ openWebSocket = function (r) {
 
 			if (new Assertion().isA(wut.getFullType())) {
 				if (app.assertions != null) {
-					var a = new EcAssertion();
-					a.copyFrom(wut);
-					app.assertions.unshift(a);
-				}
+                    var a = new EcAssertion();
+                    a.copyFrom(wut);
+                    app.assertions.unshift(a);
+
+                    a.getAssertionDateAsync(function (date) {
+                        a.assertionDateDecrypted = date;
+                        app.assertions.sort(function (a, b) {
+                            return b.assertionDateDecrypted - a.assertionDateDecrypted;
+                        });
+                    }, console.error);
+                    app.saveAssertionToIndexedDb(a);
+                }
 			}
 
 		}, console.error);
