@@ -89,7 +89,8 @@ Vue.component('timelineElement', {
             }
         },
     },
-    created: function () {},
+    created: function () {
+    },
     watch: {},
     methods: {
         initialize: function (isVisible, entry) {
@@ -163,13 +164,16 @@ Vue.component('timelineElement', {
                     app.selectedFramework = frameworks[0];
                     app.selectedCompetency = EcCompetency.getBlocking(me.assertion.competency);
                     app.subject = me.subjectPk;
-                    $("#rad2").click();
-                    setTimeout(
+                    app.$nextTick(
                         function () {
-                            $("[id=\"" + app.selectedCompetency.id + "\"]").each(function () {
-                                $(this)[0].scrollIntoView();
-                            })
-                        }, 1000);
+                            $("#rad2").click();
+                            app.$nextTick(
+                                function () {
+                                    $("[id=\"" + app.selectedCompetency.id + "\"]").each(function () {
+                                        $(this)[0].scrollIntoView();
+                                    })
+                                });
+                        });
                 }
             }, console.error);
         },
@@ -233,21 +237,21 @@ Vue.component('timelineElement', {
         },
     },
     template: '<div class="timelineElement" v-observe-visibility="{callback: initialize,once: true}">' +
-        '<span v-if="ok"><div class="time" v-if="timestamp">{{ timeAgo }},</div>' +
-        '<img style="vertical-align: sub;" v-if="fingerprintUrlAgent" :src="fingerprintUrlAgent" :title="agent"/><img style="vertical-align: sub;" v-if="fingerprintUrlSubject" :src="fingerprintUrlSubject" :title="subject"/> ' +
-        '<div class="content">' +
-        '{{agent}} claimed {{subject}} ' +
-        '<span v-if="negative">could not</span><span v-else>could</span>' +
-        ' demonstrate ' +
-        '<a href="#" v-on:click="gotoCompetency" :title="assertion.competency">' +
-        '{{ competencyName }}' +
-        '<span v-if="frameworkName"> in the subject area {{ frameworkName }}</span>' +
-        '</a> {{evidenceText}}.' +
-        '<br>' +
-        '<small>{{ competencyDescription }}</small>' +
-        '</div>' +
-        '</span>' +
-        '<div class="time" v-else><i class="mdi mdi-spin mdi-loading"/></div>' +
-        '</div>'
+    '<span v-if="ok"><div class="time" v-if="timestamp">{{ timeAgo }},</div>' +
+    '<img style="vertical-align: sub;" v-if="fingerprintUrlAgent" :src="fingerprintUrlAgent" :title="agent"/><img style="vertical-align: sub;" v-if="fingerprintUrlSubject" :src="fingerprintUrlSubject" :title="subject"/> ' +
+    '<div class="content">' +
+    '{{agent}} claimed {{subject}} ' +
+    '<span v-if="negative">could not</span><span v-else>could</span>' +
+    ' demonstrate ' +
+    '<a href="#" v-on:click="gotoCompetency" :title="assertion.competency">' +
+    '{{ competencyName }}' +
+    '<span v-if="frameworkName"> in the subject area {{ frameworkName }}</span>' +
+    '</a> {{evidenceText}}.' +
+    '<br>' +
+    '<small>{{ competencyDescription }}</small>' +
+    '</div>' +
+    '</span>' +
+    '<div class="time" v-else><i class="mdi mdi-spin mdi-loading"/></div>' +
+    '</div>'
 
 });

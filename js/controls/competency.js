@@ -260,7 +260,7 @@ Vue.component('competency', {
         },
         otherClaimsPhrase: {
             get: function () {
-                return "Others have made claims about " + (app.subject == app.me ? "you" : app.subjectName) + ".";
+                return "Others have made claims about " + (app.subject == app.me ? "you" : app.subjectName) + ". Click to expand.";
             }
         },
         canEditSubject: {
