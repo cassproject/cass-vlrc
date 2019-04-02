@@ -258,6 +258,11 @@ Vue.component('competency', {
                 return "By selecting this, I would like to remove this from " + (app.subject == app.me ? "my" : app.subjectName + "'s") + " goals.";
             }
         },
+        otherClaimsPhrase: {
+            get: function () {
+                return "Others have made claims about " + (app.subject == app.me ? "you" : app.subjectName) + ".";
+            }
+        },
         canEditSubject: {
             get: function () {
                 if (this.subjectPerson == null) return false;
@@ -535,6 +540,7 @@ Vue.component('competency', {
         '<span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
         '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
         '<div v-on:click="iconAssertion = !iconAssertion" class="assertions">' +
+        '<span v-if="iconAssertion && assertionsByOthers && assertionsByOthers.length > 0" :title="otherClaimsPhrase"><i class="mdi mdi-account-group mdi-18px" aria-hidden="true"/>: </span>'+
         '<assertion :icon="iconAssertion" v-for="item in assertionsByOthers" v-bind:key="uri+item.id" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
         '</div>' +
         '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :frameworkUri="frameworkUri" :computedState="computedState" :subjectPerson="subjectPerson" :subject="subject"></competency></ul>' +
