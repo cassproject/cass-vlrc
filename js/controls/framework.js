@@ -135,7 +135,9 @@ Vue.component('framework', {
             this.competency = null;
             this.computedStateAssertionLength = -1;
             this.once = false;
-            console.log(this.uri);
+        },
+        subject: function (newSubject, oldSubject) {
+            this.computedStateAssertionLength = -1;
         }
     },
     methods: {
