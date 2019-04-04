@@ -2,12 +2,14 @@ Vue.component('resources', {
     props: ['url'],
     data: function () {
         return {
-            resourceCount: 0
+            resourceCount: -1
         };
     },
     computed: {
         resources: function () {
-            var resourceCount = this.resourceCount;
+            if (this.resourceCount != app.creativeWorksChanges)
+                this.getResources();
+            this.resourceCount = app.creativeWorksChanges;
             return app.creativeWorks[this.url];
         },
         empty: function () {
@@ -17,7 +19,6 @@ Vue.component('resources', {
         }
     },
     created: function () {
-        this.getResources();
     },
     watch: {
         url: function (newUrl) {

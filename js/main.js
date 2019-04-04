@@ -292,6 +292,7 @@ openWebSocket = function (r) {
                             EcArray.setAdd(app.creativeWorks[a.educationalAlignment.targetUrl], a);
                         }
                 }
+                app.creativeWorksChanges++;
             }
 
         }, console.error);

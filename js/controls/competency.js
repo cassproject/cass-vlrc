@@ -3,7 +3,9 @@ Vue.component('competency', {
     props: ['uri', 'hasChild', 'parentCompetent', 'subject', 'frameworkUri', 'subjectPerson', 'computedState'],
     data: function () {
         return {
+            resources: null,
             assertionCounter: -1,
+            creativeWorkCounter: -1,
             competentStateEah: null,
             competentStateNew: null,
             incompetentStateNew: null,
@@ -21,8 +23,13 @@ Vue.component('competency', {
     computed: {
         counter: {
             get: function () {
-                if (app.creativeWorks[this.uri] == null) return 0;
-                return app.creativeWorks[this.uri].length;
+                if (this.visible) {
+                    if (this.creativeWorkCounter != app.creativeWorksChanges)
+                        this.getResourceCount();
+                    this.creativeWorkCounter = app.creativeWorksChanges;
+                }
+                if (this.resources == null) return 0;
+                return this.resources.length;
             }
         },
         estimatedCompetenceTrue: {
@@ -102,9 +109,9 @@ Vue.component('competency', {
                             assertions.push(app.assertions[i]);
                     if (this.competentStateEah != null)
                         this.competentStateEah.stop();
-                    this.competentStateEah = new EcAsyncHelper();
                     this.competentStateNew = null;
                     this.incompetentStateNew = null;
+                    this.competentStateEah = new EcAsyncHelper();
                     this.competentStateEah.each(assertions, function (assertion, callback) {
                         if (assertion != null)
                             assertion.getSubjectAsync(function (subject) {
@@ -278,7 +285,6 @@ Vue.component('competency', {
             this.visible = isVisible;
             if (isVisible && this.once == null) {
                 this.once = true;
-                this.getResourceCount();
             }
         },
         getResourceCount: function () {
@@ -290,7 +296,7 @@ Vue.component('competency', {
                 },
                 null,
                 function (resources) {
-                    app.creativeWorks[me.uri] = resources;
+                    me.resources = resources;
                 }, console.error);
             EcRepository.unsigned = false;
         },

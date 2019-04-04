@@ -89,6 +89,7 @@ Vue.component('resourceSelect', {
             var resource = EcRepository.getBlocking(this.uri);
             if (resource == null) return;
             EcRepository._delete(resource, function () {
+                app.creativeWorksChanges++;
             }, console.error);
         },
         getVotes: function (evt) {

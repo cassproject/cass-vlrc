@@ -152,9 +152,8 @@ function startVlrc() {
                 c.educationalAlignment.alignmentType = "teaches";
                 c.addOwner(EcIdentityManager.ids[0].ppk.toPk());
                 EcRepository.save(c, function () {
+                    app.creativeWorksChanges++;
                 }, console.error);
-                var c = this.selectedCompetency;
-                this.selectedCompetency = null;
             },
             computeBecause: function (evidences) {
                 var evidenceString = " because they ";
@@ -315,6 +314,7 @@ function startVlrc() {
             assertions: null,
             assertionsChanges: 0,
             creativeWorks: {},
+            creativeWorksChanges: 0,
             jobPostings: null,
             people: null,
         }
