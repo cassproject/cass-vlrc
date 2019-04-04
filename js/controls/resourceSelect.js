@@ -87,15 +87,8 @@ Vue.component('resourceSelect', {
         deleteMe: function () {
             var me = this;
             var resource = EcRepository.getBlocking(this.uri);
+            if (resource == null) return;
             EcRepository._delete(resource, function () {
-                var c = app.selectedCompetency;
-                app.selectedCompetency = null;
-                me.$nextTick(function () {
-                    app.selectedCompetency = c;
-                    if (topicCompetencies[app.selectedCompetency.id] != null)
-                        for (var i = 0; i < topicCompetencies[app.selectedCompetency.id].length; i++)
-                            topicCompetencies[app.selectedCompetency.id][i].getResourceCount();
-                });
             }, console.error);
         },
         getVotes: function (evt) {
@@ -171,7 +164,6 @@ Vue.component('resourceSelect', {
             chooseAction.addOwner(EcIdentityManager.ids[0].ppk.toPk());
             chooseAction.object = this.uri;
             EcRepository.save(chooseAction, this.getViews, console.error);
-            viewHistory.addView(chooseAction);
         },
         unview: function (evt, after) {
             var me = this;

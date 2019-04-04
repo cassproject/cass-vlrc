@@ -31698,20 +31698,25 @@ EcObject = stjs.extend(EcObject, null, [], function(constructor, prototype) {
  */
 var Task = function() {};
 Task = stjs.extend(Task, null, [], function(constructor, prototype) {
-    constructor.desiredFps = 10;
+    constructor.desiredFps = 2;
     constructor.lastFrame = null;
     constructor.tasks = new Array();
     constructor.delayedFunctions = 0;
     constructor.immediateFunctions = 0;
     constructor.asyncImmediateFunctions = 0;
     constructor.runningAsyncFunctions = 0;
+    constructor.updateFrame = function() {
+        setTimeout(function() {
+            Task.lastFrame = Date.now();
+            Task.updateFrame();
+        }, 100);
+    };
     constructor.immediate = function(c) {
         var currentMs = Date.now();
         var nextFrameMs = stjs.trunc(1000 / Task.desiredFps);
         if (EcRemote.async == true && (Task.lastFrame == null || currentMs > Task.lastFrame + nextFrameMs)) 
             return setTimeout(function() {
                 Task.delayedFunctions++;
-                Task.lastFrame = Date.now();
                 c();
             }, 0);
          else {
@@ -31742,6 +31747,9 @@ Task = stjs.extend(Task, null, [], function(constructor, prototype) {
             Task.runningAsyncFunctions--;
     };
 }, {tasks: {name: "Array", arguments: ["CallbackOrFunction"]}}, {});
+(function() {
+    Task.updateFrame();
+})();
 /**
  *  A graph consisting of a set of vertices of type <code>V</code>
  *  set and a set of edges of type <code>E</code>.  Edges of this
@@ -32027,10 +32035,18 @@ EcAsyncHelper = stjs.extend(EcAsyncHelper, null, [], function(constructor, proto
         this.counter = -1;
     };
     /**
+     *  Will allow 'after' to be called.
+     * 
+     *  @method stop
+     */
+    prototype.finish = function() {
+        this.counter = 1;
+    };
+    /**
      *  Is preventing 'after' from being called?
      * 
-     *  @method isStopped
      *  @return whether it is stopped.
+     *  @method isStopped
      */
     prototype.isStopped = function() {
         return this.counter <= -1;
@@ -38362,7 +38378,9 @@ CryptoKey = stjs.extend(CryptoKey, null, [], null, {}, {});
  */
 var EcPk = function() {};
 EcPk = stjs.extend(EcPk, null, [], function(constructor, prototype) {
+    constructor.cache = null;
     prototype.pk = null;
+    prototype.defaultPem = null;
     prototype.jwk = null;
     prototype.key = null;
     prototype.signKey = null;
@@ -38376,12 +38394,16 @@ EcPk = stjs.extend(EcPk, null, [], function(constructor, prototype) {
      *  @static
      */
     constructor.fromPem = function(pem) {
-        var pk = new EcPk();
+        var pk = (EcPk.cache)[pem];
+        if (pk != null) 
+            return pk;
+        pk = new EcPk();
         try {
             pk.pk = forge.pki.publicKeyFromPem(pem);
         }catch (ex) {
             return null;
         }
+        (EcPk.cache)[pem] = pk;
         return pk;
     };
     /**
@@ -38404,7 +38426,9 @@ EcPk = stjs.extend(EcPk, null, [], function(constructor, prototype) {
      *  @method toPem
      */
     prototype.toPem = function() {
-        return forge.pki.publicKeyToPem(this.pk).replaceAll("\r?\n", "");
+        if (this.defaultPem == null) 
+            this.defaultPem = forge.pki.publicKeyToPem(this.pk).replaceAll("\r?\n", "");
+        return this.defaultPem;
     };
     /**
      *  Encodes the public key into a PEM encoded RSAPublicKey (PKCS#1) formatted RSA Public Key.
@@ -38445,7 +38469,11 @@ EcPk = stjs.extend(EcPk, null, [], function(constructor, prototype) {
     prototype.verify = function(bytes, decode64) {
         return this.pk.verify(bytes, decode64);
     };
-}, {pk: "forge.pk", jwk: "Object", key: "CryptoKey", signKey: "CryptoKey"}, {});
+}, {cache: "Object", pk: "forge.pk", jwk: "Object", key: "CryptoKey", signKey: "CryptoKey"}, {});
+(function() {
+    if (EcPk.cache == null) 
+        EcPk.cache = new Object();
+})();
 /**
  * Message Digest Algorithm 5 with 128-bit digest (MD5) implementation.
  *
@@ -39484,10 +39512,13 @@ EcAesCtr = stjs.extend(EcAesCtr, null, [], function(constructor, prototype) {
  */
 var EcPpk = function() {};
 EcPpk = stjs.extend(EcPpk, null, [], function(constructor, prototype) {
+    constructor.cache = null;
+    prototype.defaultPem = null;
     prototype.jwk = null;
     prototype.key = null;
     prototype.signKey = null;
     prototype.ppk = null;
+    prototype.defaultPk = null;
     /**
      *  Decodes a PEM encoded PrivateKeyInfo (PKCS#8) or RSAPrivateKey (PKCS#1) formatted RSA Public Key.
      *  (In case you were curious.)
@@ -39498,12 +39529,16 @@ EcPpk = stjs.extend(EcPpk, null, [], function(constructor, prototype) {
      *  @static
      */
     constructor.fromPem = function(pem) {
-        var pk = new EcPpk();
+        var pk = (EcPpk.cache)[pem];
+        if (pk != null) 
+            return pk;
+        pk = new EcPpk();
         try {
             pk.ppk = forge.pki.privateKeyFromPem(pem);
         }catch (ex) {
             return null;
         }
+        (EcPpk.cache)[pem] = pk;
         return pk;
     };
     /**
@@ -39560,7 +39595,9 @@ EcPpk = stjs.extend(EcPpk, null, [], function(constructor, prototype) {
      *  @method toPem
      */
     prototype.toPem = function() {
-        return forge.pki.privateKeyToPem(this.ppk).replaceAll("\r?\n", "");
+        if (this.defaultPem == null) 
+            this.defaultPem = forge.pki.privateKeyToPem(this.ppk).replaceAll("\r?\n", "");
+        return this.defaultPem;
     };
     /**
      *  Encodes the private key into a PEM encoded RSAPrivateKey (PKCS#1) formatted RSA Public Key.
@@ -39597,7 +39634,9 @@ EcPpk = stjs.extend(EcPpk, null, [], function(constructor, prototype) {
      *  @method toPk
      */
     prototype.toPk = function() {
-        var pk = new EcPk();
+        if (this.defaultPk != null) 
+            return this.defaultPk;
+        var pk = this.defaultPk = new EcPk();
         pk.pk = forge.pki.rsa.setPublicKey(this.ppk.n, this.ppk.e);
         return pk;
     };
@@ -39615,7 +39654,11 @@ EcPpk = stjs.extend(EcPpk, null, [], function(constructor, prototype) {
         }
         return false;
     };
-}, {jwk: "Object", key: "CryptoKey", signKey: "CryptoKey", ppk: "forge.ppk"}, {});
+}, {cache: "Object", jwk: "Object", key: "CryptoKey", signKey: "CryptoKey", ppk: "forge.ppk", defaultPk: "EcPk"}, {});
+(function() {
+    if (EcPpk.cache == null) 
+        EcPpk.cache = new Object();
+})();
 /**
  *  Asynchronous implementation of {{#crossLink
  *  "EcRsaOaep"}}EcRsaOaep{{/crossLink}}. Uses web workers and assumes 8 workers.
@@ -40855,6 +40898,9 @@ EcRemoteLinkedData = stjs.extend(EcRemoteLinkedData, EcLinkedData, [], function(
      *  @type string (URL)
      */
     prototype.id = null;
+    prototype.equals = function(obj) {
+        return this.isId((obj).id);
+    };
     /**
      *  PEM encoded public keys of identities authorized to view the object. A
      *  repository will ignore write operations from these identities, but will
@@ -65842,6 +65888,9 @@ EcPerson = stjs.extend(EcPerson, Person, [], function(constructor, prototype) {
     constructor.getByPkBlocking = function(repo, pk, success, failure) {
         return EcPerson.getBlocking(repo.selectedServer + (repo.selectedServer.endsWith("/") ? "" : "/") + "data/" + pk.fingerprint());
     };
+    prototype.equals = function(obj) {
+        return this.isId((obj).id);
+    };
     /**
      *  Retrieves a person from it's server asynchronously
      * 
@@ -66655,7 +66704,10 @@ EcIdentityManager = stjs.extend(EcIdentityManager, null, [], function(constructo
             EcIdentityManager.createSignatureAsync(finalDuration, server, ppk, function(p1) {
                 signatures.push(p1.atIfy());
                 incrementalSuccess();
-            }, failure);
+            }, function(s) {
+                failure(s);
+                incrementalSuccess();
+            });
         }, function(pks) {
             var cache = null;
             var stringified = JSON.stringify(signatures);
@@ -68209,10 +68261,12 @@ EcEncryptedValue = stjs.extend(EcEncryptedValue, EbacEncryptedValue, [], functio
                     estimatedIndex = estimatedIndices[i];
             me.decryptSecretByKeyAsync(decryptionKey, estimatedIndex, function(p1) {
                 if (helper.counter == -1) {
+                    countdown();
                     return;
                 }
                 helper.stop();
                 success(p1);
+                countdown();
             }, function(arg0) {
                 countdown();
             });

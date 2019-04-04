@@ -164,7 +164,6 @@ Vue.component('timelineElement', {
                         for (var i = 0; i < app.assertions.length; i++)
                             while (app.assertions[i].id == assertion.id)
                                 app.assertions.splice(i, 1);
-                        console.error(error);
                     });
                 }, console.error);
             }

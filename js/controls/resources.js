@@ -2,9 +2,19 @@ Vue.component('resources', {
     props: ['url'],
     data: function () {
         return {
-            resources: null,
-            empty: false
+            resourceCount: 0
         };
+    },
+    computed: {
+        resources: function () {
+            var resourceCount = this.resourceCount;
+            return app.creativeWorks[this.url];
+        },
+        empty: function () {
+            if (this.resources == null)
+                return true;
+            return this.resources.length == 0;
+        }
     },
     created: function () {
         this.getResources();
@@ -24,15 +34,15 @@ Vue.component('resources', {
                 },
                 null,
                 function (resources) {
-                    me.resources = resources;
-                    me.empty = resources.length == 0;
+                    app.creativeWorks[me.url] = resources;
+                    me.resourceCount = resources.length;
                 }, console.error);
         }
     },
     template: '<div>' +
-    '<div v-if="empty">None found...</div>' +
+    '<div v-if="empty">No resources have been associated with this competency. To add a resource, use the form below.</div>' +
     '<div v-else>' +
-    '<ul class="noIndent" v-if="resources"><resourceSelect v-for="item in resources" v-bind:key="item.id" :uri="item.id"></resourceSelect></ul>' +
+    '<ul class="noIndent" v-if="resources"><resourceSelect v-for="item in resources" :uri="item.id"></resourceSelect></ul>' +
     '<div v-else>Loading Resources...</div>' +
     '</div>' +
     '</div>'

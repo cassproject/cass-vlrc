@@ -952,20 +952,25 @@ EcObject = stjs.extend(EcObject, null, [], function(constructor, prototype) {
  */
 var Task = function() {};
 Task = stjs.extend(Task, null, [], function(constructor, prototype) {
-    constructor.desiredFps = 10;
+    constructor.desiredFps = 2;
     constructor.lastFrame = null;
     constructor.tasks = new Array();
     constructor.delayedFunctions = 0;
     constructor.immediateFunctions = 0;
     constructor.asyncImmediateFunctions = 0;
     constructor.runningAsyncFunctions = 0;
+    constructor.updateFrame = function() {
+        setTimeout(function() {
+            Task.lastFrame = Date.now();
+            Task.updateFrame();
+        }, 100);
+    };
     constructor.immediate = function(c) {
         var currentMs = Date.now();
         var nextFrameMs = stjs.trunc(1000 / Task.desiredFps);
         if (EcRemote.async == true && (Task.lastFrame == null || currentMs > Task.lastFrame + nextFrameMs)) 
             return setTimeout(function() {
                 Task.delayedFunctions++;
-                Task.lastFrame = Date.now();
                 c();
             }, 0);
          else {
@@ -996,6 +1001,9 @@ Task = stjs.extend(Task, null, [], function(constructor, prototype) {
             Task.runningAsyncFunctions--;
     };
 }, {tasks: {name: "Array", arguments: ["CallbackOrFunction"]}}, {});
+(function() {
+    Task.updateFrame();
+})();
 /**
  *  A graph consisting of a set of vertices of type <code>V</code>
  *  set and a set of edges of type <code>E</code>.  Edges of this
@@ -1281,10 +1289,18 @@ EcAsyncHelper = stjs.extend(EcAsyncHelper, null, [], function(constructor, proto
         this.counter = -1;
     };
     /**
+     *  Will allow 'after' to be called.
+     * 
+     *  @method stop
+     */
+    prototype.finish = function() {
+        this.counter = 1;
+    };
+    /**
      *  Is preventing 'after' from being called?
      * 
-     *  @method isStopped
      *  @return whether it is stopped.
+     *  @method isStopped
      */
     prototype.isStopped = function() {
         return this.counter <= -1;

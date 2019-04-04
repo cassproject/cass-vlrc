@@ -44,7 +44,8 @@ Vue.component('framework', {
                                 var a = null;
                                 try {
                                     a = EcAlignment.getBlocking(f.relation[i]);
-                                } catch (e) {}
+                                } catch (e) {
+                                }
                                 if (a != null) {
                                     if (a.relationType == Relation.NARROWS) {
                                         if (r[a.target] == null) continue;
@@ -76,7 +77,7 @@ Vue.component('framework', {
 
                     }, console.error, console.log);
                 }, console.error);
-                return null;
+                return this.competency;
             },
             set: function (v) {
                 this.competency = v;
@@ -100,23 +101,26 @@ Vue.component('framework', {
             if (!this.once) return;
             if (this.competencies == null) return;
             var uri = this.uri;
-            if (this.computedStateAssertionLength != app.assertions.length) {
+            if (this.computedStateAssertionLength != app.assertionsChanges) {
                 this.computedStateActual = null;
-                this.computedStateAssertionLength = app.assertions.length
-                var hash = this.computedStateAssertionLength + app.assertions.length + this.uri;
+                this.computedStateAssertionLength = app.assertionsChanges;
+                var hash = this.computedStateAssertionLength + app.assertionsChanges + this.uri;
                 console.log("Started processing: " + new Date() + " " + hash);
                 var assertions = [];
                 new EcAsyncHelper().each(app.assertions, function (a, done) {
-                    a.getSubjectAsync(function (subject) {
-                        if (subject.toPem() == me.subject)
-                            assertions.push(a);
+                    if (a == null)
                         done();
-                    }, done);
+                    else
+                        a.getSubjectAsync(function (subject) {
+                            if (subject.toPem() == me.subject)
+                                assertions.push(a);
+                            done();
+                        }, done);
                 }, function (as) {
                     var frameworkGraph = new EcFrameworkGraph();
                     frameworkGraph.addFramework(EcFramework.getBlocking(me.uri), repo, function () {
                         frameworkGraph.processAssertionsBoolean(assertions, function () {
-                            if (hash == me.computedStateAssertionLength + app.assertions.length + me.uri) {
+                            if (hash == me.computedStateAssertionLength + app.assertionsChanges + me.uri) {
                                 for (var key in frameworkGraph.metaVerticies)
                                     delete frameworkGraph.metaVerticies[key].framework;
                                 me.computedStateActual = frameworkGraph;
@@ -149,8 +153,8 @@ Vue.component('framework', {
         }
     },
     template: '<div v-observe-visibility="{callback: initialize}">' +
-        '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
-        '<div class="frameworkNameAndDescription">{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
-        '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subjectPerson="subjectperson" :frameworkUri="uri" :computedState="computedState" :subject="subject"></competency></ul>' +
-        '<div v-else><br>Loading Framework...</div></div>'
+    '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
+    '<div class="frameworkNameAndDescription">{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
+    '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subjectPerson="subjectperson" :frameworkUri="uri" :computedState="computedState" :subject="subject"></competency></ul>' +
+    '<div v-else><br>Loading Framework...</div></div>'
 });

@@ -45,6 +45,7 @@ function startVlrc() {
                                     return b.assertionDateDecrypted - a.assertionDateDecrypted;
                                 });
                                 app.assertions = assertions;
+                                app.assertionsChanges++;
                                 console.log("Finished loading assertions. " + app.assertions.length + " loaded.");
                             });
                     }
@@ -56,17 +57,17 @@ function startVlrc() {
                 window.open("https://google.com/search?q=" + app.selectedCompetency.getName(), "lernnit");
             },
 
-            searchForAssertions: function(count){
-                EcAssertion.search(repo, "\""+this.me+"\"", function (assertions) {
+            searchForAssertions: function (count) {
+                EcAssertion.search(repo, "\"" + this.me + "\"", function (assertions) {
                     var eah = new EcAsyncHelper();
                     eah.each(assertions, function (assertion, callback) {
                             if (assertion.assertionDateDecrypted != null)
                                 callback();
                             else
-                            assertion.getAssertionDateAsync(function (date) {
-                                assertion.assertionDateDecrypted = date;
-                                callback();
-                            }, callback)
+                                assertion.getAssertionDateAsync(function (date) {
+                                    assertion.assertionDateDecrypted = date;
+                                    callback();
+                                }, callback)
                         },
                         function (assertions) {
                             assertions = assertions.sort(function (a, b) {
@@ -80,9 +81,28 @@ function startVlrc() {
                     size: count
                 });
             },
-            indexedDbCreate: function(event){
+            indexedDbCreate: function (event) {
                 var db = event.target.result;
                 db.createObjectStore("assertions", {keyPath: "id"});
+            },
+            removeAssertionFromIndexedDb: function (a,success) {
+                var request = indexedDB.open("assertions", 1);
+
+                request.onerror = console.error;
+                request.onupgradeneeded = this.indexedDbCreate;
+                request.onsuccess = function (event) {
+                    var db = event.target.result;
+                    var assertionStore = db.transaction("assertions", "readwrite").objectStore("assertions");
+                    var del = assertionStore.delete(a);
+                    del.onsuccess = function (event) {
+                        console.log("Removed assertion from indexedDB: " + a);
+                        if (event.returnValue && success != null)
+                            success();
+                    };
+                    del.onerror = function (event) {
+                        console.log("Failed to remove assertion from indexedDB: " + a);
+                    };
+                };
             },
             saveAssertionToIndexedDb: function (a) {
                 console.log("Saving assertion to indexedDB.");
@@ -93,10 +113,15 @@ function startVlrc() {
                 request.onsuccess = function (event) {
                     var db = event.target.result;
                     var assertionStore = db.transaction("assertions", "readwrite").objectStore("assertions");
-                    assertionStore.put(a);
+                    var add = assertionStore.put(a);
+                    add.onsuccess = function (event) {
+                        console.log("Added assertion to indexedDB: " + a);
+                    };
+                    add.onerror = function (event) {
+                        console.log("Failed to add assertion to indexedDB: " + a);
+                    };
                 };
-            }
-            ,
+            },
             saveAssertionsToIndexedDb: function () {
                 console.log("Saving assertions to indexedDB.");
                 var request = indexedDB.open("assertions", 1);
@@ -116,6 +141,7 @@ function startVlrc() {
                 localStorage.removeItem("assertions");
             },
             addResource: function () {
+                var me = this;
                 var c = new CreativeWork();
                 c.assignId(repo.selectedServer, EcCrypto.md5(app.inputUrl + app.selectedCompetency.shortId()));
                 c.name = app.inputName;
@@ -125,15 +151,10 @@ function startVlrc() {
                 c.educationalAlignment.targetUrl = app.selectedCompetency.shortId();
                 c.educationalAlignment.alignmentType = "teaches";
                 c.addOwner(EcIdentityManager.ids[0].ppk.toPk());
-                EcRepository.save(c, console.log, console.error);
+                EcRepository.save(c, function () {
+                }, console.error);
                 var c = this.selectedCompetency;
                 this.selectedCompetency = null;
-                this.$nextTick(function () {
-                    app.selectedCompetency = c;
-                    if (topicCompetencies[app.selectedCompetency.shortId()] != null)
-                        for (var i = 0; i < topicCompetencies[app.selectedCompetency.shortId()].length; i++)
-                            topicCompetencies[app.selectedCompetency.shortId()][i].getResourceCount();
-                });
             },
             computeBecause: function (evidences) {
                 var evidenceString = " because they ";
@@ -217,15 +238,24 @@ function startVlrc() {
             }
         },
         watch: {
-            me: function(newMe,oldMe){
+            me: function (newMe, oldMe) {
                 this.searchForAssertions(5000);
             },
             inputUrl: function (newUrl) {
                 var me = this;
-                EcRemote.getExpectingObject("https://api.urlmeta.org/", "?url=" + newUrl, function (success) {
-                    app.inputName = success.meta.title;
-                    app.inputDescription = success.meta.description;
-                }, console.error);
+                $.ajax("https://api.algorithmia.com/v1/web/algo/outofstep/MegaAnalyzeURL/0.1.6", {
+                    'data': "\"" + newUrl + "\"",
+                    'type': 'POST',
+                    'processData': false,
+                    'contentType': 'application/json',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", "Simple simnxB3dwTN8kds9p6SGMpGoOJC1");
+                    },
+                    success: function (success) {
+                        app.inputName = success.result.metadata.title;
+                        app.inputDescription = success.result.summary;
+                    }
+                });
             },
             subject: function (newSubject) {
                 var pk = EcPk.fromPem(newSubject);
@@ -283,6 +313,8 @@ function startVlrc() {
             processing: false,
             processingMessage: "",
             assertions: null,
+            assertionsChanges: 0,
+            creativeWorks: {},
             jobPostings: null,
             people: null,
         }
