@@ -100,6 +100,21 @@ Vue.component('timelineElement', {
                 return "";
             }
         },
+        badged:{
+            get:function(){
+                if (this.assertion == null)
+                    return false;
+                return this.assertion.hasReader(app.badgePk);
+            }
+        },
+        badgeUrl:{
+            get:function(){
+                if (this.assertion != null)
+                if (this.assertion.hasReader(app.badgePk))
+                    return EcRemote.urlAppend(repo.selectedServer,"badge/assertion/")+this.assertion.getGuid();
+                return "";
+            }
+        }
     },
     created: function () {
     },
@@ -263,7 +278,7 @@ Vue.component('timelineElement', {
     '<a href="#" v-on:click="gotoCompetency" :title="assertion.competency">' +
     '{{ competencyName }}' +
     '<span v-if="frameworkName"> in the subject area {{ frameworkName }}</span>' +
-    '</a>{{evidenceText}}.' +
+    '</a>{{evidenceText}}<span v-if="badged"> and has issued a <a target="_blank" :href="badgeUrl">badge</a></span>.' +
     '<br>' +
     '<small>{{ competencyDescription }}</small>' +
     '</div>' +

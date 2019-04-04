@@ -247,6 +247,7 @@ openWebSocket = function (r) {
                 delete EcRepository.cache[key];
         }
         delete EcRepository.cache[e.data];
+        delete EcRepository.cache[EcRemoteLinkedData.trimVersionFromUrl(e.data)];
         if (app.assertions != null)
             for (var i = 0; i < app.assertions.length; i++)
                 if (app.assertions[i].isId(e.data))

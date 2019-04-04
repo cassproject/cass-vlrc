@@ -82,6 +82,21 @@ Vue.component('assertion', {
                 return "http://tinygraphs.com/spaceinvaders/" + this.agentPerson.getGuid() + "?theme=base&numcolors=16&size=22&fmt=svg";
             }
         },
+        badged:{
+            get:function(){
+                if (this.assertion == null)
+                    return false;
+                return this.assertion.hasReader(app.badgePk);
+            }
+        },
+        badgeUrl:{
+            get:function(){
+                if (this.assertion != null)
+                    if (this.assertion.hasReader(app.badgePk))
+                        return EcRemote.urlAppend(repo.selectedServer,"badge/assertion/")+this.assertion.getGuid();
+                return "";
+            }
+        }
     },
     created: function () {},
     watch: {},
@@ -197,7 +212,7 @@ Vue.component('assertion', {
         '<li v-if="ok">' +
         '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="agent"/> <span style="color:blue">{{agent}}</span> ' +
         '<span v-if="timestamp">claimed {{ timeAgo }}:</span>' +
-        '<span class="statement" v-if="negative">{{subject}} can&#39t do this{{ evidenceText }}.</span><span class="statement" v-else>{{subject}} can do this{{ evidenceText }}.</span> ' +
+        '<span class="statement"><span v-if="negative">{{subject}} can&#39t do this{{ evidenceText }}</span><span v-else>{{subject}} can do this{{ evidenceText }}</span><span v-if="badged"> and I issued them a <a :href="badgeUrl">badge</a></span>.</span> ' +
         '</li>' +
         '</span>' +
         '<span v-else>' +
@@ -206,6 +221,7 @@ Vue.component('assertion', {
         '{{agent}} claimed {{subject}} ' +
         '<span v-if="negative">could not</span><span v-else>could</span>' +
         ' demonstrate <a href="#" v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyText }}</a> {{ evidenceText }}' +
+        '<a v-if="badged" :href="badgeUrl">Badge</a>'+
         '</li>' +
         '</span>' +
         '</span>'

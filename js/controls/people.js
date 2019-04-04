@@ -2,7 +2,6 @@ Vue.component('people', {
     props: [],
     data: function () {
         return {
-            peopleResult: [],
             search: ""
         };
     },

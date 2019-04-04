@@ -18,9 +18,6 @@ Vue.component('profile', {
                     return null;
                 this.getPerson();
                 return null;
-            },
-            set: function (newPerson) {
-                this.personObj = newPerson;
             }
         },
         name: {
@@ -131,7 +128,7 @@ Vue.component('profile', {
             p.copyFrom(person);
             if (p.seeks == null)
                 p.seeks = [];
-            this.person = p;
+            this.personObj = p;
             if (this.pk == app.subject)
                 app.subjectPerson = p;
             if (this.pk == app.me)

@@ -8,6 +8,8 @@ Vue.component('competency', {
             creativeWorkCounter: -1,
             competentStateEah: null,
             competentStateNew: null,
+            badged: null,
+            badgeLink: null,
             incompetentStateNew: null,
             competentState: null,
             incompetentState: null,
@@ -120,18 +122,26 @@ Vue.component('competency', {
                                         if (app.me == agent.toPem()) {
                                             if (assertion.negative != null) {
                                                 assertion.getNegativeAsync(function (negative) {
-                                                    if (negative)
+                                                    if (negative) {
                                                         me.incompetentStateNew = true;
-                                                    else
+                                                        me.badged = null;
+                                                    }
+                                                    else{
+                                                        me.badged = assertion.hasReader(app.badgePk);
+                                                        me.badgeLink = EcRemote.urlAppend(repo.selectedServer,"badge/assertion/")+assertion.getGuid();
                                                         me.competentStateNew = true;
+                                                }
                                                     callback();
                                                 }, callback);
                                             }
                                             else {
                                                 me.competentStateNew = true;
+                                                me.badged = assertion.hasReader(app.badgePk);
+                                                me.badgeLink = EcRemote.urlAppend(repo.selectedServer,"badge/assertion/")+assertion.getGuid();
                                                 callback();
                                             }
                                         } else {
+                                            EcArray.setRemove(me.assertionsByOthers, assertion);
                                             EcArray.setAdd(me.assertionsByOthers, assertion);
                                             callback();
                                         }
@@ -367,42 +377,47 @@ Vue.component('competency', {
         },
         unclaimCompetence: function (evt, after) {
             var me = this;
-            var a = after;
             EcCompetency.get(this.uri, function (c) {
                 me.competencyObj = c;
-                var assertions = app.assertions;
                 if (app.assertions == null)
                     return;
-                for (var i = 0; i < assertions.length; i++) {
-                    var obj = assertions[i];
-                    if (me.competencyObj.isId(obj.competency))
-                        (function (obj) {
-                            var assertion = obj;
-                            assertion.getSubjectAsync(function (subject) {
-                                if (me.subject == subject.toPem()) {
-                                    assertion.getAgentAsync(function (agent) {
-                                        if (app.me == agent.toPem()) {
-                                            if (assertion.negative == null) {
-                                                EcRepository._delete(assertion, function () {
-                                                    EcArray.setRemove(app.assertions,assertion);
-                                                    me.competentState = null;
-                                                }, console.error);
-                                            } else
-                                                assertion.getNegativeAsync(function (negative) {
-                                                    if (!negative) {
-                                                        EcRepository._delete(assertion, function () {
-                                                            EcArray.setRemove(app.assertions,assertion);
-                                                            me.competentState = null;
-                                                        }, console.error);
-                                                    }
-                                                }, console.error);
-                                        }
-                                    }, console.error);
-                                }
-                            }, console.error);
-                        })(obj);
-                }
-                if (a != null) a();
+                var eah = new EcAsyncHelper();
+                eah.each(app.assertions, function (assertion, callback) {
+                    if (me.competencyObj.isId(assertion.competency))
+                        assertion.getSubjectAsync(function (subject) {
+                            if (me.subject == subject.toPem()) {
+                                assertion.getAgentAsync(function (agent) {
+                                    if (app.me == agent.toPem()) {
+                                        if (assertion.negative == null) {
+                                            EcRepository._delete(assertion, function () {
+                                                EcArray.setRemove(app.assertions, assertion);
+                                                me.competentState = null;
+                                                callback();
+                                            }, callback);
+                                        } else
+                                            assertion.getNegativeAsync(function (negative) {
+                                                if (!negative) {
+                                                    EcRepository._delete(assertion, function () {
+                                                        EcArray.setRemove(app.assertions, assertion);
+                                                        me.competentState = null;
+                                                        callback();
+                                                    }, callback);
+                                                }
+                                                else
+                                                    callback();
+                                            }, callback);
+                                    }
+                                    else
+                                        callback();
+                                }, callback);
+                            } else
+                                callback();
+                        }, callback);
+                    else
+                        callback();
+                }, function (assertions) {
+                    if (after != null) after();
+                });
             }, console.error);
         },
         claimIncompetence: function (evt, after) {
@@ -428,37 +443,126 @@ Vue.component('competency', {
         },
         unclaimIncompetence: function (evt, after) {
             var me = this;
-            var a = after;
             EcCompetency.get(this.uri, function (c) {
                 me.competencyObj = c;
-                var assertions = app.assertions;
                 if (app.assertions == null)
                     return;
-                for (var i = 0; i < assertions.length; i++) {
-                    var obj = assertions[i];
-                    if (me.competencyObj.isId(obj.competency))
-                        (function (obj) {
-                            var assertion = obj;
-                            assertion.getSubjectAsync(function (subject) {
-                                if (app.subject == subject.toPem()) {
-                                    assertion.getAgentAsync(function (agent) {
-                                        if (app.me == agent.toPem()) {
-                                            if (assertion.negative != null)
-                                                assertion.getNegativeAsync(function (negative) {
-                                                    if (negative) {
-                                                        EcRepository._delete(assertion, function () {
-                                                            EcArray.setRemove(app.assertions,assertion);
-                                                            me.incompetentState = null;
-                                                        }, console.error);
-                                                    }
-                                                }, console.error);
+                var eah = new EcAsyncHelper();
+                eah.each(app.assertions, function (assertion, callback) {
+                    if (me.competencyObj.isId(assertion.competency))
+                        assertion.getSubjectAsync(function (subject) {
+                            if (app.subject == subject.toPem()) {
+                                assertion.getAgentAsync(function (agent) {
+                                    if (app.me == agent.toPem()) {
+                                        if (assertion.negative != null)
+                                            assertion.getNegativeAsync(function (negative) {
+                                                if (negative) {
+                                                    EcRepository._delete(assertion, function () {
+                                                        EcArray.setRemove(app.assertions, assertion);
+                                                        me.incompetentState = null;
+                                                    }, callback);
+                                                } else callback();
+                                            }, callback);
+                                    } else callback();
+                                }, callback);
+                            } else callback();
+                        }, callback);
+                    else callback();
+                }, function (assertions) {
+                    if (after != null) after();
+                });
+            }, console.error);
+        },
+        badgeAssertion: function (evt, after) {
+            var me = this;
+            EcCompetency.get(this.uri, function (c) {
+                me.competencyObj = c;
+                if (app.assertions == null)
+                    return;
+                var eah = new EcAsyncHelper();
+                eah.each(app.assertions, function (assertion, callback) {
+                    if (me.competencyObj.isId(assertion.competency))
+                        assertion.getSubjectAsync(function (subject) {
+                            if (me.subject == subject.toPem()) {
+                                assertion.getAgentAsync(function (agent) {
+                                    if (app.me == agent.toPem()) {
+                                        if (assertion.negative == null) {
+                                            assertion.addReader(app.badgePk);
+                                            EcRepository.save(assertion, function () {
+                                                app.assertionsChanges++;
+                                                callback();
+                                            }, callback);
+                                        } else {
+                                            assertion.getNegativeAsync(function (negative) {
+                                                if (!negative) {
+                                                    assertion.addReader(app.badgePk);
+                                                    EcRepository.save(assertion, function () {
+                                                        app.assertionsChanges++;
+                                                        callback();
+                                                    }, callback);
+                                                }
+                                                else
+                                                    callback();
+                                            }, callback);
                                         }
-                                    }, console.error);
-                                }
-                            }, console.error);
-                        })(obj);
-                }
-                if (a != null) a();
+                                    }
+                                    else
+                                        callback();
+                                }, callback);
+                            } else
+                                callback();
+                        }, callback);
+                    else
+                        callback();
+                }, function (assertions) {
+                    if (after != null) after();
+                });
+            }, console.error);
+        },
+        unbadgeAssertion: function (evt, after) {
+            var me = this;
+            EcCompetency.get(this.uri, function (c) {
+                me.competencyObj = c;
+                if (app.assertions == null)
+                    return;
+                var eah = new EcAsyncHelper();
+                eah.each(app.assertions, function (assertion, callback) {
+                    if (me.competencyObj.isId(assertion.competency))
+                        assertion.getSubjectAsync(function (subject) {
+                            if (me.subject == subject.toPem()) {
+                                assertion.getAgentAsync(function (agent) {
+                                    if (app.me == agent.toPem()) {
+                                        if (assertion.negative == null) {
+                                            assertion.removeReader(app.badgePk);
+                                            EcRepository.save(assertion, function () {
+                                                app.assertionsChanges++;
+                                                callback();
+                                            }, callback);
+                                        } else {
+                                            assertion.getNegativeAsync(function (negative) {
+                                                if (!negative) {
+                                                    assertion.removeReader(app.badgePk);
+                                                    EcRepository.save(assertion, function () {
+                                                        app.assertionsChanges++;
+                                                        callback();
+                                                    }, callback);
+                                                }
+                                                else
+                                                    callback();
+                                            }, callback);
+                                        }
+                                    }
+                                    else
+                                        callback();
+                                }, callback);
+                            } else
+                                callback();
+                        }, callback);
+                    else
+                        callback();
+                }, function (assertions) {
+                    if (after != null) after();
+                });
             }, console.error);
         },
         makeGoal: function (evt, after) {
@@ -513,7 +617,12 @@ Vue.component('competency', {
     '<button class="inline" v-if="estimatedCompetenceFalse" style="color:red;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-diameter-variant" aria-hidden="true"></i></button>' +
     '</span>' +
     '</span>' +
-    '<span v-on:click="setCompetency">{{ countPhrase }}</span> ' +
+    '<span v-if="competent == true || incompetent == true">' +
+    '<button class="inline" v-if="badged == true" style="color:green;" v-on:click="unbadgeAssertion" title="Remove the badge for my claim."><i class="mdi mdi-seal" aria-hidden="true"></i></button>' +
+    '<a class="inline" v-if="badged == true" style="color:green;" target="_blank" :href="badgeLink">Badge Link</a><span v-if="badged == true">&nbsp;</span>' +
+    '<button class="inline" v-if="badged == false" style="color:gray;" v-on:click="badgeAssertion" title="Issue a badge for my claim."><i class="mdi mdi-seal" aria-hidden="true"></i></button>' +
+    '</span>' +
+    '<span v-on:click="setCompetency">{{ countPhrase }}</span>' +
     '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
     '<div v-on:click="iconAssertion = !iconAssertion" class="assertions">' +
     '<span v-if="iconAssertion && assertionsByOthers && assertionsByOthers.length > 0" :title="otherClaimsPhrase"><i class="mdi mdi-account-group mdi-18px" aria-hidden="true"/>: </span>' +

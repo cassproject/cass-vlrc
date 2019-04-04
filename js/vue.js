@@ -15,6 +15,9 @@ function startVlrc() {
         },
         created: function () {
             $("#app").show();
+            EcRemote.getExpectingString(repo.selectedServer, "badge/pk", function (badgePk) {
+                app.badgePk = EcPk.fromPem(badgePk);
+            }, console.error);
             this.identities = EcIdentityManager.ids;
             var assertions = [];
             var request = indexedDB.open("assertions", 1);
@@ -85,7 +88,7 @@ function startVlrc() {
                 var db = event.target.result;
                 db.createObjectStore("assertions", {keyPath: "id"});
             },
-            removeAssertionFromIndexedDb: function (a,success) {
+            removeAssertionFromIndexedDb: function (a, success) {
                 var request = indexedDB.open("assertions", 1);
 
                 request.onerror = console.error;
