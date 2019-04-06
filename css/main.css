@@ -32,27 +32,41 @@ pre {
 #pages {
     display: flex;
     flex-direction: row;
+    justify-content:center;
 }
-
 .page {
-    width: calc(100vw - 300px);
+    width: calc(100vw - 350px);
+    max-width:1000px;
 }
 
+@media only screen and (max-width: 600px) {
+    #pages {
+        flex-direction: column;
+    }
+    .page{
+        width: calc(100vw - 50px);
+    }
+}
 ul,
 li {
     list-style: none;
 }
 
-ul li {
-    border-left: 2px solid black;
-
-}
 
 ul ul {
     margin-left: 1.5rem;
 }
 
-ul li:before {
+.framework{
+    margin-top:1rem;
+}
+
+.competency ul li {
+    border-left: 2px solid black;
+
+}
+
+.competency ul li:before {
     content: '';
     height: 3rem;
     width: 2rem;
@@ -61,11 +75,11 @@ ul li:before {
     bottom: 0;
 }
 
-ul li:last-child {
+.competency ul li:last-child {
     border-left: 0px;
 }
 
-ul li:last-child:before {
+.competency ul li:last-child:before {
     position: relative;
     border-left: 2px solid black;
     border-bottom: 2px solid black;
@@ -94,6 +108,10 @@ ul li:last-child:before {
     /* margin-top: .25rem; */
     display: flex;
     flex-direction: row;
+    width:100%;
+}
+.competency div{
+    width:100%;
 }
 
 .resource {
@@ -105,6 +123,13 @@ ul li:last-child:before {
     background-color: white;
     border-radius: .25rem;
     margin-top: .25rem;
+    padding: .75rem;
+}
+
+.antitile {
+    border: 0px gray solid;
+    background-color: #f5f5f5;
+    border-radius: .25rem;
     padding: .75rem;
 }
 
@@ -293,6 +318,7 @@ textarea {
     align-items: center;
     flex-direction: row;
     padding-top: .75rem;
+    flex-flow: wrap;
 }
 
 .competency .buttons span {

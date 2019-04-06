@@ -152,7 +152,7 @@ Vue.component('framework', {
             }
         }
     },
-    template: '<div v-observe-visibility="{callback: initialize}">' +
+    template: '<div class="framework" v-observe-visibility="{callback: initialize}">' +
     '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
     '<div class="frameworkNameAndDescription">{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
     '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subjectPerson="subjectperson" :frameworkUri="uri" :computedState="computedState" :subject="subject"></competency></ul>' +

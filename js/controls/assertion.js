@@ -212,7 +212,7 @@ Vue.component('assertion', {
         '<li v-if="ok">' +
         '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="agent"/> <span style="color:blue">{{agent}}</span> ' +
         '<span v-if="timestamp">claimed {{ timeAgo }}:</span>' +
-        '<span class="statement"><span v-if="negative">{{subject}} can&#39t do this{{ evidenceText }}</span><span v-else>{{subject}} can do this{{ evidenceText }}</span><span v-if="badged"> and I issued them a <a :href="badgeUrl">badge</a></span>.</span> ' +
+        '<span class="statement antitile"><span v-if="negative">{{subject}} can&#39t do this{{ evidenceText }}</span><span v-else>{{subject}} can do this{{ evidenceText }}</span><span v-if="badged"> and I issued them a <a :href="badgeUrl">badge</a></span>.</span> ' +
         '</li>' +
         '</span>' +
         '<span v-else>' +
