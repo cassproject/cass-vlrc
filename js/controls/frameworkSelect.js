@@ -33,7 +33,7 @@ Vue.component('frameworkSelect', {
             }, 100);
         }
     },
-    template: '<li class="frameworkSelect" v-on:click="setFramework">' +
+    template: '<li class="frameworkSelect tile" v-on:click="setFramework">' +
         '<span class="frameworkSelectName">{{ name }}</span> ({{ count }} topics)' +
         '<small v-if="description" class="frameworkSelectDescription block">{{ description }}</small>' +
         '</li>'

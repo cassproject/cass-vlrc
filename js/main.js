@@ -69,7 +69,9 @@ function ready2() {
     if (queryParams.frameworkId != null) {
         setTimeout(function () {
             app.selectedFramework = EcFramework.getBlocking(queryParams.frameworkId);
+            setTimeout(function () {
             $("#rad2").click();
+            }, 1000);
         }, 1000);
     } else {
         setTimeout(function () {

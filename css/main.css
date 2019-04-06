@@ -4,7 +4,7 @@
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    font-family: Helvetica, Arial, Sans-Serif;
+    font-family: Roboto, Arial, Sans-Serif;
 }
 
 h1,
@@ -17,7 +17,7 @@ h5 {
 }
 
 body {
-    background: #fff;
+    background: #f5f5f5;
     background-repeat: no-repeat;
     background-size: cover;
 }
@@ -26,7 +26,6 @@ pre {
     overflow: scroll;
     width: 100%;
 }
-
 
 /*PAGE*/
 
@@ -44,8 +43,34 @@ li {
     list-style: none;
 }
 
+ul li {
+    border-left: 2px solid black;
+
+}
+
 ul ul {
-    margin-left: 2.5rem;
+    margin-left: 1.5rem;
+}
+
+ul li:before {
+    content: '';
+    height: 3rem;
+    width: 2rem;
+    border-bottom: 2px solid black;
+    top: 0rem;
+    bottom: 0;
+}
+
+ul li:last-child {
+    border-left: 0px;
+}
+
+ul li:last-child:before {
+    position: relative;
+    border-left: 2px solid black;
+    border-bottom: 2px solid black;
+    width: calc(3rem - 16px);
+    bottom: 0;
 }
 
 .selected {
@@ -56,7 +81,8 @@ ul ul {
     margin-bottom: .5rem;
 }
 
-.frameworkTitle {}
+.frameworkTitle {
+}
 
 .frameworkNameAndDescription {
     font-size: large;
@@ -64,23 +90,32 @@ ul ul {
 }
 
 .competency {
-    margin-bottom: .25rem;
+    text-size: 18px;
+    /* margin-top: .25rem; */
+    display: flex;
+    flex-direction: row;
 }
 
 .resource {
     margin-bottom: .5rem;
 }
 
-.frameworkSelect {
-    margin-bottom: .25rem;
-    padding: .5rem;
+.tile {
     border: 1px gray solid;
-    border-radius: 1rem;
+    background-color: white;
+    border-radius: .25rem;
+    margin-top: .25rem;
+    padding: .75rem;
+}
+
+.frameworkSelect {
+    margin-top: .25rem;
+    padding: .5rem;
     min-height: 30px;
 }
 
 .timelineElement {
-    margin-bottom: .25rem;
+    margin-top: .25rem;
     padding: .5rem;
     min-height: 30px;
 }
@@ -97,7 +132,6 @@ ul ul {
 
 .competency .assertions {
     font-size: small;
-    margin-left: .6rem;
 }
 
 .competency .assertion img {
@@ -119,6 +153,12 @@ ul ul {
     top: 0rem;
     bottom: 0;
     margin-left: 3.9rem;
+}
+
+.competency > span {
+    position: relative;
+    width: 0px;
+    left: -22px;
 }
 
 .timelineElement .time {
@@ -165,7 +205,6 @@ ul ul {
     width: calc(100% - 100px)
 }
 
-
 /*SIDEBAR*/
 
 #sidebar {
@@ -173,10 +212,11 @@ ul ul {
     margin-right: .5rem;
 }
 
-#sidebar i {}
+#sidebar i {
+}
 
-#sidebar label {}
-
+#sidebar label {
+}
 
 /*HEADER*/
 
@@ -192,7 +232,6 @@ ul ul {
     color: #999;
 }
 
-
 /*SLIDES*/
 
 .processing {
@@ -203,7 +242,6 @@ ul ul {
     font: 12px/1.5 Helvetica, Verdana, sans-serif;
     padding: 10px 0;
 }
-
 
 /*INPUT*/
 
@@ -218,7 +256,6 @@ textarea {
     padding: .25rem;
     margin: .25rem;
 }
-
 
 /*JobPosting*/
 
@@ -249,4 +286,33 @@ textarea {
     word-wrap: break-word;
     /* Internet Explorer 5.5+ */
     overflow: hidden;
+}
+
+.competency .buttons {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    padding-top: .75rem;
+}
+
+.competency .buttons span {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.competency .buttons button {
+    display: flex;
+    align-items: center;
+    width: 6.2rem;
+    padding-right: .25rem;
+}
+
+.competency .buttons button.wider {
+    width: 8rem;
+}
+
+.competency .buttons button i {
+    padding: .5rem;
+    padding-left: .25rem;
 }

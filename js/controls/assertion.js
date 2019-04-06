@@ -205,8 +205,8 @@ Vue.component('assertion', {
     template: '' +
         '<span class="assertion" v-observe-visibility="{callback: initialize,once: true}">' +
         '<span v-if="icon">' +
-        '<i v-if="negative" class="mdi mdi-close-box-outline" aria-hidden="true" :title="statement"></i>' +
-        '<i v-else class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true" :title="statement"></i>' +
+        '<i v-if="negative" class="mdi mdi-18px mdi-close-box-outline" aria-hidden="true" :title="statement"></i>' +
+        '<i v-else class="mdi mdi-18px mdi-checkbox-marked-circle-outline" aria-hidden="true" :title="statement"></i>' +
         '</span>' +
         '<span v-else-if="short">' +
         '<li v-if="ok">' +

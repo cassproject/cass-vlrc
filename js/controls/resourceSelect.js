@@ -224,7 +224,7 @@ Vue.component('resourceSelect', {
                 }, console.error);
         }
     },
-    template: '<li class="resource">' +
+    template: '<li class="resource tile">' +
         '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
         '<button class="inline" v-if="upvoted" v-on:click="unupvote" title="Remove Upvote"><i class="mdi mdi-thumb-up-outline" aria-hidden="true"> {{upvotes}}</i></button>' +
         '<button class="inline" v-else v-on:click="upvote" title="Upvote"><i class="mdi mdi-thumb-up" aria-hidden="true"> {{upvotes}}</i></button> ' +

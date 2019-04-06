@@ -1,6 +1,6 @@
 var topicCompetencies = {};
 Vue.component('competency', {
-    props: ['uri', 'hasChild', 'parentCompetent', 'subject', 'frameworkUri', 'subjectPerson', 'computedState'],
+    props: ['uri', 'hasChild', 'parentCompetent', 'subject', 'frameworkUri', 'subjectPerson', 'computedState', 'collapse'],
     data: function () {
         return {
             resources: null,
@@ -126,18 +126,18 @@ Vue.component('competency', {
                                                         me.incompetentStateNew = true;
                                                         me.badged = null;
                                                     }
-                                                    else{
+                                                    else {
                                                         me.badged = assertion.hasReader(app.badgePk);
-                                                        me.badgeLink = EcRemote.urlAppend(repo.selectedServer,"badge/assertion/")+assertion.getGuid();
+                                                        me.badgeLink = EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + assertion.getGuid();
                                                         me.competentStateNew = true;
-                                                }
+                                                    }
                                                     callback();
                                                 }, callback);
                                             }
                                             else {
                                                 me.competentStateNew = true;
                                                 me.badged = assertion.hasReader(app.badgePk);
-                                                me.badgeLink = EcRemote.urlAppend(repo.selectedServer,"badge/assertion/")+assertion.getGuid();
+                                                me.badgeLink = EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + assertion.getGuid();
                                                 callback();
                                             }
                                         } else {
@@ -220,8 +220,9 @@ Vue.component('competency', {
         },
         countPhrase: {
             get: function () {
-                if (this.count == 0) return null;
-                return "(" + this.count + " resource" + (this.count == 1 ? "" : "s") + " available)";
+                if (this.count == 0)
+                    return "No resource" + (this.count == 1 ? "" : "s");
+                return this.count + " resource" + (this.count == 1 ? "" : "s");
             }
         },
         claimCompetencePhrase: {
@@ -241,7 +242,27 @@ Vue.component('competency', {
         },
         unclaimIncompetencePhrase: {
             get: function () {
-                return "By deselecting this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " cannot demonstrate this.";
+                return "By deselecting this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " can't demonstrate this.";
+            }
+        },
+        claimCompetencePhraseShort: {
+            get: function () {
+                return (app.subject == app.me ? "I" : "They") + " can";
+            }
+        },
+        unclaimCompetencePhraseShort: {
+            get: function () {
+                return (app.subject == app.me ? "I" : "They") + " can";
+            }
+        },
+        claimIncompetencePhraseShort: {
+            get: function () {
+                return (app.subject == app.me ? "I" : "They") + " can't";
+            }
+        },
+        unclaimIncompetencePhraseShort: {
+            get: function () {
+                return (app.subject == app.me ? "I" : "They") + " can't";
             }
         },
         makeGoalPhrase: {
@@ -592,42 +613,54 @@ Vue.component('competency', {
                 }, console.error);
         }
     },
-    template: '<li class="competency" v-on:mouseover="hover = true" v-on:mouseleave="hover = false" v-observe-visibility="{callback: initialize}" :id="uri">' +
-    '<span v-if="subject != null">' +
-    '<button class="inline" v-if="competent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="competent == true" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-checkbox-marked-circle-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="competent == false" v-on:click="claimCompetence" :title="claimCompetencePhrase"><i class="mdi mdi-checkbox-blank-circle-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="incompetent == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="incompetent == true" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-close-box-outline" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="incompetent == false" v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-checkbox-blank-outline" aria-hidden="true"></i></button>' +
-    ' </span> ' +
-    '<a href="#" v-observe-visibility="{callback: initialize,once: true}" v-on:click="setCompetency">{{ name }}</a> ' +
-    '<span v-if="canEditSubject">' +
-    '<button class="inline" v-if="isGoal == null"><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="isGoal == false" v-on:click="makeGoal" :title="makeGoalPhrase"><i class="mdi mdi-bullseye" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="isGoal == true" v-on:click="unmakeGoal" :title="unmakeGoalPhrase"><i class="mdi mdi-bullseye-arrow" style="color:green;" aria-hidden="true"></i></button>' +
+    template:
+    '<li class="competency" v-on:mouseover="hover = true" v-on:mouseleave="hover = false" v-observe-visibility="{callback: initialize}" :id="uri">' +
+    '<span v-if="hasChild != null">' +
+    '<button class="inline" v-if="collapse" v-on:click="collapse = !collapse"><i class="mdi mdi-18px mdi-menu-right" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-else v-on:click="collapse = !collapse"><i class="mdi mdi-18px mdi-menu-down" aria-hidden="true"></i></button>' +
     '</span>' +
+    '<div>' +
+    '<div class="tile">' +
+    '<span v-observe-visibility="{callback: initialize,once: true}">{{ name }}</span> ' +
+    '<small v-if="description" class="block">{{ description }}</small>' +
+    '<div class="buttons">' +
+    '<span v-if="subject != null">' +
+    '<button class="inline" v-if="competent == null"><i class="mdi mdi-18px mdi-loading mdi-spin" aria-hidden="true"></i> Loading...</button>' +
+    '<button class="inline" v-if="competent == true" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-18px mdi-checkbox-marked-circle-outline" aria-hidden="true"></i> {{unclaimCompetencePhraseShort}}</button>' +
+    '<button class="inline" v-if="competent == false" v-on:click="claimCompetence" :title="claimCompetencePhrase"><i class="mdi mdi-18px mdi-checkbox-blank-circle-outline" aria-hidden="true"></i> {{claimCompetencePhraseShort}}</button>' +
+    '<button class="inline" v-if="incompetent == null"><i class="mdi mdi-18px mdi-loading mdi-spin" aria-hidden="true"></i> Loading...</button>' +
+    '<button class="inline" v-if="incompetent == true" v-on:click="unclaimIncompetence" :title="unclaimIncompetencePhrase"><i class="mdi mdi-18px mdi-close-box-outline" aria-hidden="true"></i> {{unclaimIncompetencePhraseShort}}</button>' +
+    '<button class="inline" v-if="incompetent == false" v-on:click="claimIncompetence" :title="claimIncompetencePhrase"><i class="mdi mdi-18px mdi-checkbox-blank-outline" aria-hidden="true"></i> {{claimIncompetencePhraseShort}}</button>' +
+    ' </span> ' +
     '</span>' +
     '<span v-if="subject">' +
     '<span v-if="frameworkUri">' +
-    '<button class="inline" v-if="computedState == null" v-on:click="getEstimatedCompetence" ><i class="mdi mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceUnknown" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-help-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceIndeterminant" style="color:purple;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-flash-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceTrue" style="color:green;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-check-circle" aria-hidden="true"></i></button>' +
-    '<button class="inline" v-if="estimatedCompetenceFalse" style="color:red;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-diameter-variant" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="computedState == null" v-on:click="getEstimatedCompetence" ><i class="mdi mdi-18px mdi-loading mdi-spin" aria-hidden="true"></i> Loading...</button>' +
+    '<button class="inline" v-if="estimatedCompetenceUnknown" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-18px mdi-help-circle" aria-hidden="true"></i> Unknown</button>' +
+    '<button class="inline" v-if="estimatedCompetenceIndeterminant" style="color:purple;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-18px mdi-flash-circle" aria-hidden="true"></i> Conflict</button>' +
+    '<button class="inline" v-if="estimatedCompetenceTrue" style="color:green;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-18px mdi-check-circle" aria-hidden="true"></i> Can</button>' +
+    '<button class="inline" v-if="estimatedCompetenceFalse" style="color:red;" v-on:click="getEstimatedCompetence" :title="estimatedCompetenceTitle"><i class="mdi mdi-18px mdi-diameter-variant" aria-hidden="true"></i> Can&apos;t</button>' +
     '</span>' +
+    '<span v-if="canEditSubject">' +
+    '<button class="inline" v-if="isGoal == null"><i class="mdi mdi-18px mdi-loading mdi-spin" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="isGoal == false" v-on:click="makeGoal" :title="makeGoalPhrase"><i class="mdi mdi-18px mdi-bullseye" aria-hidden="true"></i> My Goal</button>' +
+    '<button class="inline" v-if="isGoal == true" v-on:click="unmakeGoal" :title="unmakeGoalPhrase"><i class="mdi mdi-18px mdi-bullseye-arrow" style="color:green;" aria-hidden="true"></i> Goal</button>' +
+    '</span>' +
+    '<button class="inline wider" v-on:click="setCompetency" title="View Learning Resources for this topic."><i class="mdi mdi-18px mdi-book-open" aria-hidden="true"></i>{{ countPhrase }}</button>' +
     '</span>' +
     '<span v-if="competent == true || incompetent == true">' +
-    '<button class="inline" v-if="badged == true" style="color:green;" v-on:click="unbadgeAssertion" title="Remove the badge for my claim."><i class="mdi mdi-seal" aria-hidden="true"></i></button>' +
-    '<a class="inline" v-if="badged == true" style="color:green;" target="_blank" :href="badgeLink">Badge Link</a><span v-if="badged == true">&nbsp;</span>' +
-    '<button class="inline" v-if="badged == false" style="color:gray;" v-on:click="badgeAssertion" title="Issue a badge for my claim."><i class="mdi mdi-seal" aria-hidden="true"></i></button>' +
+    '<button class="inline" v-if="badged == true" style="color:green;" v-on:click="unbadgeAssertion" title="Remove the badge for my claim."><i class="mdi mdi-18px mdi-shield" aria-hidden="true"></i> Badge</button>' +
+    '<button class="inline wider" v-if="badged == true" ><i class="mdi mdi-18px mdi-shield-link-variant" style="color:darkblue;" aria-hidden="true"></i><a class="inline" style="color:darkblue;" target="_blank" :href="badgeLink">Badge Link</a></button>' +
+    '<button class="inline" v-if="badged == false" style="color:gray;" v-on:click="badgeAssertion" title="Issue a badge for my claim."><i class="mdi mdi-18px mdi-shield-outline" aria-hidden="true"></i> Badge</button>' +
     '</span>' +
-    '<span v-on:click="setCompetency">{{ countPhrase }}</span>' +
-    '<small v-on:click="setCompetency" v-if="description" class="block">{{ description }}</small>' +
-    '<div v-on:click="iconAssertion = !iconAssertion" class="assertions">' +
+    '</div>' +
+    '<div style="padding-top:.1rem;" v-if="assertionsByOthers && assertionsByOthers.length > 0" v-on:click="iconAssertion = !iconAssertion" class="assertions">' +
     '<span v-if="iconAssertion && assertionsByOthers && assertionsByOthers.length > 0" :title="otherClaimsPhrase"><i class="mdi mdi-account-group mdi-18px" aria-hidden="true"/>: </span>' +
     '<assertion :icon="iconAssertion" v-for="item in assertionsByOthers" v-bind:key="uri+item.id" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
     '</div>' +
-    '<ul><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :frameworkUri="frameworkUri" :computedState="computedState" :subjectPerson="subjectPerson" :subject="subject"></competency></ul>' +
+    '</div>' +
+    '<ul v-if="collapse == false || collapse == null"><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :frameworkUri="frameworkUri" :computedState="computedState" :subjectPerson="subjectPerson" :subject="subject"></competency></ul>' +
+
+    '</div>' +
     '</li>'
 });
