@@ -1,6 +1,6 @@
 var topicCompetencies = {};
 Vue.component('competency', {
-    props: ['uri', 'hasChild', 'parentCompetent', 'subject', 'frameworkUri', 'subjectPerson', 'computedState', 'collapse'],
+    props: ['uri', 'hasChild', 'parentCompetent', 'subject', 'frameworkUri', 'subjectPerson', 'computedState'],
     data: function () {
         return {
             resources: null,
@@ -19,10 +19,23 @@ Vue.component('competency', {
             estimatedCompetenceTitle: null,
             visible: false,
             iconAssertion: true,
-            hover: false
+            hover: false,
+            collapseState: null
         };
     },
     computed: {
+        collapse:
+            {
+                get: function(){
+                    if (this.collapseState == null)
+                        this.collapseState = app.collapseState[this.uri];
+                    return this.collapseState;
+                },
+                set: function(val){
+                    this.collapseState = val;
+                    app.collapseState[this.uri] = val;
+                }
+            },
         counter: {
             get: function () {
                 if (this.visible) {

@@ -320,6 +320,7 @@ function startVlrc() {
             creativeWorksChanges: 0,
             jobPostings: null,
             people: null,
+            collapseState: {}
         }
     });
 }
