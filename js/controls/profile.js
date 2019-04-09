@@ -18,6 +18,9 @@ Vue.component('profile', {
                     return null;
                 this.getPerson();
                 return null;
+            },
+            set: function(person){
+            	this.personObj = person;
             }
         },
         name: {
@@ -279,7 +282,12 @@ Vue.component('profile', {
         '<i class="mdi mdi-comment-processing-outline" aria-hidden="true" style="float:right;font-size:large" :title="unshareStatement" v-if="isSubject == false" v-on:click="unshareAssertionsAboutSubjectWith();"></i> ' +
         '<i class="mdi mdi-comment-account" aria-hidden="true" style="float:right;font-size:large" :title="shareStatement" v-if="isSubject == false" v-on:click="shareAssertionsAboutSubjectWith();"></i> ' +
         '</span>' +
-        '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="fingerprint"/><svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprint" :title="fingerprint"></svg> <span v-if="editing">Name:</span><input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name"> <span v-if="editing">Email:</span><input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="email">' +
+        '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="fingerprint"/>'+
+        '<svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprint" :title="fingerprint"></svg>'+
+        ' <span v-if="editing">Name:</span>'+
+        '<input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">'+
+        ' <span v-if="editing">Email:</span>'+
+        '<input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="email">' +
         '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
         '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
         '</div>'
