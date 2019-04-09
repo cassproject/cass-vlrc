@@ -158,12 +158,12 @@ function startVlrc() {
                     app.creativeWorksChanges++;
                 }, console.error);
             },
-            computeBecause: function (evidences) {
-                var evidenceString = " because they ";
-                for (var i = 0; i < evidences.length; i++) {
-                    if (i > 0)
-                        evidenceString += " and they ";
-                    var e = JSON.parse(evidences[i]);
+            computeBecause: function (evidences, success) {
+                var explanations = [];
+                new EcAsyncHelper().each(evidences, function (e, callback) {
+                    var evidenceString = "";
+                    if (e.startsWith != null && e.startsWith("{"))
+                        e = JSON.parse(e);
                     if (EcObject.isObject(e)) {
                         if (e.verb != null)
                             if (e.verb.display != null)
@@ -187,9 +187,24 @@ function startVlrc() {
                                         if (e.result.success != null)
                                             evidenceString += e.result.success ? " correctly" : " incorrectly";
                                 }
+                        if (evidenceString != "")
+                            explanations.push({text: evidenceString});
+                        callback();
+                    } else if (e.startsWith != null && e.startsWith("http")) {
+                        EcRepository.get(e, function (success) {
+                            if (success.isAny(new ChooseAction().getTypes())) {
+                                EcRepository.get(success.object, function (creativeWork) {
+                                    explanations.push({text: "viewed " + creativeWork.name,url: creativeWork.url});
+                                    callback();
+                                }, callback);
+                            }
+                            else callback();
+                        }, callback);
                     }
-                }
-                return evidenceString;
+                    else callback();
+                }, function (evidences) {
+                    success(explanations);
+                });
             },
             explain: function (packet, tab, prev, prev2) {
                 var because = "";

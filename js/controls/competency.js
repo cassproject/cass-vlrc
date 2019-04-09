@@ -26,12 +26,12 @@ Vue.component('competency', {
     computed: {
         collapse:
             {
-                get: function(){
+                get: function () {
                     if (this.collapseState == null)
                         this.collapseState = app.collapseState[this.uri];
                     return this.collapseState;
                 },
-                set: function(val){
+                set: function (val) {
                     this.collapseState = val;
                     app.collapseState[this.uri] = val;
                 }
@@ -404,9 +404,43 @@ Vue.component('competency', {
                 a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
                 a.setNegative(false); //This is an assertion that an individual *can* do something, not that they *cannot*.
                 a.setConfidence(1.0);
-                EcRepository.save(a, function () {
-                    me.competentState = null;
-                }, console.error);
+                var evidences = [];
+                //Go find viewActions on related resources to attach to the assertion.
+                if (app.me == me.subject)
+                repo.searchWithParams(
+                    "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(me.uri) + "\"",
+                    {size: 5000},
+                    null,
+                    function (resources) {
+                        new EcAsyncHelper().each(
+                            resources,
+                            function (resource, resourceCallback) {
+                                repo.searchWithParams(
+                                    "@type:ChooseAction AND object:\"" + resource.shortId() + "\" AND @owner:\"" + me.subject + "\"",
+                                    {size: 5000},
+                                    null,
+                                    function (views) {
+                                        for (var i = 0; i < views.length; i++)
+                                            evidences.push(views[i].shortId());
+                                        resourceCallback();
+                                    },
+                                    resourceCallback
+                                );
+                            }, function (resources) {
+                                if (evidences.length > 0)
+                                    a.setEvidence(evidences);
+                                EcRepository.save(a, function () {
+                                    me.competentState = null;
+                                }, console.error);
+                            }
+                        );
+                    },
+                    console.error
+                );
+                else
+                    EcRepository.save(a, function () {
+                        me.competentState = null;
+                    }, console.error);
             });
         },
         unclaimCompetence: function (evt, after) {

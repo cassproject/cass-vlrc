@@ -12,7 +12,8 @@ Vue.component('assertion', {
             competency: null,
             negative: null,
             agentPerson: null,
-            evidence: null
+            evidence: null,
+            evidenceExplanation: null
         };
     },
     computed: {
@@ -64,11 +65,16 @@ Vue.component('assertion', {
         },
         evidenceText: {
             get: function () {
-                if (this.evidence != null)
-                    if (this.evidence.length > 0) {
-                        return app.computeBecause(this.evidence);
-                    }
-                return "";
+                var me = this;
+                if (this.evidenceExplanation == null)
+                    if (this.evidence != null)
+                        if (this.evidence.length > 0)
+                            app.computeBecause(this.evidence, function (because) {
+                                me.$nextTick(function () {
+                                    me.evidenceExplanation = because;
+                                });
+                            });
+                return this.evidenceExplanation;
             }
         },
         fingerprintUrl: {
@@ -82,24 +88,29 @@ Vue.component('assertion', {
                 return "http://tinygraphs.com/spaceinvaders/" + this.agentPerson.getGuid() + "?theme=base&numcolors=16&size=22&fmt=svg";
             }
         },
-        badged:{
-            get:function(){
+        badged: {
+            get: function () {
                 if (this.assertion == null)
                     return false;
                 return this.assertion.hasReader(app.badgePk);
             }
         },
-        badgeUrl:{
-            get:function(){
+        badgeUrl: {
+            get: function () {
                 if (this.assertion != null)
                     if (this.assertion.hasReader(app.badgePk))
-                        return EcRemote.urlAppend(repo.selectedServer,"badge/assertion/")+this.assertion.getGuid();
+                        return EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + this.assertion.getGuid();
                 return "";
             }
         }
     },
-    created: function () {},
-    watch: {},
+    created: function () {
+    },
+    watch: {
+        evidence:function(oldEvidence,newEvidence){
+            evidenceExplanation = null;
+        }
+    },
     methods: {
         initialize: function (isVisible, entry) {
             var me = this;
@@ -146,7 +157,8 @@ Vue.component('assertion', {
                                 assertion.getEvidenceAsync(i, function (evidence) {
                                     if (me.evidence == null)
                                         me.evidence = [];
-                                    me.evidence[i] = evidence;
+                                    me.evidence.push(evidence);
+                                    me.evidenceExplanation = null;
                                 }, console.error);
                             })(i);
                     EcCompetency.get(assertion.competency, function (competency) {
@@ -203,27 +215,45 @@ Vue.component('assertion', {
         },
     },
     template: '' +
-        '<span class="assertion" v-observe-visibility="{callback: initialize,once: true}">' +
-        '<span v-if="icon">' +
-        '<i v-if="negative" class="mdi mdi-18px mdi-close-box-outline" aria-hidden="true" :title="statement"></i>' +
-        '<i v-else class="mdi mdi-18px mdi-checkbox-marked-circle-outline" aria-hidden="true" :title="statement"></i>' +
-        '</span>' +
-        '<span v-else-if="short">' +
-        '<li v-if="ok">' +
-        '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="agent"/> <span style="color:blue">{{agent}}</span> ' +
-        '<span v-if="timestamp">claimed {{ timeAgo }}:</span>' +
-        '<span class="statement antitile"><span v-if="negative">{{subject}} can&#39t do this{{ evidenceText }}</span><span v-else>{{subject}} can do this{{ evidenceText }}</span><span v-if="badged"> and I issued them a <a :href="badgeUrl">badge</a></span>.</span> ' +
-        '</li>' +
-        '</span>' +
-        '<span v-else>' +
-        '<li v-if="ok">' +
-        '<span v-if="timestamp">{{ timeAgo }}, </span>' +
-        '{{agent}} claimed {{subject}} ' +
-        '<span v-if="negative">could not</span><span v-else>could</span>' +
-        ' demonstrate <a href="#" v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyText }}</a> {{ evidenceText }}' +
-        '<a v-if="badged" :href="badgeUrl">Badge</a>'+
-        '</li>' +
-        '</span>' +
-        '</span>'
+    '<span class="assertion" v-observe-visibility="{callback: initialize,once: true}">' +
+    '<span v-if="icon">' +
+    '<i v-if="negative" class="mdi mdi-18px mdi-close-box-outline" aria-hidden="true" :title="statement"></i>' +
+    '<i v-else class="mdi mdi-18px mdi-checkbox-marked-circle-outline" aria-hidden="true" :title="statement"></i>' +
+    '</span>' +
+    '<span v-else-if="short">' +
+    '<li v-if="ok">' +
+    '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="agent"/> <span style="color:blue">{{agent}}</span> ' +
+    '<span v-if="timestamp">claimed {{ timeAgo }}:</span>' +
+    '<span class="statement antitile">'+
+    '<span v-if="negative">{{subject}} can&#39t do this</span>'+
+    '<span v-else>{{subject}} can do this</span>'+
+    '<span v-if="evidenceText"> because they ' +
+    '<span v-for="(evidence, index) in evidenceText">' +
+    '<span v-if="index != 0"> and they </span>' +
+    '<a v-if="evidence.url" :href="evidence.url" target="_blank">{{evidence.text}}</a>' +
+    '<span v-else >{{evidence.text}}</span>' +
+    '</span>' +
+    '</span>' +
+    '<span v-if="badged"> and I issued them a <a :href="badgeUrl">badge</a></span>.'+
+    '</span> ' +
+    '</li>' +
+    '</span>' +
+    '<span v-else>' +
+    '<li v-if="ok">' +
+    '<span v-if="timestamp">{{ timeAgo }}, </span>' +
+    '{{agent}} claimed {{subject}} ' +
+    '<span v-if="negative">could not</span><span v-else>could</span>' +
+    ' demonstrate <a href="#" v-on:click="gotoCompetency" :title="assertion.competency">{{ competencyText }}</a>' +
+    '<span v-if="evidenceText"> because they ' +
+    '<span v-for="(evidence, index) in evidenceText">' +
+    '<span v-if="index != 0"> and they </span>' +
+    '<a v-if="evidence.url" :href="evidence.url" target="_blank">{{evidence.text}}</a>' +
+    '<span v-else >{{evidence.text}}</span>' +
+    '</span>' +
+    '</span>' +
+    '<a v-if="badged" :href="badgeUrl">Badge</a>' +
+    '</li>' +
+    '</span>' +
+    '</span>'
 
 });
