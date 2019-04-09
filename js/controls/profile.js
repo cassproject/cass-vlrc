@@ -107,6 +107,9 @@ Vue.component('profile', {
             this.personObj = null;
             this.editing = false;
             this.private = false;
+            this.refreshesStuff = true;
+            this.inContactList = null;
+            this.getPerson();
         },
         private: function () {}
     },
