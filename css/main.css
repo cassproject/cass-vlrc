@@ -39,14 +39,6 @@ pre {
     max-width:1000px;
 }
 
-@media only screen and (max-width: 600px) {
-    #pages {
-        flex-direction: column;
-    }
-    .page{
-        width: calc(100vw - 50px);
-    }
-}
 ul,
 li {
     list-style: none;
@@ -394,4 +386,19 @@ textarea {
 .competency .buttons button i {
     padding: .5rem;
     padding-left: .25rem;
+}
+
+@media only screen and (max-width: 600px) {
+    #pages {
+        flex-direction: column;
+    }
+    .page{
+        width: calc(100vw - 50px);
+    }
+    #sidebar{
+        margin-bottom:1rem;
+        padding-bottom:1rem;
+        border-bottom:1px solid black;
+        width:calc(100% - 2rem);
+    }
 }
