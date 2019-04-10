@@ -350,6 +350,9 @@ Vue.component('competency', {
             this.competentState = null;
             this.incompetentState = null;
             this.estimatedCompetenceValue = null;
+            this.evidenceExplanation = null;
+            this.evidenceInput = null;
+            this.evidence = null;
         },
         subject: function (newSubject, oldSubject) {
             this.assertionsByOthers = [];
@@ -357,6 +360,9 @@ Vue.component('competency', {
             this.competentState = null;
             this.incompetentState = null;
             this.estimatedCompetenceValue = null;
+            this.evidenceExplanation = null;
+            this.evidenceInput = null;
+            this.evidence = null;
         }
     },
     methods: {
