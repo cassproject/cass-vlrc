@@ -563,6 +563,7 @@ Vue.component('competency', {
                                                     EcRepository._delete(assertion, function () {
                                                         EcArray.setRemove(app.assertions, assertion);
                                                         me.incompetentState = null;
+                                                        callback();
                                                     }, callback);
                                                 } else callback();
                                             }, callback);
