@@ -20,7 +20,10 @@ Vue.component('competency', {
             visible: false,
             iconAssertion: true,
             hover: false,
-            collapseState: null
+            collapseState: null,
+            evidence: null,
+            evidenceExplanation: null,
+            evidenceInput: null
         };
     },
     computed: {
@@ -36,6 +39,12 @@ Vue.component('competency', {
                     app.collapseState[this.uri] = val;
                 }
             },
+        evidenceText: {
+            get: function () {
+                var me = this;
+                return this.evidenceExplanation;
+            }
+        },
         counter: {
             get: function () {
                 if (this.visible) {
@@ -133,25 +142,41 @@ Vue.component('competency', {
                                 if (me.subject == subject.toPem()) {
                                     assertion.getAgentAsync(function (agent) {
                                         if (app.me == agent.toPem()) {
-                                            if (assertion.negative != null) {
-                                                assertion.getNegativeAsync(function (negative) {
-                                                    if (negative) {
-                                                        me.incompetentStateNew = true;
-                                                        me.badged = null;
-                                                    }
-                                                    else {
-                                                        me.badged = assertion.hasReader(app.badgePk);
-                                                        me.badgeLink = EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + assertion.getGuid();
-                                                        me.competentStateNew = true;
-                                                    }
+                                            var negativeCallback = function () {
+                                                if (assertion.negative != null) {
+                                                    assertion.getNegativeAsync(function (negative) {
+                                                        if (negative) {
+                                                            me.incompetentStateNew = true;
+                                                            me.badged = null;
+                                                        }
+                                                        else {
+                                                            me.badged = assertion.hasReader(app.badgePk);
+                                                            me.badgeLink = EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + assertion.getGuid();
+                                                            me.competentStateNew = true;
+                                                        }
+                                                        callback();
+                                                    }, callback);
+                                                }
+                                                else {
+                                                    me.competentStateNew = true;
+                                                    me.badged = assertion.hasReader(app.badgePk);
+                                                    me.badgeLink = EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + assertion.getGuid();
                                                     callback();
+                                                }
+                                            }
+                                            if (assertion.evidence != null) {
+                                                assertion.getEvidencesAsync(function (evidences) {
+                                                    me.evidence = evidences;
+                                                    app.computeBecause(me.evidence, function (because) {
+                                                        me.evidenceExplanation = because;
+                                                    });
+                                                    negativeCallback();
                                                 }, callback);
                                             }
                                             else {
-                                                me.competentStateNew = true;
-                                                me.badged = assertion.hasReader(app.badgePk);
-                                                me.badgeLink = EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + assertion.getGuid();
-                                                callback();
+                                                me.evidence = null;
+                                                me.evidenceExplanation = null;
+                                                negativeCallback();
                                             }
                                         } else {
                                             EcArray.setRemove(me.assertionsByOthers, assertion);
@@ -293,6 +318,16 @@ Vue.component('competency', {
                 return "Others have made claims about " + (app.subject == app.me ? "you" : app.subjectName) + ". Click to expand.";
             }
         },
+        ithey: {
+            get: function () {
+                return (app.subject == app.me ? "I" : "they");
+            }
+        },
+        becausePhrase: {
+            get: function () {
+                return "do this because " + (app.subject == app.me ? "I..." : "they...");
+            }
+        },
         canEditSubject: {
             get: function () {
                 if (this.subjectPerson == null) return false;
@@ -407,36 +442,36 @@ Vue.component('competency', {
                 var evidences = [];
                 //Go find viewActions on related resources to attach to the assertion.
                 if (app.me == me.subject)
-                repo.searchWithParams(
-                    "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(me.uri) + "\"",
-                    {size: 5000},
-                    null,
-                    function (resources) {
-                        new EcAsyncHelper().each(
-                            resources,
-                            function (resource, resourceCallback) {
-                                repo.searchWithParams(
-                                    "@type:ChooseAction AND object:\"" + resource.shortId() + "\" AND @owner:\"" + me.subject + "\"",
-                                    {size: 5000},
-                                    null,
-                                    function (views) {
-                                        for (var i = 0; i < views.length; i++)
-                                            evidences.push(views[i].shortId());
-                                        resourceCallback();
-                                    },
-                                    resourceCallback
-                                );
-                            }, function (resources) {
-                                if (evidences.length > 0)
-                                    a.setEvidence(evidences);
-                                EcRepository.save(a, function () {
-                                    me.competentState = null;
-                                }, console.error);
-                            }
-                        );
-                    },
-                    console.error
-                );
+                    repo.searchWithParams(
+                        "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(me.uri) + "\"",
+                        {size: 5000},
+                        null,
+                        function (resources) {
+                            new EcAsyncHelper().each(
+                                resources,
+                                function (resource, resourceCallback) {
+                                    repo.searchWithParams(
+                                        "@type:ChooseAction AND object:\"" + resource.shortId() + "\" AND @owner:\"" + me.subject + "\"",
+                                        {size: 5000},
+                                        null,
+                                        function (views) {
+                                            for (var i = 0; i < views.length; i++)
+                                                evidences.push(views[i].shortId());
+                                            resourceCallback();
+                                        },
+                                        resourceCallback
+                                    );
+                                }, function (resources) {
+                                    if (evidences.length > 0)
+                                        a.setEvidence(evidences);
+                                    EcRepository.save(a, function () {
+                                        me.competentState = null;
+                                    }, console.error);
+                                }
+                            );
+                        },
+                        console.error
+                    );
                 else
                     EcRepository.save(a, function () {
                         me.competentState = null;
@@ -633,6 +668,77 @@ Vue.component('competency', {
                 });
             }, console.error);
         },
+        evidenceAssertion: function (evt, after) {
+            var me = this;
+            EcCompetency.get(this.uri, function (c) {
+                me.competencyObj = c;
+                if (app.assertions == null)
+                    return;
+                var eah = new EcAsyncHelper();
+                eah.each(app.assertions, function (assertion, callback) {
+                    if (me.competencyObj.isId(assertion.competency))
+                        assertion.getSubjectAsync(function (subject) {
+                            if (me.subject == subject.toPem()) {
+                                assertion.getAgentAsync(function (agent) {
+                                    if (app.me == agent.toPem()) {
+                                        assertion.getEvidencesAsync(function (evidences) {
+                                            EcArray.setAdd(evidences, me.evidenceInput);
+                                            me.evidenceInput = "";
+                                            assertion.setEvidence(evidences);
+                                            EcRepository.save(assertion, function () {
+                                                app.assertionsChanges++;
+                                                callback();
+                                            }, callback);
+                                        }, callback);
+                                    }
+                                    else
+                                        callback();
+                                }, callback);
+                            } else
+                                callback();
+                        }, callback);
+                    else
+                        callback();
+                }, function (assertions) {
+                    if (after != null) after();
+                });
+            }, console.error);
+        },
+        unevidenceAssertion: function (url, after) {
+            var me = this;
+            EcCompetency.get(this.uri, function (c) {
+                me.competencyObj = c;
+                if (app.assertions == null)
+                    return;
+                var eah = new EcAsyncHelper();
+                eah.each(app.assertions, function (assertion, callback) {
+                    if (me.competencyObj.isId(assertion.competency))
+                        assertion.getSubjectAsync(function (subject) {
+                            if (me.subject == subject.toPem()) {
+                                assertion.getAgentAsync(function (agent) {
+                                    if (app.me == agent.toPem()) {
+                                        assertion.getEvidencesAsync(function (evidences) {
+                                            EcArray.setRemove(evidences, url);
+                                            assertion.setEvidence(evidences);
+                                            EcRepository.save(assertion, function () {
+                                                app.assertionsChanges++;
+                                                callback();
+                                            }, callback);
+                                        }, callback);
+                                    }
+                                    else
+                                        callback();
+                                }, callback);
+                            } else
+                                callback();
+                        }, callback);
+                    else
+                        callback();
+                }, function (assertions) {
+                    if (after != null) after();
+                });
+            }, console.error);
+        },
         makeGoal: function (evt, after) {
             this.goalState = null;
             var d = new Demand();
@@ -668,9 +774,11 @@ Vue.component('competency', {
     '</span>' +
     '<div>' +
     '<div class="tile">' +
-    '<span v-observe-visibility="{callback: initialize,once: true}">{{ name }}</span> ' +
+    '<div class="section pbottom">' +
+    '<div v-observe-visibility="{callback: initialize,once: true}">{{ name }}</div> ' +
     '<small v-if="description" class="block">{{ description }}</small>' +
-    '<div class="buttons">' +
+    '</div>' +
+    '<div class="buttons btop">' +
     '<span v-if="subject != null">' +
     '<button class="inline" v-if="competent == null"><i class="mdi mdi-18px mdi-loading mdi-spin" aria-hidden="true"></i> Loading...</button>' +
     '<button class="inline" v-if="competent == true" v-on:click="unclaimCompetence" :title="unclaimCompetencePhrase"><i class="mdi mdi-18px mdi-checkbox-marked-circle-outline" aria-hidden="true"></i> {{unclaimCompetencePhraseShort}}</button>' +
@@ -697,17 +805,29 @@ Vue.component('competency', {
     '</span>' +
     '<span v-if="competent == true || incompetent == true">' +
     '<button class="inline" v-if="badged == true" style="color:green;" v-on:click="unbadgeAssertion" title="Remove the badge for my claim."><i class="mdi mdi-18px mdi-shield" aria-hidden="true"></i> Badge</button>' +
-    '<button class="inline wider" v-if="badged == true" ><i class="mdi mdi-18px mdi-shield-link-variant" style="color:darkblue;" aria-hidden="true"></i><a class="inline" style="color:darkblue;" target="_blank" :href="badgeLink">Badge Link</a></button>' +
+    '<button class="inline wider" v-if="badged == true"><i class="mdi mdi-18px mdi-shield-link-variant" style="color:darkblue;" aria-hidden="true"></i><a class="inline" style="color:darkblue;" target="_blank" :href="badgeLink">Badge Link</a></button>' +
     '<button class="inline" v-if="badged == false" style="color:gray;" v-on:click="badgeAssertion" title="Issue a badge for my claim."><i class="mdi mdi-18px mdi-shield-outline" aria-hidden="true"></i> Badge</button>' +
     '</span>' +
     '</div>' +
-    '<div style="padding-top:.1rem;" v-if="assertionsByOthers && assertionsByOthers.length > 0" v-on:click="iconAssertion = !iconAssertion" class="assertions">' +
+    '<div class="btop" v-if="competent == true || incompetent == true">' +
+    '<input class="inline antitile" style="width:25rem;" v-model="evidenceInput" v-on:keyup.enter="evidenceAssertion" v-on:keyup.esc="evidenceInput = null" :placeholder="becausePhrase" title="Text or URL Link">' +
+    //'<button class="inline wider" v-on:click="evidenceAssertion" title="Add Evidence as URL or Text."><i class="mdi mdi-18px mdi-fingerprint" aria-hidden="true"></i>Add Evidence</button>' +
+    '</div>' +
+    '<small class="buttons" v-if="evidenceText">' +
+    '<ul>' +
+    '<li class="pbottom" v-for="(evidence, index) in evidenceText">' +
+    '<span v-on:click="unevidenceAssertion(evidence.original)" style="float:right;cursor:pointer;">X</span>' +
+    '<a v-if="evidence.url" :href="evidence.url" target="_blank">{{evidence.text}}</a>' +
+    '<span v-else>{{evidence.text}}</span>' +
+    '</li>' +
+    '</ul>' +
+    '</small>' +
+    '<div v-if="assertionsByOthers && assertionsByOthers.length > 0" v-on:click="iconAssertion = !iconAssertion" class="assertions section btop ptop">' +
     '<span v-if="iconAssertion && assertionsByOthers && assertionsByOthers.length > 0" :title="otherClaimsPhrase"><i class="mdi mdi-account-group mdi-18px" aria-hidden="true"/>: </span>' +
     '<assertion :icon="iconAssertion" v-for="item in assertionsByOthers" v-bind:key="uri+item.id" :short="true" :uri="item.id" title="Assertion from elsewhere"></assertion>' +
     '</div>' +
     '</div>' +
     '<ul v-if="collapse == false || collapse == null"><competency v-for="item in hasChild" :uri="item.id" :hasChild="item.hasChild" :parentCompetent="isCompetent" :frameworkUri="frameworkUri" :computedState="computedState" :subjectPerson="subjectPerson" :subject="subject"></competency></ul>' +
-
     '</div>' +
     '</li>'
 });

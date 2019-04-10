@@ -162,6 +162,7 @@ function startVlrc() {
                 var explanations = [];
                 new EcAsyncHelper().each(evidences, function (e, callback) {
                     var evidenceString = "";
+                    var eoriginal = e;
                     if (e.startsWith != null && e.startsWith("{"))
                         e = JSON.parse(e);
                     if (EcObject.isObject(e)) {
@@ -188,20 +189,35 @@ function startVlrc() {
                                             evidenceString += e.result.success ? " correctly" : " incorrectly";
                                 }
                         if (evidenceString != "")
-                            explanations.push({text: evidenceString});
+                            explanations.push({text: evidenceString, original: eoriginal});
                         callback();
                     } else if (e.startsWith != null && e.startsWith("http")) {
                         EcRepository.get(e, function (success) {
                             if (success.isAny(new ChooseAction().getTypes())) {
                                 EcRepository.get(success.object, function (creativeWork) {
-                                    explanations.push({text: "viewed " + creativeWork.name,url: creativeWork.url});
+                                    explanations.push({
+                                        text: "viewed " + creativeWork.name,
+                                        url: creativeWork.url,
+                                        original: eoriginal
+                                    });
                                     callback();
                                 }, callback);
                             }
-                            else callback();
-                        }, callback);
+                            else
+                                callback();
+                        }, function (failure) {
+                            explanations.push({
+                                text: "did this",
+                                url: e,
+                                original: eoriginal
+                            });
+                            callback();
+                        });
                     }
-                    else callback();
+                    else {
+                        explanations.push({text: "\"" + e + "\"", original: eoriginal});
+                        callback();
+                    }
                 }, function (evidences) {
                     success(explanations);
                 });
