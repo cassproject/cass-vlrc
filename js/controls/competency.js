@@ -810,7 +810,7 @@ Vue.component('competency', {
     '</span>' +
     '</div>' +
     '<div class="btop" v-if="competent == true || incompetent == true">' +
-    '<input class="inline antitile" style="width:25rem;" v-model="evidenceInput" v-on:keyup.enter="evidenceAssertion" v-on:keyup.esc="evidenceInput = null" :placeholder="becausePhrase" title="Text or URL Link">' +
+    '<input class="inline antitile" style="width:25rem;max-width:100%" v-model="evidenceInput" v-on:keyup.enter="evidenceAssertion" v-on:keyup.esc="evidenceInput = null" :placeholder="becausePhrase" title="Text or URL Link">' +
     //'<button class="inline wider" v-on:click="evidenceAssertion" title="Add Evidence as URL or Text."><i class="mdi mdi-18px mdi-fingerprint" aria-hidden="true"></i>Add Evidence</button>' +
     '</div>' +
     '<small class="buttons" v-if="evidenceText">' +
