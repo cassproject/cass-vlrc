@@ -117,18 +117,20 @@ Vue.component('framework', {
                             done();
                         }, done);
                 }, function (as) {
-                    var frameworkGraph = new EcFrameworkGraph();
-                    frameworkGraph.addFramework(EcFramework.getBlocking(me.uri), repo, function () {
-                        frameworkGraph.processAssertionsBoolean(assertions, function () {
-                            if (hash == me.computedStateAssertionLength + app.assertionsChanges + me.uri) {
-                                for (var key in frameworkGraph.metaVerticies)
-                                    delete frameworkGraph.metaVerticies[key].framework;
-                                me.computedStateActual = frameworkGraph;
-                                console.log("Finished processing (overwrite): " + new Date() + " " + hash);
-                            } else
-                                console.log("Finished processing (abort): " + new Date() + " " + hash);
+                    setTimeout(function(){
+                        var frameworkGraph = new EcFrameworkGraph();
+                        frameworkGraph.addFramework(EcFramework.getBlocking(me.uri), repo, function () {
+                            frameworkGraph.processAssertionsBoolean(assertions, function () {
+                                if (hash == me.computedStateAssertionLength + app.assertionsChanges + me.uri) {
+                                    for (var key in frameworkGraph.metaVerticies)
+                                        delete frameworkGraph.metaVerticies[key].framework;
+                                    me.computedStateActual = frameworkGraph;
+                                    console.log("Finished processing (overwrite): " + new Date() + " " + hash);
+                                } else
+                                    console.log("Finished processing (abort): " + new Date() + " " + hash);
+                            }, console.error);
                         }, console.error);
-                    }, console.error);
+                    },1000);
                 });
             }
             return this.computedStateActual;

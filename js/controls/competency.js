@@ -431,6 +431,7 @@ Vue.component('competency', {
         },
         claimCompetence: function (evt, after) {
             var me = this;
+            this.competentState = null;
             this.unclaimIncompetence(evt, function () {
                 var a = new EcAssertion();
                 a.generateId(repo.selectedServer);
@@ -486,6 +487,7 @@ Vue.component('competency', {
         },
         unclaimCompetence: function (evt, after) {
             var me = this;
+            this.competentState = null;
             EcCompetency.get(this.uri, function (c) {
                 me.competencyObj = c;
                 if (app.assertions == null)
@@ -531,6 +533,7 @@ Vue.component('competency', {
         },
         claimIncompetence: function (evt, after) {
             var me = this;
+            this.incompetentState = null;
             this.unclaimCompetence(evt, function () {
                 var a = new EcAssertion();
                 a.generateId(repo.selectedServer);
@@ -552,6 +555,7 @@ Vue.component('competency', {
         },
         unclaimIncompetence: function (evt, after) {
             var me = this;
+            this.incompetentState = null;
             EcCompetency.get(this.uri, function (c) {
                 me.competencyObj = c;
                 if (app.assertions == null)
