@@ -39,14 +39,6 @@ pre {
     max-width:1000px;
 }
 
-@media only screen and (max-width: 600px) {
-    #pages {
-        flex-direction: column;
-    }
-    .page{
-        width: calc(100vw - 50px);
-    }
-}
 ul,
 li {
     list-style: none;
@@ -61,12 +53,12 @@ ul ul {
     margin-top:1rem;
 }
 
-.competency ul li {
+.competency>div>ul>li {
     border-left: 2px solid black;
 
 }
 
-.competency ul li:before {
+.competency>div>ul>li:before {
     content: '';
     height: 3rem;
     width: 2rem;
@@ -75,11 +67,11 @@ ul ul {
     bottom: 0;
 }
 
-.competency ul li:last-child {
+.competency>div>ul>li:last-child {
     border-left: 0px;
 }
 
-.competency ul li:last-child:before {
+.competency>div>ul>li:last-child:before {
     position: relative;
     border-left: 2px solid black;
     border-bottom: 2px solid black;
@@ -130,7 +122,18 @@ ul ul {
     border: 0px gray solid;
     background-color: #f5f5f5;
     border-radius: .25rem;
-    padding: .75rem;
+    padding: .25rem;
+    margin-top: .50rem;
+    margin-bottom: .50rem;
+}
+
+input.antitile {
+    border: 1px gray solid;
+    background-color: #f5f5f5;
+    border-radius: .5rem;
+    padding: .50rem .75rem;
+    margin-top: .50rem;
+    margin-bottom: .50rem;
 }
 
 .frameworkSelect {
@@ -318,7 +321,45 @@ textarea {
     display: flex;
     align-items: center;
     flex-direction: row;
-    padding-top: .75rem;
+    flex-flow: wrap;
+}
+
+.btop {
+    border-top: 1px lightgray solid;
+}
+
+.bbottom {
+    border-bottom: 1px lightgray solid;
+}
+
+.ptop {
+    padding-top: .5rem;
+}
+
+.pbottom {
+    padding-bottom: .5rem;
+}
+
+.noptop {
+    padding-top: 0rem;
+}
+
+.nopbottom {
+    padding-bottom: 0rem;
+}
+
+.nomtop {
+    margin-top: 0rem;
+}
+
+.nombottom {
+    margin-bottom: 0rem;
+}
+
+.competency .section {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
     flex-flow: wrap;
 }
 
@@ -326,6 +367,10 @@ textarea {
     display: flex;
     align-items: center;
     flex-direction: row;
+}
+
+.competency .buttons ul {
+    width:100%;
 }
 
 .competency .buttons button {
@@ -342,4 +387,19 @@ textarea {
 .competency .buttons button i {
     padding: .5rem;
     padding-left: .25rem;
+}
+
+@media only screen and (max-width: 600px) {
+    #pages {
+        flex-direction: column;
+    }
+    .page{
+        width: calc(100vw - 50px);
+    }
+    #sidebar{
+        margin-bottom:1rem;
+        padding-bottom:1rem;
+        border-bottom:1px solid black;
+        width:calc(100% - 2rem);
+    }
 }

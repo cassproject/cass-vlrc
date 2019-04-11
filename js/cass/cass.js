@@ -64648,7 +64648,7 @@ Level = stjs.extend(Level, CreativeWork, [], function(constructor, prototype) {
         a.push(Level.TYPE_0_1);
         return a;
     };
-}, {contributor: "Object", reviews: "Review", audience: "Audience", timeRequired: "Duration", publication: "PublicationEvent", contentLocation: "Place", temporalCoverage: "Object", isBasedOn: "Object", fileFormat: "Object", interactionStatistic: "InteractionCounter", recordedAt: "Event", isPartOf: "CreativeWork", exampleOfWork: "CreativeWork", dateCreated: "Object", releasedEvent: "PublicationEvent", publisher: "Object", encoding: "MediaObject", creator: "Object", hasPart: "CreativeWork", license: "Object", translator: "Object", offers: "Offer", schemaVersion: "Object", review: "Review", position: "Object", genre: "Object", character: "Person", producer: "Object", editor: "Person", locationCreated: "Place", about: "Thing", audio: "AudioObject", encodings: "MediaObject", funder: "Object", accountablePerson: "Person", material: "Object", author: "Object", sourceOrganization: "Organization", sponsor: "Object", provider: "Object", copyrightHolder: "Object", comment: "Comment", spatialCoverage: "Place", aggregateRating: "AggregateRating", educationalAlignment: "AlignmentObject", video: "VideoObject", version: "Object", mainEntity: "Thing", associatedMedia: "MediaObject", workExample: "CreativeWork", mentions: "Thing", citation: "Object", dateModified: "Object", inLanguage: "Object", isBasedOnUrl: "Object", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  A relation between two objects.
  * 
@@ -64786,7 +64786,7 @@ Relation = stjs.extend(Relation, CreativeWork, [], function(constructor, prototy
         a.push(Relation.TYPE_0_1);
         return a;
     };
-}, {contributor: "Object", reviews: "Review", audience: "Audience", timeRequired: "Duration", publication: "PublicationEvent", contentLocation: "Place", temporalCoverage: "Object", isBasedOn: "Object", fileFormat: "Object", interactionStatistic: "InteractionCounter", recordedAt: "Event", isPartOf: "CreativeWork", exampleOfWork: "CreativeWork", dateCreated: "Object", releasedEvent: "PublicationEvent", publisher: "Object", encoding: "MediaObject", creator: "Object", hasPart: "CreativeWork", license: "Object", translator: "Object", offers: "Offer", schemaVersion: "Object", review: "Review", position: "Object", genre: "Object", character: "Person", producer: "Object", editor: "Person", locationCreated: "Place", about: "Thing", audio: "AudioObject", encodings: "MediaObject", funder: "Object", accountablePerson: "Person", material: "Object", author: "Object", sourceOrganization: "Organization", sponsor: "Object", provider: "Object", copyrightHolder: "Object", comment: "Comment", spatialCoverage: "Place", aggregateRating: "AggregateRating", educationalAlignment: "AlignmentObject", video: "VideoObject", version: "Object", mainEntity: "Thing", associatedMedia: "MediaObject", workExample: "CreativeWork", mentions: "Thing", citation: "Object", dateModified: "Object", inLanguage: "Object", isBasedOnUrl: "Object", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  A segment of script that defines in a domain specific language how competence is transferred from one competency to another.
  * 
@@ -64834,7 +64834,7 @@ RollupRule = stjs.extend(RollupRule, CreativeWork, [], function(constructor, pro
         a.push(RollupRule.TYPE_0_2);
         return a;
     };
-}, {contributor: "Object", reviews: "Review", audience: "Audience", timeRequired: "Duration", publication: "PublicationEvent", contentLocation: "Place", temporalCoverage: "Object", isBasedOn: "Object", fileFormat: "Object", interactionStatistic: "InteractionCounter", recordedAt: "Event", isPartOf: "CreativeWork", exampleOfWork: "CreativeWork", dateCreated: "Object", releasedEvent: "PublicationEvent", publisher: "Object", encoding: "MediaObject", creator: "Object", hasPart: "CreativeWork", license: "Object", translator: "Object", offers: "Offer", schemaVersion: "Object", review: "Review", position: "Object", genre: "Object", character: "Person", producer: "Object", editor: "Person", locationCreated: "Place", about: "Thing", audio: "AudioObject", encodings: "MediaObject", funder: "Object", accountablePerson: "Person", material: "Object", author: "Object", sourceOrganization: "Organization", sponsor: "Object", provider: "Object", copyrightHolder: "Object", comment: "Comment", spatialCoverage: "Place", aggregateRating: "AggregateRating", educationalAlignment: "AlignmentObject", video: "VideoObject", version: "Object", mainEntity: "Thing", associatedMedia: "MediaObject", workExample: "CreativeWork", mentions: "Thing", citation: "Object", dateModified: "Object", inLanguage: "Object", isBasedOnUrl: "Object", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  A Competency Framework or simply Framework is a collection of competencies and relations between competencies in the framework and potentially between competencies in the framework and competencies in other frameworks. In practice, a Framework represents competencies related to a specific job, task, organization, career, knowledge domain, etc.
  * 
@@ -64904,7 +64904,7 @@ Framework = stjs.extend(Framework, CreativeWork, [], function(constructor, proto
         a.push(Framework.TYPE_0_1);
         return a;
     };
-}, {competency: {name: "Array", arguments: [null]}, relation: {name: "Array", arguments: [null]}, level: {name: "Array", arguments: [null]}, rollupRule: {name: "Array", arguments: [null]}, contributor: "Object", reviews: "Review", audience: "Audience", timeRequired: "Duration", publication: "PublicationEvent", contentLocation: "Place", temporalCoverage: "Object", isBasedOn: "Object", fileFormat: "Object", interactionStatistic: "InteractionCounter", recordedAt: "Event", isPartOf: "CreativeWork", exampleOfWork: "CreativeWork", dateCreated: "Object", releasedEvent: "PublicationEvent", publisher: "Object", encoding: "MediaObject", creator: "Object", hasPart: "CreativeWork", license: "Object", translator: "Object", offers: "Offer", schemaVersion: "Object", review: "Review", position: "Object", genre: "Object", character: "Person", producer: "Object", editor: "Person", locationCreated: "Place", about: "Thing", audio: "AudioObject", encodings: "MediaObject", funder: "Object", accountablePerson: "Person", material: "Object", author: "Object", sourceOrganization: "Organization", sponsor: "Object", provider: "Object", copyrightHolder: "Object", comment: "Comment", spatialCoverage: "Place", aggregateRating: "AggregateRating", educationalAlignment: "AlignmentObject", video: "VideoObject", version: "Object", mainEntity: "Thing", associatedMedia: "MediaObject", workExample: "CreativeWork", mentions: "Thing", citation: "Object", dateModified: "Object", inLanguage: "Object", isBasedOnUrl: "Object", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {competency: {name: "Array", arguments: [null]}, relation: {name: "Array", arguments: [null]}, level: {name: "Array", arguments: [null]}, rollupRule: {name: "Array", arguments: [null]}, about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Competencies include skills, knowledge, abilities, traits, and combinations thereof that are needed to perform a task or job. In CASS, competencies are identified and located using a globally unique ID. Competencies can be further described using titles, descriptions, levels, indicators (coming soon), roll-up rules, and relationships to other competencies.
  * 
@@ -64957,7 +64957,7 @@ Competency = stjs.extend(Competency, CreativeWork, [], function(constructor, pro
         a.push(Competency.TYPE_0_1);
         return a;
     };
-}, {contributor: "Object", reviews: "Review", audience: "Audience", timeRequired: "Duration", publication: "PublicationEvent", contentLocation: "Place", temporalCoverage: "Object", isBasedOn: "Object", fileFormat: "Object", interactionStatistic: "InteractionCounter", recordedAt: "Event", isPartOf: "CreativeWork", exampleOfWork: "CreativeWork", dateCreated: "Object", releasedEvent: "PublicationEvent", publisher: "Object", encoding: "MediaObject", creator: "Object", hasPart: "CreativeWork", license: "Object", translator: "Object", offers: "Offer", schemaVersion: "Object", review: "Review", position: "Object", genre: "Object", character: "Person", producer: "Object", editor: "Person", locationCreated: "Place", about: "Thing", audio: "AudioObject", encodings: "MediaObject", funder: "Object", accountablePerson: "Person", material: "Object", author: "Object", sourceOrganization: "Organization", sponsor: "Object", provider: "Object", copyrightHolder: "Object", comment: "Comment", spatialCoverage: "Place", aggregateRating: "AggregateRating", educationalAlignment: "AlignmentObject", video: "VideoObject", version: "Object", mainEntity: "Thing", associatedMedia: "MediaObject", workExample: "CreativeWork", mentions: "Thing", citation: "Object", dateModified: "Object", inLanguage: "Object", isBasedOnUrl: "Object", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  A claim of competence in CASS is called an Assertion. It states with some confidence that an individual has mastered a competency at a given level, provides evidence of such mastery, and records data such as the time of assertion and the party making the assertion.
  * 
@@ -65252,7 +65252,7 @@ Assertion = stjs.extend(Assertion, CreativeWork, [], function(constructor, proto
             Assertion.codebooks = new Object();
         return (Assertion.codebooks)[assertion.id];
     };
-}, {codebooks: "Object", subject: "EcEncryptedValue", agent: "EcEncryptedValue", evidence: {name: "Array", arguments: ["EcEncryptedValue"]}, assertionDate: "EcEncryptedValue", expirationDate: "EcEncryptedValue", decayFunction: "EcEncryptedValue", negative: "EcEncryptedValue", contributor: "Object", reviews: "Review", audience: "Audience", timeRequired: "Duration", publication: "PublicationEvent", contentLocation: "Place", temporalCoverage: "Object", isBasedOn: "Object", fileFormat: "Object", interactionStatistic: "InteractionCounter", recordedAt: "Event", isPartOf: "CreativeWork", exampleOfWork: "CreativeWork", dateCreated: "Object", releasedEvent: "PublicationEvent", publisher: "Object", encoding: "MediaObject", creator: "Object", hasPart: "CreativeWork", license: "Object", translator: "Object", offers: "Offer", schemaVersion: "Object", review: "Review", position: "Object", genre: "Object", character: "Person", producer: "Object", editor: "Person", locationCreated: "Place", about: "Thing", audio: "AudioObject", encodings: "MediaObject", funder: "Object", accountablePerson: "Person", material: "Object", author: "Object", sourceOrganization: "Organization", sponsor: "Object", provider: "Object", copyrightHolder: "Object", comment: "Comment", spatialCoverage: "Place", aggregateRating: "AggregateRating", educationalAlignment: "AlignmentObject", video: "VideoObject", version: "Object", mainEntity: "Thing", associatedMedia: "MediaObject", workExample: "CreativeWork", mentions: "Thing", citation: "Object", dateModified: "Object", inLanguage: "Object", isBasedOnUrl: "Object", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {codebooks: "Object", subject: "EcEncryptedValue", agent: "EcEncryptedValue", evidence: {name: "Array", arguments: ["EcEncryptedValue"]}, assertionDate: "EcEncryptedValue", expirationDate: "EcEncryptedValue", decayFunction: "EcEncryptedValue", negative: "EcEncryptedValue", about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  Container for storing assertions and the secrets used to decrypt those assertions.
  * 
@@ -65459,7 +65459,7 @@ AssertionEnvelope = stjs.extend(AssertionEnvelope, CreativeWork, [], function(co
                     return false;
         return true;
     };
-}, {assertion: {name: "Array", arguments: ["Assertion"]}, codebook: {name: "Array", arguments: ["AssertionCodebook"]}, contributor: "Object", reviews: "Review", audience: "Audience", timeRequired: "Duration", publication: "PublicationEvent", contentLocation: "Place", temporalCoverage: "Object", isBasedOn: "Object", fileFormat: "Object", interactionStatistic: "InteractionCounter", recordedAt: "Event", isPartOf: "CreativeWork", exampleOfWork: "CreativeWork", dateCreated: "Object", releasedEvent: "PublicationEvent", publisher: "Object", encoding: "MediaObject", creator: "Object", hasPart: "CreativeWork", license: "Object", translator: "Object", offers: "Offer", schemaVersion: "Object", review: "Review", position: "Object", genre: "Object", character: "Person", producer: "Object", editor: "Person", locationCreated: "Place", about: "Thing", audio: "AudioObject", encodings: "MediaObject", funder: "Object", accountablePerson: "Person", material: "Object", author: "Object", sourceOrganization: "Organization", sponsor: "Object", provider: "Object", copyrightHolder: "Object", comment: "Comment", spatialCoverage: "Place", aggregateRating: "AggregateRating", educationalAlignment: "AlignmentObject", video: "VideoObject", version: "Object", mainEntity: "Thing", associatedMedia: "MediaObject", workExample: "CreativeWork", mentions: "Thing", citation: "Object", dateModified: "Object", inLanguage: "Object", isBasedOnUrl: "Object", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+}, {assertion: {name: "Array", arguments: ["Assertion"]}, codebook: {name: "Array", arguments: ["AssertionCodebook"]}, about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 var EcAnswer = function() {
     Answer.call(this);
 };
@@ -70719,6 +70719,20 @@ EcAssertion = stjs.extend(EcAssertion, Assertion, [], function(constructor, prot
         }
         return decryptedString;
     };
+    prototype.getEvidencesAsync = function(success, failure) {
+        var results = new Array();
+        if (this.evidence != null) 
+            new EcAsyncHelper().each(this.evidence, function(e, callback0) {
+                e.decryptIntoStringAsync(function(str) {
+                    results.push(str);
+                    callback0();
+                }, callback0);
+            }, function(strings) {
+                success(results);
+            });
+         else 
+            success(results);
+    };
     prototype.getEvidenceAsync = function(index, success, failure) {
         if (this.evidence[index] == null) {
             success(null);
@@ -73629,6 +73643,22 @@ Node = stjs.extend(Node, null, [], function(constructor, prototype) {
         return "Node: \"" + this.id + "\"";
     };
 }, {}, {});
+var EcGraphUtil = function() {};
+EcGraphUtil = stjs.extend(EcGraphUtil, null, [], function(constructor, prototype) {
+    constructor.buildIdSearchQueryForIdList = function(idList) {
+        var searchQuery = "";
+        if (idList.length > 1) 
+            searchQuery = "(";
+        for (var i = 0; i < idList.length; i++) {
+            if (i > 0) 
+                searchQuery += " OR ";
+            searchQuery += "(\\*@id:\"" + idList[i] + "\")";
+        }
+        if (idList.length > 1) 
+            searchQuery += ")";
+        return searchQuery;
+    };
+}, {}, {});
 var ExceptionReturn = function(errorMessage) {
     this.errorMessage = errorMessage;
 };
@@ -75271,10 +75301,15 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
     prototype.edgeMap = null;
     prototype.dontTryAnyMore = null;
     prototype.frameworks = null;
+    prototype.addFrameworkSuccessCallback = null;
+    prototype.addFrameworkFailureCallback = null;
+    prototype.repo = null;
     prototype.addFramework = function(framework, repo, success, failure) {
         this.frameworks.push(framework);
         var me = this;
+        console.log("addFramework about to multiget: " + Date.now());
         repo.multiget(framework.competency.concat(framework.relation), function(data) {
+            console.log("Multiget complete: " + Date.now());
             var competencyTemplate = new EcCompetency();
             var alignmentTemplate = new EcAlignment();
             for (var i = 0; i < data.length; i++) {
@@ -75292,12 +75327,23 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
             success();
         }, failure);
     };
+    prototype.fetchFrameworkAlignments = function(framework) {
+        var me = this;
+        EcAlignment.search(this.repo, EcGraphUtil.buildIdSearchQueryForIdList(framework.relation), function(ecaa) {
+            for (var i = 0; i < ecaa.length; i++) {
+                var a = ecaa[i];
+                me.addRelation(a);
+                me.addToMetaStateArray(me.getMetaStateAlignment(a), "framework", framework);
+            }
+            me.addFrameworkSuccessCallback();
+        }, me.addFrameworkFailureCallback, null);
+    };
     prototype.processAssertionsBoolean = function(assertions, success, failure) {
         var me = this;
         var eah = new EcAsyncHelper();
         eah.each(assertions, function(assertion, done) {
-            var competency = EcCompetency.getBlocking(assertion.competency);
-            if (!me.containsVertex(competency)) {
+            var competency = me.getCompetency(assertion.competency);
+            if (competency == null || !me.containsVertex(competency)) {
                 done();
                 return;
             }
@@ -75319,18 +75365,20 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
             var metaState = this.getMetaStateCompetency(competency);
             this.addToMetaStateArray(metaState, "negativeAssertion", assertion);
             new EcAsyncHelper().each(me.getOutEdges(competency), function(alignment, callback0) {
+                var c = me.getCompetency(alignment.target);
                 if (alignment.relationType == Relation.NARROWS) 
-                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
+                    me.processAssertionsBooleanPerAssertion(assertion, negative, c, callback0, visited);
                  else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
-                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
+                    me.processAssertionsBooleanPerAssertion(assertion, negative, c, callback0, visited);
                  else 
                     callback0();
             }, function(strings) {
                 new EcAsyncHelper().each(me.getInEdges(competency), function(alignment, callback0) {
+                    var c = me.getCompetency(alignment.source);
                     if (alignment.relationType == Relation.REQUIRES) 
-                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
+                        me.processAssertionsBooleanPerAssertion(assertion, negative, c, callback0, visited);
                      else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
-                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
+                        me.processAssertionsBooleanPerAssertion(assertion, negative, c, callback0, visited);
                      else 
                         callback0();
                 }, function(strings) {
@@ -75341,18 +75389,20 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
             var metaState = this.getMetaStateCompetency(competency);
             this.addToMetaStateArray(metaState, "positiveAssertion", assertion);
             new EcAsyncHelper().each(me.getInEdges(competency), function(alignment, callback0) {
+                var c = me.getCompetency(alignment.source);
                 if (alignment.relationType == Relation.NARROWS) 
-                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
+                    me.processAssertionsBooleanPerAssertion(assertion, negative, c, callback0, visited);
                  else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
-                    me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.source), callback0, visited);
+                    me.processAssertionsBooleanPerAssertion(assertion, negative, c, callback0, visited);
                  else 
                     callback0();
             }, function(strings) {
                 new EcAsyncHelper().each(me.getOutEdges(competency), function(alignment, callback0) {
+                    var c = me.getCompetency(alignment.target);
                     if (alignment.relationType == Relation.REQUIRES) 
-                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
+                        me.processAssertionsBooleanPerAssertion(assertion, negative, c, callback0, visited);
                      else if (alignment.relationType == Relation.IS_EQUIVALENT_TO) 
-                        me.processAssertionsBooleanPerAssertion(assertion, negative, EcCompetency.getBlocking(alignment.target), callback0, visited);
+                        me.processAssertionsBooleanPerAssertion(assertion, negative, c, callback0, visited);
                      else 
                         callback0();
                 }, function(strings) {
@@ -75394,6 +75444,13 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
     prototype.containsEdge = function(competency) {
         return (this.edgeMap)[competency.shortId()] != null;
     };
+    prototype.getCompetency = function(competencyId) {
+        var c = null;
+        c = (this.competencyMap)[competencyId];
+        if (c == null) 
+            c = EcCompetency.getBlocking(competencyId);
+        return c;
+    };
     prototype.addCompetency = function(competency) {
         if (competency == null) 
             return false;
@@ -75412,14 +75469,14 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
         if (source == null && (this.dontTryAnyMore)[alignment.source] != null) 
             return false;
         if (source == null) 
-            source = EcCompetency.getBlocking(alignment.source);
+            source = this.getCompetency(alignment.source);
         if (source == null) 
             (this.dontTryAnyMore)[alignment.source] = "";
         var target = (this.competencyMap)[alignment.target];
         if (target == null && (this.dontTryAnyMore)[alignment.target] != null) 
             return false;
         if (target == null) 
-            target = EcCompetency.getBlocking(alignment.target);
+            target = this.getCompetency(alignment.target);
         if (target == null) 
             (this.dontTryAnyMore)[alignment.target] = "";
         if (source == null || target == null) 
@@ -75435,7 +75492,7 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
     prototype.getDefaultEdgeType = function() {
         return EcAlignment.NARROWS;
     };
-}, {metaVerticies: {name: "Map", arguments: [null, "Object"]}, metaEdges: {name: "Map", arguments: [null, "Object"]}, competencyMap: "Object", edgeMap: "Object", dontTryAnyMore: "Object", frameworks: {name: "Array", arguments: ["EcFramework"]}, edges: {name: "Array", arguments: [{name: "Triple", arguments: ["V", "V", "E"]}]}, verticies: {name: "Array", arguments: ["V"]}}, {});
+}, {metaVerticies: {name: "Map", arguments: [null, "Object"]}, metaEdges: {name: "Map", arguments: [null, "Object"]}, competencyMap: "Object", edgeMap: "Object", dontTryAnyMore: "Object", frameworks: {name: "Array", arguments: ["EcFramework"]}, addFrameworkSuccessCallback: "Callback0", addFrameworkFailureCallback: {name: "Callback1", arguments: [null]}, repo: "EcRepository", edges: {name: "Array", arguments: [{name: "Triple", arguments: ["V", "V", "E"]}]}, verticies: {name: "Array", arguments: ["V"]}}, {});
 var CompetencyGraphBuilder = function() {
     this.repositories = new Array();
     this.subjects = new Array();
@@ -76850,6 +76907,7 @@ CombinatorAssertionProcessor = stjs.extend(CombinatorAssertionProcessor, Asserti
 }, {relationLookup: "Object", repositories: {name: "Array", arguments: ["EcRepository"]}, logFunction: {name: "Callback1", arguments: ["Object"]}, assertions: "Object", coprocessors: {name: "Array", arguments: ["AssertionCoprocessor"]}, processedEquivalencies: {name: "Map", arguments: [null, null]}, context: "EcFramework"}, {});
 var FrameworkCollapser = function() {};
 FrameworkCollapser = stjs.extend(FrameworkCollapser, null, [], function(constructor, prototype) {
+    prototype.repo = null;
     prototype.framework = null;
     prototype.createImpliedRelations = false;
     prototype.competencyArray = null;
@@ -76859,44 +76917,6 @@ FrameworkCollapser = stjs.extend(FrameworkCollapser, null, [], function(construc
     prototype.collapsedFrameworkNodePacketGraph = null;
     prototype.successCallback = null;
     prototype.failureCallback = null;
-    prototype.buildFrameworkUrlLookups = function() {
-        var urlArray = new Array();
-        var cid;
-        var rid;
-        for (var i = 0; i < this.framework.competency.length; i++) {
-            cid = this.framework.competency[i];
-            urlArray.push(cid);
-        }
-        if (this.framework.relation != null && this.framework.relation.length > 0) {
-            for (var i = 0; i < this.framework.relation.length; i++) {
-                rid = this.framework.relation[i];
-                urlArray.push(rid);
-            }
-        }
-        return urlArray;
-    };
-    prototype.parseCompetencies = function(rlda) {
-        this.competencyArray = new Array();
-        var c;
-        for (var i = 0; i < rlda.length; i++) {
-            if (rlda[i].isAny(new EcCompetency().getTypes())) {
-                c = new EcCompetency();
-                c.copyFrom(rlda[i]);
-                this.competencyArray.push(c);
-            }
-        }
-    };
-    prototype.parseRelationships = function(rlda) {
-        this.relationArray = new Array();
-        var r;
-        for (var i = 0; i < rlda.length; i++) {
-            if (rlda[i].isAny(new EcAlignment().getTypes())) {
-                r = new EcAlignment();
-                r.copyFrom(rlda[i]);
-                this.relationArray.push(r);
-            }
-        }
-    };
     prototype.addCompetenciesToFrameworkNodeGraph = function() {
         var cmp;
         var n;
@@ -76948,9 +76968,7 @@ FrameworkCollapser = stjs.extend(FrameworkCollapser, null, [], function(construc
         var cgc = new CyclicGraphCollapser();
         this.collapsedFrameworkNodePacketGraph = cgc.collapseGraph(this.frameworkNodeGraph);
     };
-    prototype.continueFrameworkCollapse = function(rlda) {
-        this.parseCompetencies(rlda);
-        this.parseRelationships(rlda);
+    prototype.continueFrameworkCollapse = function() {
         try {
             this.generateFrameworkNodeGraph();
             try {
@@ -76963,6 +76981,13 @@ FrameworkCollapser = stjs.extend(FrameworkCollapser, null, [], function(construc
             this.failureCallback("Framework node graph generation failed: " + e.toString());
         }
     };
+    prototype.fetchFrameworkAlignments = function(framework) {
+        var me = this;
+        EcAlignment.search(this.repo, EcGraphUtil.buildIdSearchQueryForIdList(framework.relation), function(ecaa) {
+            me.relationArray = ecaa;
+            me.continueFrameworkCollapse();
+        }, me.failureCallback, null);
+    };
     prototype.collapseFramework = function(repo, framework, createImpliedRelations, success, failure) {
         if (framework == null) 
             failure("Framework is null or undefined");
@@ -76971,17 +76996,20 @@ FrameworkCollapser = stjs.extend(FrameworkCollapser, null, [], function(construc
          else if (repo == null) 
             failure("Repo is null or undefined");
          else {
+            this.repo = repo;
             this.framework = framework;
             this.createImpliedRelations = createImpliedRelations;
             this.successCallback = success;
             this.failureCallback = failure;
-            var fc = this;
-            repo.multiget(this.buildFrameworkUrlLookups(), function(rlda) {
-                fc.continueFrameworkCollapse(rlda);
-            }, fc.failureCallback);
+            var me = this;
+            var fwkParam = framework;
+            EcCompetency.search(repo, EcGraphUtil.buildIdSearchQueryForIdList(framework.competency), function(ecca) {
+                me.competencyArray = ecca;
+                me.fetchFrameworkAlignments(fwkParam);
+            }, me.failureCallback, null);
         }
     };
-}, {framework: "EcFramework", competencyArray: {name: "Array", arguments: ["EcCompetency"]}, competencyNodeMap: {name: "Map", arguments: [null, "Node"]}, relationArray: {name: "Array", arguments: ["EcAlignment"]}, frameworkNodeGraph: "NodeGraph", collapsedFrameworkNodePacketGraph: "NodePacketGraph", successCallback: {name: "Callback2", arguments: [null, "NodePacketGraph"]}, failureCallback: {name: "Callback1", arguments: [null]}}, {});
+}, {repo: "EcRepository", framework: "EcFramework", competencyArray: {name: "Array", arguments: ["EcCompetency"]}, competencyNodeMap: {name: "Map", arguments: [null, "Node"]}, relationArray: {name: "Array", arguments: ["EcAlignment"]}, frameworkNodeGraph: "NodeGraph", collapsedFrameworkNodePacketGraph: "NodePacketGraph", successCallback: {name: "Callback2", arguments: [null, "NodePacketGraph"]}, failureCallback: {name: "Callback1", arguments: [null]}}, {});
 var PessimisticQuadnaryAssertionProcessor = function() {
     CombinatorAssertionProcessor.call(this);
 };

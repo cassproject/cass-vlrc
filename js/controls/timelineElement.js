@@ -13,7 +13,8 @@ Vue.component('timelineElement', {
             negative: null,
             agentPerson: null,
             subjectPerson: null,
-            evidence: null
+            evidence: null,
+            evidenceExplanation: null
         };
     },
     computed: {
@@ -93,32 +94,44 @@ Vue.component('timelineElement', {
         },
         evidenceText: {
             get: function () {
-                if (this.evidence != null)
-                    if (this.evidence.length > 0) {
-                        return app.computeBecause(this.evidence);
-                    }
-                return "";
+                var me = this;
+                if (this.evidenceExplanation == null)
+                    if (this.evidence != null)
+                        if (this.evidence.length > 0) {
+                            var count = this.evidence.length;
+                            app.computeBecause(this.evidence, function (because) {
+                                me.$nextTick(function () {
+                                    if (count == me.evidence.length)
+                                    me.evidenceExplanation = because;
+                                });
+                            });
+                        }
+                return this.evidenceExplanation;
             }
         },
-        badged:{
-            get:function(){
+        badged: {
+            get: function () {
                 if (this.assertion == null)
                     return false;
                 return this.assertion.hasReader(app.badgePk);
             }
         },
-        badgeUrl:{
-            get:function(){
+        badgeUrl: {
+            get: function () {
                 if (this.assertion != null)
-                if (this.assertion.hasReader(app.badgePk))
-                    return EcRemote.urlAppend(repo.selectedServer,"badge/assertion/")+this.assertion.getGuid();
+                    if (this.assertion.hasReader(app.badgePk))
+                        return EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + this.assertion.getGuid();
                 return "";
             }
         }
     },
     created: function () {
     },
-    watch: {},
+    watch: {
+        evidence: function (oldEvidence, newEvidence) {
+            evidenceExplanation = null;
+        }
+    },
     methods: {
         initialize: function (isVisible, entry) {
             var me = this;
@@ -166,7 +179,8 @@ Vue.component('timelineElement', {
                                 assertion.getEvidenceAsync(i, function (evidence) {
                                     if (me.evidence == null)
                                         me.evidence = [];
-                                    me.evidence[i] = evidence;
+                                    me.evidence.push(evidence);
+                                    me.evidenceExplanation = null;
                                 }, console.error);
                             })(i);
                     if (assertion.framework != null)
@@ -278,7 +292,15 @@ Vue.component('timelineElement', {
     '<a href="#" v-on:click="gotoCompetency" :title="assertion.competency">' +
     '{{ competencyName }}' +
     '<span v-if="frameworkName"> in the subject area {{ frameworkName }}</span>' +
-    '</a>{{evidenceText}}<span v-if="badged"> and has issued a <a target="_blank" :href="badgeUrl">badge</a></span>.' +
+    '</a>' +
+    '<span v-if="evidenceText"> because they ' +
+    '<span v-for="(evidence, index) in evidenceText">' +
+    '<span v-if="index != 0"> and they </span>' +
+    '<a v-if="evidence.url" :href="evidence.url" target="_blank">{{evidence.text}}</a>' +
+    '<span v-else >{{evidence.text}}</span>' +
+    '</span>' +
+    '</span>' +
+    '<span v-if="badged"> and has issued a <a target="_blank" :href="badgeUrl">badge</a></span>.' +
     '<br>' +
     '<small>{{ competencyDescription }}</small>' +
     '</div>' +
