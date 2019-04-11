@@ -795,17 +795,14 @@ EcAssertion = stjs.extend(EcAssertion, Assertion, [], function(constructor, prot
     };
     prototype.getEvidencesAsync = function(success, failure) {
         var results = new Array();
-        if (this.evidence != null) 
-            new EcAsyncHelper().each(this.evidence, function(e, callback0) {
-                e.decryptIntoStringAsync(function(str) {
-                    results.push(str);
-                    callback0();
-                }, callback0);
-            }, function(strings) {
-                success(results);
-            });
-         else 
+        new EcAsyncHelper().each(this.evidence, function(e, callback0) {
+            e.decryptIntoStringAsync(function(str) {
+                results.push(str);
+                callback0();
+            }, callback0);
+        }, function(strings) {
             success(results);
+        });
     };
     prototype.getEvidenceAsync = function(index, success, failure) {
         if (this.evidence[index] == null) {

@@ -2640,24 +2640,28 @@ EcFrameworkGraph = stjs.extend(EcFrameworkGraph, EcDirectedGraph, [], function(c
     prototype.addFramework = function(framework, repo, success, failure) {
         this.frameworks.push(framework);
         var me = this;
-        console.log("addFramework about to multiget: " + Date.now());
         repo.multiget(framework.competency.concat(framework.relation), function(data) {
-            console.log("Multiget complete: " + Date.now());
             var competencyTemplate = new EcCompetency();
             var alignmentTemplate = new EcAlignment();
-            for (var i = 0; i < data.length; i++) {
-                var d = data[i];
+            var eah = new EcAsyncHelper();
+            eah.each(data, function(d, callback0) {
                 if (d.isAny(competencyTemplate.getTypes())) {
-                    var c = EcCompetency.getBlocking(d.id);
-                    me.addCompetency(c);
-                    me.addToMetaStateArray(me.getMetaStateCompetency(c), "framework", framework);
+                    EcCompetency.get(d.id, function(c) {
+                        me.addToMetaStateArray(me.getMetaStateCompetency(c), "framework", framework);
+                        me.addCompetency(c);
+                        callback0();
+                    }, callback0);
                 } else if (d.isAny(alignmentTemplate.getTypes())) {
-                    var alignment = EcAlignment.getBlocking(d.id);
-                    me.addRelation(alignment);
-                    me.addToMetaStateArray(me.getMetaStateAlignment(alignment), "framework", framework);
-                }
-            }
-            success();
+                    EcAlignment.get(d.id, function(alignment) {
+                        me.addRelation(alignment);
+                        me.addToMetaStateArray(me.getMetaStateAlignment(alignment), "framework", framework);
+                        callback0();
+                    }, callback0);
+                } else 
+                    callback0();
+            }, function(strings) {
+                success();
+            });
         }, failure);
     };
     prototype.fetchFrameworkAlignments = function(framework) {

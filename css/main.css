@@ -214,13 +214,12 @@ input.antitile {
 }
 
 .timelineElement .content {
-    height:3rem;
     margin-left: 13rem;
 }
 
 .timelineElement {
     left: 0rem;
-    min-height: calc(44px + 1rem);
+    min-height: 3rem;
 }
 
 .timelineElement img {

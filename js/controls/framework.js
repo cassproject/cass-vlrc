@@ -117,7 +117,6 @@ Vue.component('framework', {
                             done();
                         }, done);
                 }, function (as) {
-                    setTimeout(function(){
                         var frameworkGraph = new EcFrameworkGraph();
                         frameworkGraph.addFramework(EcFramework.getBlocking(me.uri), repo, function () {
                             frameworkGraph.processAssertionsBoolean(assertions, function () {
@@ -130,7 +129,6 @@ Vue.component('framework', {
                                     console.log("Finished processing (abort): " + new Date() + " " + hash);
                             }, console.error);
                         }, console.error);
-                    },1000);
                 });
             }
             return this.computedStateActual;
