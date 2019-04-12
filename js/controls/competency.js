@@ -265,67 +265,67 @@ Vue.component('competency', {
         },
         claimCompetencePhrase: {
             get: function () {
-                return "By selecting this, I think " + (app.subject == app.me ? "I" : app.subjectName) + " can demonstrate this.";
+                return "By selecting this, I think " + (this.subject == app.me ? "I" : this.subjectPerson.getName()) + " can demonstrate this.";
             }
         },
         unclaimCompetencePhrase: {
             get: function () {
-                return "By deselecting this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " can demonstrate this.";
+                return "By deselecting this, I no longer think " + (this.subject == app.me ? "I" : this.subjectPerson.getName()) + " can demonstrate this.";
             }
         },
         claimIncompetencePhrase: {
             get: function () {
-                return "By selecting this, I think " + (app.subject == app.me ? "I" : app.subjectName) + " could not demonstrate this.";
+                return "By selecting this, I think " + (this.subject == app.me ? "I" : this.subjectPerson.getName()) + " could not demonstrate this.";
             }
         },
         unclaimIncompetencePhrase: {
             get: function () {
-                return "By deselecting this, I no longer think " + (app.subject == app.me ? "I" : app.subjectName) + " can't demonstrate this.";
+                return "By deselecting this, I no longer think " + (this.subject == app.me ? "I" : this.subjectPerson.getName()) + " can't demonstrate this.";
             }
         },
         claimCompetencePhraseShort: {
             get: function () {
-                return (app.subject == app.me ? "I" : "They") + " can";
+                return (this.subject == app.me ? "I" : "They") + " can";
             }
         },
         unclaimCompetencePhraseShort: {
             get: function () {
-                return (app.subject == app.me ? "I" : "They") + " can";
+                return (this.subject == app.me ? "I" : "They") + " can";
             }
         },
         claimIncompetencePhraseShort: {
             get: function () {
-                return (app.subject == app.me ? "I" : "They") + " can't";
+                return (this.subject == app.me ? "I" : "They") + " can't";
             }
         },
         unclaimIncompetencePhraseShort: {
             get: function () {
-                return (app.subject == app.me ? "I" : "They") + " can't";
+                return (this.subject == app.me ? "I" : "They") + " can't";
             }
         },
         makeGoalPhrase: {
             get: function () {
-                return "By selecting this, I would like to add this to " + (app.subject == app.me ? "my" : app.subjectName + "'s") + " goals.";
+                return "By selecting this, I would like to add this to " + (this.subject == app.me ? "my" : this.subjectPerson.getName() + "'s") + " goals.";
             }
         },
         unmakeGoalPhrase: {
             get: function () {
-                return "By selecting this, I would like to remove this from " + (app.subject == app.me ? "my" : app.subjectName + "'s") + " goals.";
+                return "By selecting this, I would like to remove this from " + (this.subject == app.me ? "my" : this.subjectPerson.getName() + "'s") + " goals.";
             }
         },
         otherClaimsPhrase: {
             get: function () {
-                return "Others have made claims about " + (app.subject == app.me ? "you" : app.subjectName) + ". Click to expand.";
+                return "Others have made claims about " + (this.subject == app.me ? "you" : this.subjectPerson.getName()) + ". Click to expand.";
             }
         },
         ithey: {
             get: function () {
-                return (app.subject == app.me ? "I" : "they");
+                return (this.subject == app.me ? "I" : "they");
             }
         },
         becausePhrase: {
             get: function () {
-                return "do this because " + (app.subject == app.me ? "I..." : "they...");
+                return "do this because " + (this.subject == app.me ? "I..." : "they...");
             }
         },
         canEditSubject: {
@@ -439,7 +439,7 @@ Vue.component('competency', {
                 //a.addReader(EcPk.fromPem("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAixq5WEp+F5HEJZj12N791JATM+vkVJuolfOq0KbqtZwiygPao12fnpTwZdRCmb/4O1n6PXkJJ1XbufAx6k7hGNyM1kTngbs743QuyzP15SmYcP9l9FluL9ISvIECt1eHo4sSKdaKxLRguOj79HjZXtFg3UDIhvvLBVqPQm5d5OQ1OPgu4WzL4GN7hYwK6PYJf2zJjxs9vEQ6agrvpAZI+Rm1DT5x3i4xtcB+Mip473Xe+6IPoRmJ/NqzcP3c0xBf6xV1GDBBIQIaRRkIJgoAb/k0fb+Hl0uXnKxcSm86nYk4Kq5GSbeZ+G+B3rrnQfXbLZnle6nTj1YdAOErOKKi2wIDAQAB-----END PUBLIC KEY-----")); //Eduworks Researcher
                 for (var i = 0; i < EcIdentityManager.contacts.length; i++)
                     a.addReader(EcIdentityManager.contacts[i].pk);
-                a.setSubject(EcPk.fromPem(app.subject));
+                a.setSubject(EcPk.fromPem(me.subject));
                 a.setAgent(EcPk.fromPem(app.me));
                 a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
                 a.setAssertionDate(Date.now()); //UTC Milliseconds
@@ -541,7 +541,7 @@ Vue.component('competency', {
                 //a.addReader(EcPk.fromPem("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAixq5WEp+F5HEJZj12N791JATM+vkVJuolfOq0KbqtZwiygPao12fnpTwZdRCmb/4O1n6PXkJJ1XbufAx6k7hGNyM1kTngbs743QuyzP15SmYcP9l9FluL9ISvIECt1eHo4sSKdaKxLRguOj79HjZXtFg3UDIhvvLBVqPQm5d5OQ1OPgu4WzL4GN7hYwK6PYJf2zJjxs9vEQ6agrvpAZI+Rm1DT5x3i4xtcB+Mip473Xe+6IPoRmJ/NqzcP3c0xBf6xV1GDBBIQIaRRkIJgoAb/k0fb+Hl0uXnKxcSm86nYk4Kq5GSbeZ+G+B3rrnQfXbLZnle6nTj1YdAOErOKKi2wIDAQAB-----END PUBLIC KEY-----")); //Eduworks Researcher
                 for (var i = 0; i < EcIdentityManager.contacts.length; i++)
                     a.addReader(EcIdentityManager.contacts[i].pk);
-                a.setSubject(EcPk.fromPem(app.subject));
+                a.setSubject(EcPk.fromPem(me.subject));
                 a.setAgent(EcPk.fromPem(app.me));
                 a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
                 a.setAssertionDate(Date.now()); //UTC Milliseconds
@@ -564,7 +564,7 @@ Vue.component('competency', {
                 eah.each(app.assertions, function (assertion, callback) {
                     if (me.competencyObj.isId(assertion.competency))
                         assertion.getSubjectAsync(function (subject) {
-                            if (app.subject == subject.toPem()) {
+                            if (me.subject == subject.toPem()) {
                                 assertion.getAgentAsync(function (agent) {
                                     if (app.me == agent.toPem()) {
                                         if (assertion.negative != null)
