@@ -60,6 +60,7 @@ Vue.component('competency', {
             get: function () {
                 if (this.competencyObj == null) return null;
                 if (this.computedState == null) return null;
+                if (this.computedState == 0) return null;
                 var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
                 if (msc != null)
                     if (msc.negativeAssertion == null && msc.positiveAssertion != null) {
@@ -73,6 +74,7 @@ Vue.component('competency', {
             get: function () {
                 if (this.competencyObj == null) return null;
                 if (this.computedState == null) return null;
+                if (this.computedState == 0) return null;
                 var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
                 if (msc != null)
                     if (msc.negativeAssertion != null && msc.positiveAssertion == null) {
@@ -86,6 +88,7 @@ Vue.component('competency', {
             get: function () {
                 if (this.competencyObj == null) return null;
                 if (this.computedState == null) return null;
+                if (this.computedState == 0) return null;
                 var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
                 if (msc != null)
                     if (msc.negativeAssertion != null && msc.positiveAssertion != null) {
@@ -99,6 +102,7 @@ Vue.component('competency', {
             get: function () {
                 if (this.competencyObj == null) return null;
                 if (this.computedState == null) return null;
+                if (this.computedState == 0) return null;
                 var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
                 if (msc != null)
                     if (msc.negativeAssertion == null && msc.positiveAssertion == null) {
@@ -439,50 +443,60 @@ Vue.component('competency', {
                 //a.addReader(EcPk.fromPem("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAixq5WEp+F5HEJZj12N791JATM+vkVJuolfOq0KbqtZwiygPao12fnpTwZdRCmb/4O1n6PXkJJ1XbufAx6k7hGNyM1kTngbs743QuyzP15SmYcP9l9FluL9ISvIECt1eHo4sSKdaKxLRguOj79HjZXtFg3UDIhvvLBVqPQm5d5OQ1OPgu4WzL4GN7hYwK6PYJf2zJjxs9vEQ6agrvpAZI+Rm1DT5x3i4xtcB+Mip473Xe+6IPoRmJ/NqzcP3c0xBf6xV1GDBBIQIaRRkIJgoAb/k0fb+Hl0uXnKxcSm86nYk4Kq5GSbeZ+G+B3rrnQfXbLZnle6nTj1YdAOErOKKi2wIDAQAB-----END PUBLIC KEY-----")); //Eduworks Researcher
                 for (var i = 0; i < EcIdentityManager.contacts.length; i++)
                     a.addReader(EcIdentityManager.contacts[i].pk);
-                a.setSubject(EcPk.fromPem(me.subject));
-                a.setAgent(EcPk.fromPem(app.me));
-                a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
-                a.setAssertionDate(Date.now()); //UTC Milliseconds
-                a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
-                a.setNegative(false); //This is an assertion that an individual *can* do something, not that they *cannot*.
-                a.setConfidence(1.0);
-                var evidences = [];
-                //Go find viewActions on related resources to attach to the assertion.
-                if (app.me == me.subject)
-                    repo.searchWithParams(
-                        "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(me.uri) + "\"",
-                        {size: 5000},
-                        null,
-                        function (resources) {
-                            new EcAsyncHelper().each(
-                                resources,
-                                function (resource, resourceCallback) {
-                                    repo.searchWithParams(
-                                        "@type:ChooseAction AND object:\"" + resource.shortId() + "\" AND @owner:\"" + me.subject + "\"",
-                                        {size: 5000},
-                                        null,
-                                        function (views) {
-                                            for (var i = 0; i < views.length; i++)
-                                                evidences.push(views[i].shortId());
-                                            resourceCallback();
-                                        },
-                                        resourceCallback
-                                    );
-                                }, function (resources) {
-                                    if (evidences.length > 0)
-                                        a.setEvidence(evidences);
-                                    EcRepository.save(a, function () {
-                                        me.competentState = null;
-                                    }, console.error);
-                                }
-                            );
-                        },
-                        console.error
-                    );
-                else
-                    EcRepository.save(a, function () {
-                        me.competentState = null;
+                a.setSubjectAsync(EcPk.fromPem(me.subject), function () {
+                    a.setAgentAsync(EcPk.fromPem(app.me), function () {
+                        a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
+                        a.setAssertionDateAsync(Date.now(), function () {
+                            a.setExpirationDateAsync(Date.now() + 1000 * 60 * 60 * 24 * 365, function () {
+                                a.setNegativeAsync(false, function () {
+                                    a.setConfidence(1.0);
+                                    var evidences = [];
+                                    //Go find viewActions on related resources to attach to the assertion.
+                                    if (app.me == me.subject)
+                                        repo.searchWithParams(
+                                            "@type:CreativeWork AND educationalAlignment.targetUrl:\"" + EcRemoteLinkedData.trimVersionFromUrl(me.uri) + "\"",
+                                            {size: 5000},
+                                            null,
+                                            function (resources) {
+                                                new EcAsyncHelper().each(
+                                                    resources,
+                                                    function (resource, resourceCallback) {
+                                                        repo.searchWithParams(
+                                                            "@type:ChooseAction AND object:\"" + resource.shortId() + "\" AND @owner:\"" + me.subject + "\"",
+                                                            {size: 5000},
+                                                            null,
+                                                            function (views) {
+                                                                for (var i = 0; i < views.length; i++)
+                                                                    evidences.push(views[i].shortId());
+                                                                resourceCallback();
+                                                            },
+                                                            resourceCallback
+                                                        );
+                                                    }, function (resources) {
+                                                        if (evidences.length > 0)
+                                                            a.setEvidenceAsync(evidences, function () {
+                                                                EcRepository.save(a, function () {
+                                                                    me.competentState = null;
+                                                                }, console.error);
+                                                            }, console.error);
+                                                        else
+                                                            EcRepository.save(a, function () {
+                                                                me.competentState = null;
+                                                            }, console.error);
+                                                    }
+                                                );
+                                            },
+                                            console.error
+                                        );
+                                    else
+                                        EcRepository.save(a, function () {
+                                            me.competentState = null;
+                                        }, console.error);
+                                }, console.error); //This is an assertion that an individual *can* do something, not that they *cannot*.
+                            }, console.error); //UTC Milliseconds, 365 days in the future.
+                        }, console.error); //UTC Milliseconds
                     }, console.error);
+                }, console.error);
             });
         },
         unclaimCompetence: function (evt, after) {
@@ -541,15 +555,20 @@ Vue.component('competency', {
                 //a.addReader(EcPk.fromPem("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAixq5WEp+F5HEJZj12N791JATM+vkVJuolfOq0KbqtZwiygPao12fnpTwZdRCmb/4O1n6PXkJJ1XbufAx6k7hGNyM1kTngbs743QuyzP15SmYcP9l9FluL9ISvIECt1eHo4sSKdaKxLRguOj79HjZXtFg3UDIhvvLBVqPQm5d5OQ1OPgu4WzL4GN7hYwK6PYJf2zJjxs9vEQ6agrvpAZI+Rm1DT5x3i4xtcB+Mip473Xe+6IPoRmJ/NqzcP3c0xBf6xV1GDBBIQIaRRkIJgoAb/k0fb+Hl0uXnKxcSm86nYk4Kq5GSbeZ+G+B3rrnQfXbLZnle6nTj1YdAOErOKKi2wIDAQAB-----END PUBLIC KEY-----")); //Eduworks Researcher
                 for (var i = 0; i < EcIdentityManager.contacts.length; i++)
                     a.addReader(EcIdentityManager.contacts[i].pk);
-                a.setSubject(EcPk.fromPem(me.subject));
-                a.setAgent(EcPk.fromPem(app.me));
-                a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
-                a.setAssertionDate(Date.now()); //UTC Milliseconds
-                a.setExpirationDate(Date.now() + 1000 * 60 * 60 * 24 * 365); //UTC Milliseconds, 365 days in the future.
-                a.setNegative(true); //This is an assertion that an individual *cannot* do something, not that they *can*.
-                a.setConfidence(1.0);
-                EcRepository.save(a, function () {
-                    me.incompetentState = null;
+                a.setSubjectAsync(EcPk.fromPem(me.subject), function () {
+                    a.setAgentAsync(EcPk.fromPem(app.me), function () {
+                        a.setCompetency(EcRemoteLinkedData.trimVersionFromUrl(me.uri));
+                        a.setAssertionDateAsync(Date.now(), function () {
+                            a.setExpirationDateAsync(Date.now() + 1000 * 60 * 60 * 24 * 365, function () {
+                                a.setNegativeAsync(true, function () {
+                                    a.setConfidence(1.0);
+                                    EcRepository.save(a, function () {
+                                        me.incompetentState = null;
+                                    }, console.error);
+                                }, console.error); //This is an assertion that an individual *cannot* do something, not that they *can*.
+                            }, console.error); //UTC Milliseconds, 365 days in the future.
+                        }, console.error); //UTC Milliseconds
+                    }, console.error);
                 }, console.error);
             });
         },
@@ -586,7 +605,9 @@ Vue.component('competency', {
                     if (after != null) after();
                 });
             }, console.error);
-        },
+        }
+
+        ,
         badgeAssertion: function (evt, after) {
             var me = this;
             EcCompetency.get(this.uri, function (c) {
@@ -632,7 +653,8 @@ Vue.component('competency', {
                     if (after != null) after();
                 });
             }, console.error);
-        },
+        }
+        ,
         unbadgeAssertion: function (evt, after) {
             var me = this;
             EcCompetency.get(this.uri, function (c) {
@@ -678,7 +700,8 @@ Vue.component('competency', {
                     if (after != null) after();
                 });
             }, console.error);
-        },
+        }
+        ,
         evidenceAssertion: function (evt, after) {
             var me = this;
             EcCompetency.get(this.uri, function (c) {
@@ -714,7 +737,8 @@ Vue.component('competency', {
                     if (after != null) after();
                 });
             }, console.error);
-        },
+        }
+        ,
         unevidenceAssertion: function (url, after) {
             var me = this;
             EcCompetency.get(this.uri, function (c) {
@@ -749,7 +773,8 @@ Vue.component('competency', {
                     if (after != null) after();
                 });
             }, console.error);
-        },
+        }
+        ,
         makeGoal: function (evt, after) {
             this.goalState = null;
             var d = new Demand();
@@ -760,7 +785,8 @@ Vue.component('competency', {
             this.subjectPerson.seeks.push(d);
             EcRepository.save(this.subjectPerson, function () {
             }, console.error);
-        },
+        }
+        ,
         unmakeGoal: function (evt, after) {
             this.goalState = null;
             var needsSave = false;

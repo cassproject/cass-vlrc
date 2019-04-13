@@ -316,13 +316,6 @@ textarea {
     overflow: hidden;
 }
 
-.competency .buttons {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    flex-flow: wrap;
-}
-
 .btop {
     border-top: 1px lightgray solid;
 }
@@ -337,6 +330,9 @@ textarea {
 
 .pbottom {
     padding-bottom: .5rem;
+}
+.fright {
+    justify-content: flex-end;
 }
 
 .noptop {
@@ -362,28 +358,35 @@ textarea {
     flex-flow: wrap;
 }
 
-.competency .buttons span {
+.buttons {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-flow: wrap;
+}
+
+.buttons span {
     display: flex;
     align-items: center;
     flex-direction: row;
 }
 
-.competency .buttons ul {
+.buttons ul {
     width:100%;
 }
 
-.competency .buttons button {
+.buttons button {
     display: flex;
     align-items: center;
     width: 6.2rem;
     padding-right: .25rem;
 }
 
-.competency .buttons button.wider {
+.buttons button.wider {
     width: 8rem;
 }
 
-.competency .buttons button i {
+.buttons button i {
     padding: .5rem;
     padding-left: .25rem;
 }

@@ -12,7 +12,8 @@ Vue.component('framework', {
             computedStateActual: null,
             computedStateAssertionLength: -1,
             visible: false,
-            once: false
+            once: false,
+            calculate: false
         }
     },
     computed: {
@@ -98,6 +99,8 @@ Vue.component('framework', {
         },
         computedState: function () {
             var me = this;
+            if (this.calculate == false)
+                return 0;
             if (!this.once) return;
             if (this.competencies == null) return;
             var uri = this.uri;
@@ -117,18 +120,18 @@ Vue.component('framework', {
                             done();
                         }, done);
                 }, function (as) {
-                        var frameworkGraph = new EcFrameworkGraph();
-                        frameworkGraph.addFramework(EcFramework.getBlocking(me.uri), repo, function () {
-                            frameworkGraph.processAssertionsBoolean(assertions, function () {
-                                if (hash == me.computedStateAssertionLength + app.assertionsChanges + me.uri) {
-                                    for (var key in frameworkGraph.metaVerticies)
-                                        delete frameworkGraph.metaVerticies[key].framework;
-                                    me.computedStateActual = frameworkGraph;
-                                    console.log("Finished processing (overwrite): " + new Date() + " " + hash);
-                                } else
-                                    console.log("Finished processing (abort): " + new Date() + " " + hash);
-                            }, console.error);
+                    var frameworkGraph = new EcFrameworkGraph();
+                    frameworkGraph.addFramework(EcFramework.getBlocking(me.uri), repo, function () {
+                        frameworkGraph.processAssertionsBoolean(assertions, function () {
+                            if (hash == me.computedStateAssertionLength + app.assertionsChanges + me.uri) {
+                                for (var key in frameworkGraph.metaVerticies)
+                                    delete frameworkGraph.metaVerticies[key].framework;
+                                me.computedStateActual = frameworkGraph;
+                                console.log("Finished processing (overwrite): " + new Date() + " " + hash);
+                            } else
+                                console.log("Finished processing (abort): " + new Date() + " " + hash);
                         }, console.error);
+                    }, console.error);
                 });
             }
             return this.computedStateActual;
@@ -153,8 +156,12 @@ Vue.component('framework', {
         }
     },
     template: '<div class="framework" v-observe-visibility="{callback: initialize}">' +
-    '<a style="float:right;cursor:pointer;" :href="permalink">permalink</a>' +
     '<div class="frameworkNameAndDescription">{{ name }}<small v-if="description" class="block">{{ description }}</small></div>' +
+    '<span class="buttons btop fright">' +
+    '<button class="inline"><a style="float:right;cursor:pointer;" :href="permalink"><i class="mdi mdi-18px mdi-link" aria-hidden="true"></i>Permalink</a></button>' +
+    '<button class="inline" v-if="calculate == true" style="color:blue;" v-on:click="calculate = false" title="Turn off processing."><i class="mdi mdi-18px mdi-cogs" aria-hidden="true"></i> Processing</button>' +
+    '<button class="inline" v-if="calculate == false" v-on:click="calculate = true" title="Turn on processing, showing estimated ability."><i class="mdi mdi-18px mdi-cogs" aria-hidden="true"></i> Processing</button>' +
+    '</span>' +
     '<ul v-if="competencies"><competency v-for="item in competencies" v-bind:key="item.id" :uri="item.id" :hasChild="item.hasChild" :subjectPerson="subjectperson" :frameworkUri="uri" :computedState="computedState" :subject="subject"></competency></ul>' +
     '<div v-else><br>Loading Framework...</div></div>'
 });
