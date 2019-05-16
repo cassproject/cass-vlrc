@@ -9,7 +9,7 @@ Vue.component('profile', {
             inContactList: null
         }
     },
-    computed: {
+    recomputed:{
         person: {
             get: function () {
                 if (this.personObj != null)
@@ -20,9 +20,13 @@ Vue.component('profile', {
                 return null;
             },
             set: function(person){
-            	this.personObj = person;
+                this.personObj = person;
+                this.$recompute("person");
             }
-        },
+        }
+
+    },
+    computed: {
         name: {
             get: function () {
                 if (this.person == null)
@@ -135,6 +139,7 @@ Vue.component('profile', {
             if (p.seeks == null)
                 p.seeks = [];
             this.personObj = p;
+            this.$recompute("person");
             if (this.pk == app.subject)
                 app.subjectPerson = p;
             if (this.pk == app.me)
@@ -276,18 +281,18 @@ Vue.component('profile', {
     template: '<div class="profileRow" v-if="person">' +
         '<span v-if="mine">' +
         '<span v-if="editing">' +
-        '<i class="mdi mdi-content-save" aria-hidden="true" style="float:right;font-size:large" title="Save your person." v-on:click="savePerson()"></i>' +
-        '<i class="mdi mdi-cancel" aria-hidden="true" style="float:right;font-size:large" title="Cancel editing." v-on:click="cancelSave();"></i>' +
+        '<i class="mdi mdi-content-save mdi-36px" aria-hidden="true" style="float:right;font-size:large" title="Save your personal information." v-on:click="savePerson()"></i>' +
+        '<i class="mdi mdi-cancel mdi-36px" aria-hidden="true" style="float:right;font-size:large" title="Cancel editing." v-on:click="cancelSave();"></i>' +
         '</span>' +
         '<span v-else>' +
-        '<i class="mdi mdi-pencil" aria-hidden="true" style="float:right;font-size:large" title="Edit your person." v-on:click="editing = true;"></i>' +
+        '<i class="mdi mdi-pencil mdi-36px" aria-hidden="true" style="float:right;font-size:large" title="Edit your personal information." v-on:click="editing = true;"></i>' +
         '</span>' +
         '</span>' +
         '<span v-else>' +
-        '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i> ' +
-        '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i> ' +
-        '<i class="mdi mdi-comment-processing-outline" aria-hidden="true" style="float:right;font-size:large" :title="unshareStatement" v-if="isSubject == false" v-on:click="unshareAssertionsAboutSubjectWith();"></i> ' +
-        '<i class="mdi mdi-comment-account" aria-hidden="true" style="float:right;font-size:large" :title="shareStatement" v-if="isSubject == false" v-on:click="shareAssertionsAboutSubjectWith();"></i> ' +
+        '<i class="mdi mdi-account-circle mdi-36px" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i> ' +
+        '<i class="mdi mdi-account-circle-outline mdi-36px" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i> ' +
+        '<i class="mdi mdi-comment-processing-outline mdi-36px" aria-hidden="true" style="float:right;font-size:large" :title="unshareStatement" v-if="isSubject == false" v-on:click="unshareAssertionsAboutSubjectWith();"></i> ' +
+        '<i class="mdi mdi-comment-account mdi-36px" aria-hidden="true" style="float:right;font-size:large" :title="shareStatement" v-if="isSubject == false" v-on:click="shareAssertionsAboutSubjectWith();"></i> ' +
         '</span>' +
         '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="fingerprint"/>'+
         '<svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprint" :title="fingerprint"></svg>'+

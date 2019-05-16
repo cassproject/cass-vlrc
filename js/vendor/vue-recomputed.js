@@ -27,6 +27,8 @@ Vue.mixin({
       this$1.$options.computed[key] = function (vm) {
         /* eslint-disable-next-line */
         data[me][key];
+        if (EcObject.isObject(this$1.$options.recomputed[key]))
+          return this$1.$options.recomputed[key].get.call(vm, vm)
         return this$1.$options.recomputed[key].call(vm, vm)
       };
     });
