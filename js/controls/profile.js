@@ -1,3 +1,4 @@
+var vueProfiles = [];
 Vue.component('profile', {
     props: ['pk', 'displayName', 'onClick'],
     data: function () {
@@ -9,7 +10,7 @@ Vue.component('profile', {
             inContactList: null
         }
     },
-    recomputed:{
+    recomputed: {
         person: {
             get: function () {
                 if (this.personObj != null)
@@ -19,7 +20,7 @@ Vue.component('profile', {
                 this.getPerson();
                 return null;
             },
-            set: function(person){
+            set: function (person) {
                 this.personObj = person;
                 this.$recompute("person");
             }
@@ -70,7 +71,9 @@ Vue.component('profile', {
             get: function () {
                 if (this.personObj == null)
                     return null;
-                setTimeout(function(){jdenticon()},100);
+                setTimeout(function () {
+                    jdenticon()
+                }, 100);
                 return this.personObj.getGuid();
             }
         },
@@ -106,6 +109,12 @@ Vue.component('profile', {
             }
         }
     },
+    created: function () {
+        EcArray.setAdd(vueProfiles, this);
+    },
+    destroyed: function () {
+        EcArray.setRemove(vueProfiles, this);
+    },
     watch: {
         pk: function () {
             this.personObj = null;
@@ -115,7 +124,8 @@ Vue.component('profile', {
             this.inContactList = null;
             this.getPerson();
         },
-        private: function () {}
+        private: function () {
+        }
     },
     methods: {
         savePerson: function () {
@@ -127,13 +137,23 @@ Vue.component('profile', {
                     thingToSave.reader = []; //Can delete when https://github.com/Eduworks/ec/issues/21 is resolved and integrated.
                 EcEncryptedValue.toEncryptedValueAsync(thingToSave, false, function (thingToSave) {
                     thingToSave.name = null; //Delete PII.
-                    EcRepository.save(thingToSave, me.getPerson, console.error);
+                    EcRepository.save(thingToSave, function () {
+                        me.getPerson();
+                        for (var i = 0; i < vueProfiles.length; i++)
+                            if (vueProfiles[i].pk == me.pk)
+                                vueProfiles[i].getPerson();
+                    }, console.error);
                 }, console.error);
             } else {
-                EcRepository.save(thingToSave, me.getPerson, console.error);
+                EcRepository.save(thingToSave, function () {
+                    me.getPerson();
+                    for (var i = 0; i < vueProfiles.length; i++)
+                        if (vueProfiles[i].pk == me.pk)
+                            vueProfiles[i].getPerson();
+                }, console.error);
             }
         },
-        setPerson: function(person){
+        setPerson: function (person) {
             var p = new Person();
             p.copyFrom(person);
             if (p.seeks == null)
@@ -194,7 +214,7 @@ Vue.component('profile', {
             EcIdentityManager.addContact(c);
             this.inContactList = true;
             app.mePerson.addReader(EcPk.fromPem(this.pk));
-            repo.saveTo(app.mePerson,console.log,console.error);
+            repo.saveTo(app.mePerson, console.log, console.error);
         },
         uncontact: function () {
             for (var i = 0; i < EcIdentityManager.contacts.length; i++) {
@@ -203,7 +223,7 @@ Vue.component('profile', {
             }
             this.inContactList = false;
             app.mePerson.removeReader(EcPk.fromPem(this.pk));
-            repo.saveTo(app.mePerson,console.log,console.error);
+            repo.saveTo(app.mePerson, console.log, console.error);
         },
         shareAssertionsAboutSubjectWith: function () {
             var me = this;
@@ -294,11 +314,11 @@ Vue.component('profile', {
         '<i class="mdi mdi-comment-processing-outline mdi-36px" aria-hidden="true" style="float:right;font-size:large" :title="unshareStatement" v-if="isSubject == false" v-on:click="unshareAssertionsAboutSubjectWith();"></i> ' +
         '<i class="mdi mdi-comment-account mdi-36px" aria-hidden="true" style="float:right;font-size:large" :title="shareStatement" v-if="isSubject == false" v-on:click="shareAssertionsAboutSubjectWith();"></i> ' +
         '</span>' +
-        '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="fingerprint"/>'+
-        '<svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprint" :title="fingerprint"></svg>'+
-        ' <span v-if="editing">Name:</span>'+
-        '<input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">'+
-        ' <span v-if="editing">Email:</span>'+
+        '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="fingerprint"/>' +
+        '<svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprint" :title="fingerprint"></svg>' +
+        ' <span v-if="editing">Name:</span>' +
+        '<input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">' +
+        ' <span v-if="editing">Email:</span>' +
         '<input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="email">' +
         '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
         '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
