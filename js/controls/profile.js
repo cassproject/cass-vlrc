@@ -188,6 +188,8 @@ Vue.component('profile', {
             c.displayName = this.name;
             EcIdentityManager.addContact(c);
             this.inContactList = true;
+            app.mePerson.addReader(EcPk.fromPem(this.pk));
+            repo.saveTo(app.mePerson,console.log,console.error);
         },
         uncontact: function () {
             for (var i = 0; i < EcIdentityManager.contacts.length; i++) {
@@ -195,6 +197,8 @@ Vue.component('profile', {
                     EcIdentityManager.contactChanged(EcIdentityManager.contacts.splice(i, 1));
             }
             this.inContactList = false;
+            app.mePerson.removeReader(EcPk.fromPem(this.pk));
+            repo.saveTo(app.mePerson,console.log,console.error);
         },
         shareAssertionsAboutSubjectWith: function () {
             var me = this;
