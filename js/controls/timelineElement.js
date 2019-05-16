@@ -17,6 +17,22 @@ Vue.component('timelineElement', {
             evidenceExplanation: null
         };
     },
+    recomputed: {
+        timeAgo: function () {
+            var me = this;
+            if (this.timestamp == null)
+                return null;
+            if (this.isVisible != true && this.invl != null) {
+                clearInterval(this.invl);
+                delete this.invl;
+            }
+            else if (this.invl == null)
+                this.invl = setInterval(function () {
+                    me.$recompute('timeAgo');
+                }, 60000);
+            return moment(this.timestamp).fromNow();
+        }
+    },
     computed: {
         ok: {
             get: function () {
@@ -27,14 +43,6 @@ Vue.component('timelineElement', {
                 if (this.competency == null)
                     return false;
                 return true;
-            }
-
-        },
-        timeAgo: {
-            get: function () {
-                if (this.timestamp == null)
-                    return null;
-                return moment(this.timestamp).fromNow();
             }
         },
         competencyName: {
@@ -66,7 +74,7 @@ Vue.component('timelineElement', {
                 if (this.agentPerson.email != null) {
                     return "https://www.gravatar.com/avatar/" + EcCrypto.md5(this.agentPerson.email.toLowerCase()) + "?s=44";
                 }
-                return "http://tinygraphs.com/spaceinvaders/" + this.agentPerson.getGuid() + "?theme=base&numcolors=16&size=44&fmt=svg";
+                return null;
             }
         },
         fingerprintUrlSubject: {
@@ -77,7 +85,29 @@ Vue.component('timelineElement', {
                 if (this.subjectPerson.email != null) {
                     return "https://www.gravatar.com/avatar/" + EcCrypto.md5(this.subjectPerson.email.toLowerCase()) + "?s=44";
                 }
-                return "http://tinygraphs.com/spaceinvaders/" + this.subjectPerson.getGuid() + "?theme=base&numcolors=16&size=44&fmt=svg";
+                return null;
+            }
+        },
+        fingerprintAgent: {
+            get: function () {
+                if (this.agentPerson == null) {
+                    return null;
+                }
+                setTimeout(function () {
+                    jdenticon()
+                }, 100);
+                return this.agentPerson.getGuid();
+            }
+        },
+        fingerprintSubject: {
+            get: function () {
+                if (this.subjectPerson == null) {
+                    return null;
+                }
+                setTimeout(function () {
+                    jdenticon()
+                }, 100);
+                return this.subjectPerson.getGuid();
             }
         },
         mine: {
@@ -102,7 +132,7 @@ Vue.component('timelineElement', {
                             app.computeBecause(this.evidence, function (because) {
                                 me.$nextTick(function () {
                                     if (count == me.evidence.length)
-                                    me.evidenceExplanation = because;
+                                        me.evidenceExplanation = because;
                                 });
                             });
                         }
@@ -127,6 +157,9 @@ Vue.component('timelineElement', {
     },
     created: function () {
     },
+    destroyed: function () {
+        clearInterval(this.invl);
+    },
     watch: {
         evidence: function (oldEvidence, newEvidence) {
             evidenceExplanation = null;
@@ -134,6 +167,15 @@ Vue.component('timelineElement', {
     },
     methods: {
         initialize: function (isVisible, entry) {
+            this.isVisible = isVisible;
+            if (isVisible) {
+                if (this.once) return;
+                this.once = true;
+                this.getAssertion(isVisible, entry);
+            }
+        },
+
+        getAssertion: function (isVisible, entry) {
             var me = this;
             if (true && isVisible) {
                 EcAssertion.get(this.uri, function (assertion) {
@@ -279,33 +321,36 @@ Vue.component('timelineElement', {
             var resource = EcRepository.getBlocking(this.uri);
             EcRepository._delete(resource, function () {
             }, console.error);
-        },
+        }
     },
-    template: '<div class="timelineElement" v-observe-visibility="{callback: initialize,once: true}">' +
-    '<span v-if="ok"><div class="time" v-if="timestamp">{{ timeAgo }},</div>' +
-    '<img style="vertical-align: sub;" v-if="fingerprintUrlAgent" :src="fingerprintUrlAgent" :title="agent"/><img style="vertical-align: sub;" v-if="fingerprintUrlSubject" :src="fingerprintUrlSubject" :title="subject"/> ' +
-    '<div class="content">' +
-    '<div v-if="mine" v-on:click="deleteMe" title="Delete this claim." style="float:right;cursor:pointer;">X</div>' +
-    '{{agent}} claimed {{subject}} ' +
-    '<span v-if="negative">could not</span><span v-else>could</span>' +
-    ' demonstrate ' +
-    '<a href="#" v-on:click="gotoCompetency" :title="assertion.competency">' +
-    '{{ competencyName }}' +
-    '<span v-if="frameworkName"> in the subject area {{ frameworkName }}</span>' +
-    '</a>' +
-    '<span v-if="evidenceText"> because they ' +
-    '<span v-for="(evidence, index) in evidenceText">' +
-    '<span v-if="index != 0"> and they </span>' +
-    '<a v-if="evidence.url" :href="evidence.url" target="_blank">{{evidence.text}}</a>' +
-    '<span v-else >{{evidence.text}}</span>' +
-    '</span>' +
-    '</span>' +
-    '<span v-if="badged"> and has issued a <a target="_blank" :href="badgeUrl">badge</a></span>.' +
-    '<br>' +
-    '<small>{{ competencyDescription }}</small>' +
-    '</div>' +
-    '</span>' +
-    '<div class="time" v-else><i class="mdi mdi-spin mdi-loading"/></div>' +
-    '</div>'
+    template: '<div class="timelineElement" v-observe-visibility="{callback: initialize}">' +
+        '<span v-if="ok"><div class="time" v-if="timestamp">{{ timeAgo }},</div>' +
+        '<img style="vertical-align: sub;" v-if="fingerprintUrlAgent" :src="fingerprintUrlAgent" :title="agent"/>' +
+        '<svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprintAgent" :title="fingerprintAgent"></svg>' +
+        '<img style="vertical-align: sub;" v-if="fingerprintUrlSubject" :src="fingerprintUrlSubject" :title="subject"/> ' +
+        '<svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprintSubject" :title="fingerprintSubject"></svg>' +
+        '<div class="content">' +
+        '<div v-if="mine" v-on:click="deleteMe" title="Delete this claim." style="float:right;cursor:pointer;">X</div>' +
+        '{{agent}} claimed {{subject}} ' +
+        '<span v-if="negative">could not</span><span v-else>could</span>' +
+        ' demonstrate ' +
+        '<a href="#" v-on:click="gotoCompetency" :title="assertion.competency">' +
+        '{{ competencyName }}' +
+        '<span v-if="frameworkName"> in the subject area {{ frameworkName }}</span>' +
+        '</a>' +
+        '<span v-if="evidenceText"> because they ' +
+        '<span v-for="(evidence, index) in evidenceText">' +
+        '<span v-if="index != 0"> and they </span>' +
+        '<a v-if="evidence.url" :href="evidence.url" target="_blank">{{evidence.text}}</a>' +
+        '<span v-else >{{evidence.text}}</span>' +
+        '</span>' +
+        '</span>' +
+        '<span v-if="badged"> and has issued a <a target="_blank" :href="badgeUrl">badge</a></span>.' +
+        '<br>' +
+        '<small>{{ competencyDescription }}</small>' +
+        '</div>' +
+        '</span>' +
+        '<div class="time" v-else><i class="mdi mdi-spin mdi-loading"/></div>' +
+        '</div>'
 
 });

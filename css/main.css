@@ -222,7 +222,7 @@ input.antitile {
     min-height: 4rem;
 }
 
-.timelineElement img {
+.timelineElement img,.timelineElement svg {
     float: left;
     clip-path: circle(22px at center);
     margin-left: .25rem;
