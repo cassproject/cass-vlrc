@@ -1,14 +1,10 @@
-/**
- *  Base class for all exporters, can hold helper functions
- *  that are useful for all exporters
- * 
- *  @author devlin.junker@eduworks.com
- *  @module org.cassproject
- *  @class Exporter
- *  @abstract
- */
-var Exporter = function() {};
-Exporter = stjs.extend(Exporter, null, [], null, {}, {});
+var PapaParseParams = function() {};
+PapaParseParams = stjs.extend(PapaParseParams, null, [], function(constructor, prototype) {
+    prototype.complete = null;
+    prototype.header = null;
+    prototype.error = null;
+    prototype.encoding = null;
+}, {complete: {name: "Callback1", arguments: ["Object"]}, error: {name: "Callback1", arguments: ["Object"]}}, {});
 /**
  *  Base class for all importers, can hold helper functions
  *  that are useful for all importers
@@ -27,13 +23,17 @@ Importer = stjs.extend(Importer, null, [], function(constructor, prototype) {
         return Object.prototype.toString.call(obj) == "[object Array]";
     };
 }, {}, {});
-var PapaParseParams = function() {};
-PapaParseParams = stjs.extend(PapaParseParams, null, [], function(constructor, prototype) {
-    prototype.complete = null;
-    prototype.header = null;
-    prototype.error = null;
-    prototype.encoding = null;
-}, {complete: {name: "Callback1", arguments: ["Object"]}, error: {name: "Callback1", arguments: ["Object"]}}, {});
+/**
+ *  Base class for all exporters, can hold helper functions
+ *  that are useful for all exporters
+ * 
+ *  @author devlin.junker@eduworks.com
+ *  @module org.cassproject
+ *  @class Exporter
+ *  @abstract
+ */
+var Exporter = function() {};
+Exporter = stjs.extend(Exporter, null, [], null, {}, {});
 /**
  *  Import methods to handle an CSV file of competencies and a
  *  CSV file of relationships and store them in a CASS instance
@@ -667,6 +667,281 @@ FrameworkImport = stjs.extend(FrameworkImport, null, [], function(constructor, p
         }
     };
 }, {targetUsable: "EcFramework", competencies: {name: "Array", arguments: ["EcCompetency"]}, relations: {name: "Array", arguments: ["EcAlignment"]}, compMap: {name: "Map", arguments: [null, null]}}, {});
+var CTDLASNCSVImport = function() {};
+CTDLASNCSVImport = stjs.extend(CTDLASNCSVImport, null, [], function(constructor, prototype) {
+    constructor.analyzeFile = function(file, success, failure) {
+        if (file == null) {
+            failure("No file to analyze");
+            return;
+        }
+        if ((file)["name"] == null) {
+            failure("Invalid file");
+        } else if (!((file)["name"]).endsWith(".csv")) {
+            failure("Invalid file type");
+        }
+        Papa.parse(file, {encoding: "UTF-8", complete: function(results) {
+            var tabularData = (results)["data"];
+            var colNames = tabularData[0];
+            var nameToCol = new Object();
+            for (var i = 0; i < colNames.length; i++) 
+                (nameToCol)[colNames[i]] = i;
+            var frameworkCounter = 0;
+            var competencyCounter = 0;
+            var typeCol = (nameToCol)["@type"];
+            if (typeCol == null) {
+                this.error("No @type in CSV.");
+                return;
+            }
+            for (var i = 0; i < tabularData.length; i++) {
+                if (i == 0) 
+                    continue;
+                var col = tabularData[i];
+                if (col[typeCol] != null && col[typeCol].trim() == "ceasn:CompetencyFramework") 
+                    frameworkCounter++;
+                 else if (col[typeCol] != null && col[typeCol].trim() == "ceasn:Competency") 
+                    competencyCounter++;
+                 else if (col[typeCol] == null || col[typeCol] == "") 
+                    continue;
+                 else {
+                    this.error("Found unknown type:" + col[typeCol]);
+                    return;
+                }
+            }
+            success(frameworkCounter, competencyCounter);
+        }, error: failure});
+    };
+    constructor.importFrameworksAndCompetencies = function(repo, file, success, failure, ceo) {
+        if (file == null) {
+            failure("No file to analyze");
+            return;
+        }
+        if ((file)["name"] == null) {
+            failure("Invalid file");
+        } else if (!((file)["name"]).endsWith(".csv")) {
+            failure("Invalid file type");
+        }
+        Papa.parse(file, {header: true, encoding: "UTF-8", complete: function(results) {
+            var tabularData = (results)["data"];
+            var frameworks = new Object();
+            var frameworkArray = new Array();
+            var frameworkRows = new Object();
+            var competencies = new Array();
+            var competencyRows = new Object();
+            var relations = new Array();
+            var relationById = new Object();
+            new EcAsyncHelper().each(tabularData, function(pretranslatedE, callback0) {
+                if ((pretranslatedE)["@type"] == "ceasn:CompetencyFramework") {
+                    var translator = new EcLinkedData(null, null);
+                    translator.copyFrom(pretranslatedE);
+                    for (var key in (translator)) {
+                        if ((translator)[key] == "") {
+                            (translator)[key] = null;
+                        }
+                    }
+                    translator.recast("http://schema.cassproject.org/0.3/ceasn2cass", "http://schema.cassproject.org/0.3", function(e) {
+                        var f = new EcFramework();
+                        f.copyFrom(e);
+                        if ((e)["owner"] != null) {
+                            var id = new EcIdentity();
+                            id.ppk = EcPpk.fromPem((e)["owner"]);
+                            if (ceo != null) 
+                                f.addOwner(ceo.ppk.toPk());
+                            f.addOwner(id.ppk.toPk());
+                            EcIdentityManager.addIdentityQuietly(id);
+                        }
+                        (frameworks)[f.id] = f;
+                        (frameworkRows)[f.id] = e;
+                        (f)["ceasn:hasChild"] = null;
+                        (f)["ceasn:hasTopChild"] = null;
+                        frameworkArray.push(f);
+                        f.competency = new Array();
+                        f.relation = new Array();
+                        callback0();
+                    }, failure);
+                } else if ((pretranslatedE)["@type"] == "ceasn:Competency") {
+                    var translator = new EcLinkedData(null, null);
+                    translator.copyFrom(pretranslatedE);
+                    for (var key in (translator)) {
+                        if ((translator)[key] == "") {
+                            (translator)[key] = null;
+                        }
+                    }
+                    translator.recast("http://schema.cassproject.org/0.3/ceasn2cass", "http://schema.cassproject.org/0.3", function(e) {
+                        var f = new EcCompetency();
+                        f.copyFrom(e);
+                        if ((e)["id"] == null) {
+                            callback0();
+                            return;
+                        }
+                        if ((e)["ceasn:isPartOf"] != null) {
+                            ((frameworks)[(e)["ceasn:isPartOf"]]).competency.push(f.shortId());
+                        } else {
+                            var parent = e;
+                            var done = false;
+                             while (!done && parent != null){
+                                if ((parent)["ceasn:isChildOf"] != null && (parent)["ceasn:isChildOf"] != "") {
+                                    parent = (competencyRows)[(parent)["ceasn:isChildOf"]];
+                                } else if ((parent)["ceasn:isTopChildOf"] != null && (parent)["ceasn:isTopChildOf"] != "") {
+                                    parent = (frameworkRows)[(parent)["ceasn:isTopChildOf"]];
+                                    done = true;
+                                }
+                            }
+                            if (!done) {
+                                this.error("Could not find framework:" + (e)["type"]);
+                                return;
+                            }
+                            if (parent != null) {
+                                if ((parent)["type"] == "Framework") {
+                                    (e)["ceasn:isPartOf"] = (parent)["id"];
+                                    ((frameworks)[(parent)["id"]]).competency.push(f.shortId());
+                                } else {
+                                    this.error("Object cannot trace to framework:" + (e)["type"]);
+                                    return;
+                                }
+                            } else {
+                                this.error("Object has no framework:" + (e)["type"]);
+                                return;
+                            }
+                        }
+                        if ((e)["owner"] == null) {
+                            if (((frameworkRows)[(e)["ceasn:isPartOf"]])["owner"] != null) 
+                                (e)["owner"] = ((frameworkRows)[(e)["ceasn:isPartOf"]])["owner"];
+                        }
+                        var id = new EcIdentity();
+                        if ((e)["owner"] != null) {
+                            id.ppk = EcPpk.fromPem((e)["owner"]);
+                            if (ceo != null) 
+                                f.addOwner(ceo.ppk.toPk());
+                            if (id.ppk != null) 
+                                f.addOwner(id.ppk.toPk());
+                            EcIdentityManager.addIdentityQuietly(id);
+                        }
+                        if ((e)["ceasn:isChildOf"] != null) {
+                            var r = new EcAlignment();
+                            r.generateId(repo.selectedServer);
+                            if (ceo != null) 
+                                r.addOwner(ceo.ppk.toPk());
+                            if (id.ppk != null) 
+                                r.addOwner(id.ppk.toPk());
+                            r.source = (e)["id"];
+                            r.relationType = Relation.NARROWS;
+                            r.target = (e)["ceasn:isChildOf"];
+                            relations.push(r);
+                            (relationById)[r.shortId()] = r;
+                            ((frameworks)[(e)["ceasn:isPartOf"]]).relation.push(r.shortId());
+                        }
+                        if ((e)["ceasn:broadAlignment"] != null) {
+                            var r = new EcAlignment();
+                            r.generateId(repo.selectedServer);
+                            if (ceo != null) 
+                                r.addOwner(ceo.ppk.toPk());
+                            if (id.ppk != null) 
+                                r.addOwner(id.ppk.toPk());
+                            r.source = (e)["id"];
+                            r.relationType = Relation.NARROWS;
+                            r.target = (e)["ceasn:broadAlignment"];
+                            relations.push(r);
+                            (relationById)[r.shortId()] = r;
+                            ((frameworks)[(e)["ceasn:isPartOf"]]).relation.push(r.shortId());
+                        }
+                        if ((e)["ceasn:narrowAlignment"] != null) {
+                            var r = new EcAlignment();
+                            r.generateId(repo.selectedServer);
+                            if (ceo != null) 
+                                r.addOwner(ceo.ppk.toPk());
+                            if (id.ppk != null) 
+                                r.addOwner(id.ppk.toPk());
+                            r.source = (e)["ceasn:narrowAlignment"];
+                            r.relationType = Relation.NARROWS;
+                            r.target = (e)["id"];
+                            relations.push(r);
+                            (relationById)[r.shortId()] = r;
+                            ((frameworks)[(e)["ceasn:isPartOf"]]).relation.push(r.shortId());
+                        }
+                        if ((e)["sameAs"] != null) {
+                            var r = new EcAlignment();
+                            r.generateId(repo.selectedServer);
+                            if (ceo != null) 
+                                r.addOwner(ceo.ppk.toPk());
+                            if (id.ppk != null) 
+                                r.addOwner(id.ppk.toPk());
+                            r.source = (e)["id"];
+                            r.relationType = Relation.IS_EQUIVALENT_TO;
+                            r.target = (e)["sameAs"];
+                            relations.push(r);
+                            (relationById)[r.shortId()] = r;
+                            ((frameworks)[(e)["ceasn:isPartOf"]]).relation.push(r.shortId());
+                        }
+                        if ((e)["ceasn:majorAlignment"] != null) {
+                            var r = new EcAlignment();
+                            r.generateId(repo.selectedServer);
+                            if (ceo != null) 
+                                r.addOwner(ceo.ppk.toPk());
+                            if (id.ppk != null) 
+                                r.addOwner(id.ppk.toPk());
+                            r.source = (e)["id"];
+                            r.relationType = "majorRelated";
+                            r.target = (e)["ceasn:majorAlignment"];
+                            relations.push(r);
+                            (relationById)[r.shortId()] = r;
+                            ((frameworks)[(e)["ceasn:isPartOf"]]).relation.push(r.shortId());
+                        }
+                        if ((e)["ceasn:minorAlignment"] != null) {
+                            var r = new EcAlignment();
+                            r.generateId(repo.selectedServer);
+                            if (ceo != null) 
+                                r.addOwner(ceo.ppk.toPk());
+                            if (id.ppk != null) 
+                                r.addOwner(id.ppk.toPk());
+                            r.source = (e)["id"];
+                            r.relationType = "minorRelated";
+                            r.target = (e)["ceasn:minorAlignment"];
+                            relations.push(r);
+                            (relationById)[r.shortId()] = r;
+                            ((frameworks)[(e)["ceasn:isPartOf"]]).relation.push(r.shortId());
+                        }
+                        if ((e)["ceasn:prerequisiteAlignment"] != null) {
+                            var r = new EcAlignment();
+                            r.generateId(repo.selectedServer);
+                            if (ceo != null) 
+                                r.addOwner(ceo.ppk.toPk());
+                            if (id.ppk != null) 
+                                r.addOwner(id.ppk.toPk());
+                            r.source = (e)["id"];
+                            r.relationType = Relation.REQUIRES;
+                            r.target = (e)["ceasn:prerequisiteAlignment"];
+                            relations.push(r);
+                            (relationById)[r.shortId()] = r;
+                            ((frameworks)[(e)["ceasn:isPartOf"]]).relation.push(r.shortId());
+                        }
+                        (f)["ceasn:isTopChildOf"] = null;
+                        (f)["ceasn:isChildOf"] = null;
+                        (f)["ceasn:isPartOf"] = null;
+                        (f)["ceasn:broadAlignment"] = null;
+                        (f)["ceasn:narrowAlignment"] = null;
+                        (f)["sameAs"] = null;
+                        (f)["ceasn:majorAlignment"] = null;
+                        (f)["ceasn:minorAlignment"] = null;
+                        (f)["ceasn:prerequisiteAlignment"] = null;
+                        (f)["ceasn:hasChild"] = null;
+                        competencies.push(f);
+                        (competencyRows)[f.id] = e;
+                        callback0();
+                    }, failure);
+                } else if ((pretranslatedE)["@type"] == null || (pretranslatedE)["@type"] == "") {
+                    callback0();
+                    return;
+                } else {
+                    this.error("Found unknown type:" + (pretranslatedE)["@type"]);
+                    callback0();
+                    return;
+                }
+            }, function(strings) {
+                success(frameworkArray, competencies, relations);
+            });
+        }, error: failure});
+    };
+}, {}, {});
 var TabStructuredImport = function() {};
 TabStructuredImport = stjs.extend(TabStructuredImport, null, [], function(constructor, prototype) {
     /**
@@ -755,329 +1030,6 @@ TabStructuredImport = stjs.extend(TabStructuredImport, null, [], function(constr
         return tabs;
     };
 }, {}, {});
-var CTDLASNCSVImport = function() {};
-CTDLASNCSVImport = stjs.extend(CTDLASNCSVImport, null, [], function(constructor, prototype) {
-    constructor.analyzeFile = function(file, success, failure) {
-        if (file == null) {
-            failure("No file to analyze");
-            return;
-        }
-        if ((file)["name"] == null) {
-            failure("Invalid file");
-        } else if (!((file)["name"]).endsWith(".csv")) {
-            failure("Invalid file type");
-        }
-        Papa.parse(file, {encoding: "UTF-8", complete: function(results) {
-            var tabularData = (results)["data"];
-            var colNames = tabularData[0];
-            var nameToCol = new Object();
-            for (var i = 0; i < colNames.length; i++) 
-                (nameToCol)[colNames[i]] = i;
-            var frameworkCounter = 0;
-            var competencyCounter = 0;
-            var typeCol = (nameToCol)["@type"];
-            if (typeCol == null) {
-                this.error("No @type in CSV.");
-                return;
-            }
-            for (var i = 0; i < tabularData.length; i++) {
-                if (i == 0) 
-                    continue;
-                var col = tabularData[i];
-                if (col[typeCol] != null && col[typeCol].trim() == "ceasn:CompetencyFramework") 
-                    frameworkCounter++;
-                 else if (col[typeCol] != null && col[typeCol].trim() == "ceasn:Competency") 
-                    competencyCounter++;
-                 else if (col[typeCol] == null || col[typeCol] == "") 
-                    continue;
-                 else {
-                    this.error("Found unknown type:" + col[typeCol]);
-                    return;
-                }
-            }
-            success(frameworkCounter, competencyCounter);
-        }, error: failure});
-    };
-    constructor.importFrameworksAndCompetencies = function(repo, file, success, failure, ceo) {
-        if (file == null) {
-            failure("No file to analyze");
-            return;
-        }
-        if ((file)["name"] == null) {
-            failure("Invalid file");
-        } else if (!((file)["name"]).endsWith(".csv")) {
-            failure("Invalid file type");
-        }
-        Papa.parse(file, {header: true, encoding: "UTF-8", complete: function(results) {
-            var tabularData = (results)["data"];
-            var frameworks = new Object();
-            var frameworkArray = new Array();
-            var frameworkRows = new Object();
-            var competencies = new Array();
-            var competencyRows = new Object();
-            var relations = new Array();
-            var relationById = new Object();
-            for (var i = 0; i < tabularData.length; i++) {
-                var e = tabularData[i];
-                if ((e)["@type"] != null && ((e)["@type"]).trim() == "ceasn:CompetencyFramework") {
-                    var f = new EcFramework();
-                    if ((e)["@owner"] != null) {
-                        var id = new EcIdentity();
-                        id.ppk = EcPpk.fromPem((e)["@owner"]);
-                        if (ceo != null) 
-                            f.addOwner(ceo.ppk.toPk());
-                        f.addOwner(id.ppk.toPk());
-                        EcIdentityManager.addIdentityQuietly(id);
-                    }
-                    f.id = (e)["@id"];
-                    (frameworks)[f.id] = f;
-                    (frameworkRows)[f.id] = e;
-                    frameworkArray.push(f);
-                    f.competency = new Array();
-                    f.relation = new Array();
-                    f.name = (e)["ceasn:name"];
-                    if ((e)["ceasn:creator"] != null) 
-                        (e)["ceasn:creator"] = ((e)["ceasn:creator"]).toLowerCase();
-                    (f)["schema:creator"] = (e)["ceasn:creator"];
-                    (f)["ceasn:derivedFrom"] = (e)["ceasn:derivedFrom"];
-                    (f)["dc:source"] = (e)["ceasn:source"];
-                } else if ((e)["@type"] != null && ((e)["@type"]).trim() == "ceasn:Competency") {
-                    var f = new EcCompetency();
-                    if ((e)["@id"] == null) 
-                        continue;
-                    f.id = (e)["@id"];
-                    if ((e)["ceasn:isPartOf"] != null) {
-                        ((frameworks)[(e)["ceasn:isPartOf"]]).competency.push(f.shortId());
-                    } else {
-                        var parent = e;
-                        var done = false;
-                         while (!done && parent != null){
-                            if ((parent)["ceasn:isChildOf"] != null && (parent)["ceasn:isChildOf"] != "") {
-                                parent = (competencyRows)[(parent)["ceasn:isChildOf"]];
-                            } else if ((parent)["ceasn:isTopChildOf"] != null && (parent)["ceasn:isTopChildOf"] != "") {
-                                parent = (frameworkRows)[(parent)["ceasn:isTopChildOf"]];
-                                done = true;
-                            }
-                        }
-                        if (!done) {
-                            this.error("Could not find framework:" + (e)["@type"]);
-                            return;
-                        }
-                        if (parent != null) {
-                            if ((parent)["@type"] != null && ((parent)["@type"]).trim() == "ceasn:CompetencyFramework") {
-                                (e)["ceasn:isPartOf"] = (parent)["@id"];
-                                ((frameworks)[(parent)["@id"]]).competency.push(f.shortId());
-                            } else {
-                                this.error("Object cannot trace to framework:" + (e)["@type"]);
-                                return;
-                            }
-                        } else {
-                            this.error("Object has no framework:" + (e)["@type"]);
-                            return;
-                        }
-                    }
-                    if ((e)["@owner"] == null) {
-                        if (((frameworkRows)[(e)["ceasn:isPartOf"]])["@owner"] != null) 
-                            (e)["@owner"] = ((frameworkRows)[(e)["ceasn:isPartOf"]])["@owner"];
-                    }
-                    var id = new EcIdentity();
-                    if ((e)["@owner"] != null) {
-                        id.ppk = EcPpk.fromPem((e)["@owner"]);
-                        if (ceo != null) 
-                            f.addOwner(ceo.ppk.toPk());
-                        if (id.ppk != null) 
-                            f.addOwner(id.ppk.toPk());
-                        EcIdentityManager.addIdentityQuietly(id);
-                    }
-                    f.name = (e)["ceasn:competencyText"];
-                    if (f.name == null || f.name == "") 
-                        f.name = (e)["ceasn:name"];
-                    if ((e)["ceasn:comment"] != null) 
-                        f.description = (e)["ceasn:comment"];
-                    (f)["schema:creator"] = (e)["ceasn:creator"];
-                    (f)["ceasn:codedNotation"] = (e)["ceasn:codedNotation"];
-                    (f)["ceasn:listID"] = (e)["ceasn:listID"];
-                    if ((e)["ceasn:isChildOf"] != null) {
-                        var r = new EcAlignment();
-                        r.generateId(repo.selectedServer);
-                        if (ceo != null) 
-                            r.addOwner(ceo.ppk.toPk());
-                        if (id.ppk != null) 
-                            r.addOwner(id.ppk.toPk());
-                        r.source = (e)["@id"];
-                        r.relationType = Relation.NARROWS;
-                        r.target = (e)["ceasn:isChildOf"];
-                        relations.push(r);
-                        (relationById)[r.shortId()] = r;
-                        ((frameworks)[(e)["ceasn:isPartOf"]]).relation.push(r.shortId());
-                    }
-                    (f)["ceasn:derivedFrom"] = (e)["ceasn:derivedFrom"];
-                    competencies.push(f);
-                    (competencyRows)[f.id] = e;
-                } else if ((e)["@type"] == null || (e)["@type"] == "") 
-                    continue;
-                 else {
-                    this.error("Found unknown type:" + (e)["@type"]);
-                    return;
-                }
-            }
-            success(frameworkArray, competencies, relations);
-        }, error: failure});
-    };
-}, {}, {});
-/**
- *  Export methods to handle exporting two CSV file , one of competencies
- *  and one of relationships representing a framework
- * 
- *  @author devlin.junker@eduworks.com
- *  @author fritz.ray@eduworks.com
- *  @module org.cassproject
- *  @class CSVExport
- *  @static
- *  @extends Exporter
- */
-var CSVExport = function() {
-    Exporter.call(this);
-};
-CSVExport = stjs.extend(CSVExport, Exporter, [], function(constructor, prototype) {
-    constructor.frameworkCompetencies = null;
-    constructor.frameworkRelations = null;
-    constructor.exportObjects = function(objects, fileName) {
-        var compExport = new CSVExport.CSVExportProcess();
-        compExport.buildExport(objects);
-        compExport.downloadCSV(fileName);
-    };
-    /**
-     *  Method to export the CSV files of competencies and relationships for a framework
-     * 
-     *  @param {String}            frameworkId
-     *                             Id of the framework to export
-     *  @param {Callback0}         success
-     *                             Callback triggered after both files have been successfully exported
-     *  @param {Callback1<String>} failure
-     *                             Callback triggered if an error occurs during export
-     *  @memberOf CSVExport
-     *  @method export
-     *  @static
-     */
-    constructor.exportFramework = function(frameworkId, success, failure) {
-        if (frameworkId == null) {
-            failure("Framework not selected.");
-            return;
-        }
-        CSVExport.frameworkCompetencies = [];
-        CSVExport.frameworkRelations = [];
-        EcRepository.get(frameworkId, function(data) {
-            if (data.isAny(new EcFramework().getTypes())) {
-                var fw = new EcFramework();
-                fw.copyFrom(data);
-                if (fw.competency == null || fw.competency.length == 0) 
-                    failure("No Competencies in Framework");
-                for (var i = 0; i < fw.competency.length; i++) {
-                    var competencyUrl = fw.competency[i];
-                    EcRepository.get(competencyUrl, function(competency) {
-                        CSVExport.frameworkCompetencies.push(competency);
-                        if (CSVExport.frameworkCompetencies.length == fw.competency.length) {
-                            var compExport = new CSVExport.CSVExportProcess();
-                            compExport.buildExport(CSVExport.frameworkCompetencies);
-                            compExport.downloadCSV(fw.getName() + " - Competencies.csv");
-                        } else {}
-                    }, function(s) {
-                        CSVExport.frameworkCompetencies.push(null);
-                        if (CSVExport.frameworkCompetencies.length == fw.competency.length) {
-                            var compExport = new CSVExport.CSVExportProcess();
-                            compExport.buildExport(CSVExport.frameworkCompetencies);
-                            compExport.downloadCSV(fw.getName() + " - Competencies.csv");
-                        } else {}
-                    });
-                }
-                for (var i = 0; i < fw.relation.length; i++) {
-                    var relationUrl = fw.relation[i];
-                    EcRepository.get(relationUrl, function(relation) {
-                        CSVExport.frameworkRelations.push(relation);
-                        if (CSVExport.frameworkRelations.length == fw.relation.length) {
-                            var compExport = new CSVExport.CSVExportProcess();
-                            compExport.buildExport(CSVExport.frameworkRelations);
-                            compExport.downloadCSV(fw.getName() + " - Relations.csv");
-                            if (success != null && success != undefined) 
-                                success();
-                        } else {}
-                    }, function(s) {
-                        CSVExport.frameworkRelations.push(null);
-                        if (CSVExport.frameworkRelations.length == fw.relation.length) {
-                            var compExport = new CSVExport.CSVExportProcess();
-                            compExport.buildExport(CSVExport.frameworkRelations);
-                            compExport.downloadCSV(fw.getName() + " - Relations.csv");
-                            if (success != null && success != undefined) 
-                                success();
-                        } else {}
-                    });
-                }
-            }
-        }, failure);
-    };
-    constructor.CSVExportProcess = function() {
-        this.csvOutput = [];
-    };
-    constructor.CSVExportProcess = stjs.extend(constructor.CSVExportProcess, null, [], function(constructor, prototype) {
-        prototype.csvOutput = null;
-        prototype.flattenObject = function(flattenedObject, object, prefix) {
-            var data = new EcRemoteLinkedData((object)["@context"], (object)["@type"]);
-            data.copyFrom(object);
-            var tempObj = JSON.parse(data.toJson());
-            var props = (tempObj);
-            for (var prop in props) {
-                var id;
-                if (prefix != null && prefix != undefined) 
-                    id = prefix + "." + prop;
-                 else 
-                    id = prop;
-                if (props[prop] != null && props[prop] != "" && stjs.isInstanceOf(props[prop].constructor, Object)) {
-                    this.flattenObject(flattenedObject, props[prop], id);
-                } else {
-                    var display = Thing.getDisplayStringFrom(props[prop]);
-                    (flattenedObject)[id] = display;
-                }
-            }
-        };
-        prototype.addCSVRow = function(object) {
-            var flattenedObject = new EcRemoteLinkedData(object.context, object.type);
-            this.flattenObject(flattenedObject, object, null);
-            this.csvOutput.push(JSON.parse(flattenedObject.toJson()));
-            var props = (JSON.parse(flattenedObject.toJson()));
-            for (var prop in props) {
-                if (props[prop] != null && props[prop] != "") {
-                    for (var i = 0; i < this.csvOutput.length; i++) {
-                        var row = this.csvOutput[i];
-                        if (!(row).hasOwnProperty(prop)) {
-                            (row)[prop] = "";
-                        }
-                    }
-                }
-            }
-        };
-        prototype.buildExport = function(objects) {
-            for (var i = 0; i < objects.length; i++) 
-                if (objects[i] != null) {
-                    var object = objects[i];
-                    this.addCSVRow(object);
-                }
-        };
-        prototype.downloadCSV = function(name) {
-            var csv = Papa.unparse(this.csvOutput);
-            var pom = window.document.createElement("a");
-            pom.setAttribute("href", "data:text/csv;charset=utf-8," + encodeURIComponent(csv));
-            pom.setAttribute("download", name);
-            if ((window.document)["createEvent"] != null) {
-                var event = ((window.document)["createEvent"]).call(window.document, "MouseEvents");
-                ((event)["initEvent"]).call(event, "click", true, true);
-                pom.dispatchEvent(event);
-            } else {
-                ((pom)["click"]).call(pom);
-            }
-        };
-    }, {csvOutput: {name: "Array", arguments: ["Object"]}}, {});
-}, {frameworkCompetencies: {name: "Array", arguments: ["EcRemoteLinkedData"]}, frameworkRelations: {name: "Array", arguments: ["EcRemoteLinkedData"]}}, {});
 /**
  *  Import methods to handle an ASN JSON file containing a framework,
  *  competencies and relationships, and store them in a CASS instance
@@ -1608,3 +1560,358 @@ MedbiqImport = stjs.extend(MedbiqImport, Importer, [], function(constructor, pro
         });
     };
 }, {medbiqXmlCompetencies: {name: "Array", arguments: ["EcCompetency"]}, progressObject: "Object"}, {});
+/**
+ *  Export methods to handle exporting two CSV file , one of competencies
+ *  and one of relationships representing a framework
+ * 
+ *  @author devlin.junker@eduworks.com
+ *  @author fritz.ray@eduworks.com
+ *  @module org.cassproject
+ *  @class CSVExport
+ *  @static
+ *  @extends Exporter
+ */
+var CSVExport = function() {
+    Exporter.call(this);
+};
+CSVExport = stjs.extend(CSVExport, Exporter, [], function(constructor, prototype) {
+    constructor.frameworkCompetencies = null;
+    constructor.frameworkRelations = null;
+    constructor.exportObjects = function(objects, fileName) {
+        var compExport = new CSVExport.CSVExportProcess();
+        compExport.buildExport(objects);
+        compExport.downloadCSV(fileName);
+    };
+    /**
+     *  Method to export the CSV files of competencies and relationships for a framework
+     * 
+     *  @param {String}            frameworkId
+     *                             Id of the framework to export
+     *  @param {Callback0}         success
+     *                             Callback triggered after both files have been successfully exported
+     *  @param {Callback1<String>} failure
+     *                             Callback triggered if an error occurs during export
+     *  @memberOf CSVExport
+     *  @method export
+     *  @static
+     */
+    constructor.exportFramework = function(frameworkId, success, failure) {
+        if (frameworkId == null) {
+            failure("Framework not selected.");
+            return;
+        }
+        CSVExport.frameworkCompetencies = [];
+        CSVExport.frameworkRelations = [];
+        EcRepository.get(frameworkId, function(data) {
+            if (data.isAny(new EcFramework().getTypes())) {
+                var fw = new EcFramework();
+                fw.copyFrom(data);
+                if (fw.competency == null || fw.competency.length == 0) 
+                    failure("No Competencies in Framework");
+                for (var i = 0; i < fw.competency.length; i++) {
+                    var competencyUrl = fw.competency[i];
+                    EcRepository.get(competencyUrl, function(competency) {
+                        CSVExport.frameworkCompetencies.push(competency);
+                        if (CSVExport.frameworkCompetencies.length == fw.competency.length) {
+                            var compExport = new CSVExport.CSVExportProcess();
+                            compExport.buildExport(CSVExport.frameworkCompetencies);
+                            compExport.downloadCSV(fw.getName() + " - Competencies.csv");
+                        } else {}
+                    }, function(s) {
+                        CSVExport.frameworkCompetencies.push(null);
+                        if (CSVExport.frameworkCompetencies.length == fw.competency.length) {
+                            var compExport = new CSVExport.CSVExportProcess();
+                            compExport.buildExport(CSVExport.frameworkCompetencies);
+                            compExport.downloadCSV(fw.getName() + " - Competencies.csv");
+                        } else {}
+                    });
+                }
+                for (var i = 0; i < fw.relation.length; i++) {
+                    var relationUrl = fw.relation[i];
+                    EcRepository.get(relationUrl, function(relation) {
+                        CSVExport.frameworkRelations.push(relation);
+                        if (CSVExport.frameworkRelations.length == fw.relation.length) {
+                            var compExport = new CSVExport.CSVExportProcess();
+                            compExport.buildExport(CSVExport.frameworkRelations);
+                            compExport.downloadCSV(fw.getName() + " - Relations.csv");
+                            if (success != null && success != undefined) 
+                                success();
+                        } else {}
+                    }, function(s) {
+                        CSVExport.frameworkRelations.push(null);
+                        if (CSVExport.frameworkRelations.length == fw.relation.length) {
+                            var compExport = new CSVExport.CSVExportProcess();
+                            compExport.buildExport(CSVExport.frameworkRelations);
+                            compExport.downloadCSV(fw.getName() + " - Relations.csv");
+                            if (success != null && success != undefined) 
+                                success();
+                        } else {}
+                    });
+                }
+            }
+        }, failure);
+    };
+    constructor.CSVExportProcess = function() {
+        this.csvOutput = [];
+    };
+    constructor.CSVExportProcess = stjs.extend(constructor.CSVExportProcess, null, [], function(constructor, prototype) {
+        prototype.csvOutput = null;
+        prototype.flattenObject = function(flattenedObject, object, prefix) {
+            var data = new EcRemoteLinkedData((object)["@context"], (object)["@type"]);
+            data.copyFrom(object);
+            var tempObj = JSON.parse(data.toJson());
+            var props = (tempObj);
+            for (var prop in props) {
+                var id;
+                if (prefix != null && prefix != undefined) 
+                    id = prefix + "." + prop;
+                 else 
+                    id = prop;
+                if (props[prop] != null && props[prop] != "" && stjs.isInstanceOf(props[prop].constructor, Object)) {
+                    this.flattenObject(flattenedObject, props[prop], id);
+                } else {
+                    var display = Thing.getDisplayStringFrom(props[prop]);
+                    (flattenedObject)[id] = display;
+                }
+            }
+        };
+        prototype.addCSVRow = function(object) {
+            var flattenedObject = new EcRemoteLinkedData(object.context, object.type);
+            this.flattenObject(flattenedObject, object, null);
+            this.csvOutput.push(JSON.parse(flattenedObject.toJson()));
+            var props = (JSON.parse(flattenedObject.toJson()));
+            for (var prop in props) {
+                if (props[prop] != null && props[prop] != "") {
+                    for (var i = 0; i < this.csvOutput.length; i++) {
+                        var row = this.csvOutput[i];
+                        if (!(row).hasOwnProperty(prop)) {
+                            (row)[prop] = "";
+                        }
+                    }
+                }
+            }
+        };
+        prototype.buildExport = function(objects) {
+            for (var i = 0; i < objects.length; i++) 
+                if (objects[i] != null) {
+                    var object = objects[i];
+                    this.addCSVRow(object);
+                }
+        };
+        prototype.downloadCSV = function(name) {
+            var csv = Papa.unparse(this.csvOutput);
+            var pom = window.document.createElement("a");
+            pom.setAttribute("href", "data:text/csv;charset=utf-8," + encodeURIComponent(csv));
+            pom.setAttribute("download", name);
+            if ((window.document)["createEvent"] != null) {
+                var event = ((window.document)["createEvent"]).call(window.document, "MouseEvents");
+                ((event)["initEvent"]).call(event, "click", true, true);
+                pom.dispatchEvent(event);
+            } else {
+                ((pom)["click"]).call(pom);
+            }
+        };
+    }, {csvOutput: {name: "Array", arguments: ["Object"]}}, {});
+}, {frameworkCompetencies: {name: "Array", arguments: ["EcRemoteLinkedData"]}, frameworkRelations: {name: "Array", arguments: ["EcRemoteLinkedData"]}}, {});
+var CTDLASNCSVConceptImport = function() {};
+CTDLASNCSVConceptImport = stjs.extend(CTDLASNCSVConceptImport, null, [], function(constructor, prototype) {
+    constructor.analyzeFile = function(file, success, failure) {
+        if (file == null) {
+            failure("No file to analyze");
+            return;
+        }
+        if ((file)["name"] == null) {
+            failure("Invalid file");
+        } else if (!((file)["name"]).endsWith(".csv")) {
+            failure("Invalid file type");
+        }
+        Papa.parse(file, {encoding: "UTF-8", complete: function(results) {
+            var tabularData = (results)["data"];
+            var colNames = tabularData[0];
+            var nameToCol = new Object();
+            for (var i = 0; i < colNames.length; i++) 
+                (nameToCol)[colNames[i]] = i;
+            var conceptSchemeCounter = 0;
+            var conceptCounter = 0;
+            var typeCol = (nameToCol)["@type"];
+            if (typeCol == null) {
+                this.error("No @type in CSV.");
+                return;
+            }
+            for (var i = 0; i < tabularData.length; i++) {
+                if (i == 0) 
+                    continue;
+                var col = tabularData[i];
+                if (col[typeCol] == "skos:ConceptScheme") 
+                    conceptSchemeCounter++;
+                 else if (col[typeCol] == "skos:Concept") 
+                    conceptCounter++;
+                 else if (col[typeCol] == null || col[typeCol] == "") 
+                    continue;
+                 else {
+                    this.error("Found unknown type:" + col[typeCol]);
+                    return;
+                }
+            }
+            success(conceptSchemeCounter, conceptCounter);
+        }, error: failure});
+    };
+    constructor.importFrameworksAndCompetencies = function(repo, file, success, failure, ceo) {
+        if (file == null) {
+            failure("No file to analyze");
+            return;
+        }
+        if ((file)["name"] == null) {
+            failure("Invalid file");
+        } else if (!((file)["name"]).endsWith(".csv")) {
+            failure("Invalid file type");
+        }
+        Papa.parse(file, {header: true, encoding: "UTF-8", complete: function(results) {
+            var tabularData = (results)["data"];
+            var schemeArray = new Array();
+            var concepts = new Array();
+            new EcAsyncHelper().each(tabularData, function(pretranslatedE, callback0) {
+                if ((pretranslatedE)["@type"] == "skos:ConceptScheme") {
+                    var translator = new EcLinkedData(null, null);
+                    translator.copyFrom(pretranslatedE);
+                    for (var key in (translator)) {
+                        if ((translator)[key] == "") {
+                            (translator)[key] = null;
+                        } else if ((translator)[key] != null) {
+                            var thisKey = (translator)[key];
+                            if ((typeof thisKey) == "string" && (thisKey).indexOf("[") != -1) {
+                                thisKey = (thisKey).replaceAll("'", "\"");
+                                (translator)[key] = JSON.parse(thisKey);
+                            }
+                        }
+                    }
+                    if ((translator)["ceasn:name"] != null) {
+                        var name = (translator)["ceasn:name"];
+                        var nameWithLanguage = new Object();
+                        (nameWithLanguage)["en-US"] = name;
+                        (translator)["ceasn:name"] = nameWithLanguage;
+                    }
+                    translator.recast("http://schema.cassproject.org/0.3/ceasn2cassConcepts", "http://schema.cassproject.org/0.3/skos", function(e) {
+                        var f = new EcConceptScheme();
+                        f.copyFrom(e);
+                        if ((e)["owner"] != null) {
+                            var id = new EcIdentity();
+                            id.ppk = EcPpk.fromPem((e)["owner"]);
+                            if (ceo != null) 
+                                f.addOwner(ceo.ppk.toPk());
+                            f.addOwner(id.ppk.toPk());
+                            EcIdentityManager.addIdentityQuietly(id);
+                        }
+                        (f)["schema:dateModified"] = new Date().toISOString();
+                        if ((e)["schema:dateCreated"] == null) {
+                            (f)["schema:dateCreated"] = new Date().toISOString();
+                        }
+                        schemeArray.push(f);
+                        callback0();
+                    }, failure);
+                } else if ((pretranslatedE)["@type"] == "skos:Concept") {
+                    var translator = new EcLinkedData(null, null);
+                    translator.copyFrom(pretranslatedE);
+                    for (var key in (translator)) {
+                        if ((translator)[key] == "") {
+                            (translator)[key] = null;
+                        } else if ((translator)[key] != null) {
+                            var thisKey = (translator)[key];
+                            if ((typeof thisKey) == "string" && (thisKey).indexOf("[") != -1) {
+                                thisKey = (thisKey).replaceAll("'", "\"");
+                                (translator)[key] = JSON.parse(thisKey);
+                            }
+                        }
+                    }
+                    if ((translator)["skos:prefLabel"] != null) {
+                        var name = (translator)["skos:prefLabel"];
+                        var nameWithLanguage = new Object();
+                        (nameWithLanguage)["en-US"] = name;
+                        (translator)["skos:prefLabel"] = nameWithLanguage;
+                    }
+                    translator.recast("http://schema.cassproject.org/0.3/ceasn2cassConcepts", "http://schema.cassproject.org/0.3/skos", function(e) {
+                        var f = new EcConcept();
+                        f.copyFrom(e);
+                        if ((e)["id"] == null) {
+                            callback0();
+                            return;
+                        }
+                        if ((e)["owner"] != null) {
+                            var id = new EcIdentity();
+                            id.ppk = EcPpk.fromPem((e)["owner"]);
+                            if (ceo != null) 
+                                f.addOwner(ceo.ppk.toPk());
+                            if (id.ppk != null) 
+                                f.addOwner(id.ppk.toPk());
+                            EcIdentityManager.addIdentityQuietly(id);
+                        }
+                        if ((e)["skos:narrower"] != null) {
+                            var relation = (e)["skos:narrower"];
+                            if (!EcArray.isArray(relation)) {
+                                var array = [relation];
+                                (f)["skos:narrower"] = array;
+                            }
+                        }
+                        if ((e)["skos:broader"] != null) {
+                            var relation = (e)["skos:broader"];
+                            if (!EcArray.isArray(relation)) {
+                                var array = [relation];
+                                (f)["skos:broader"] = array;
+                            }
+                        }
+                        if ((e)["skos:broadMatch"] != null) {
+                            var relation = (e)["skos:broadMatch"];
+                            if (!EcArray.isArray(relation)) {
+                                var array = [relation];
+                                (f)["skos:broadMatch"] = array;
+                            }
+                        }
+                        if ((e)["skos:closeMatch"] != null) {
+                            var relation = (e)["skos:closeMatch"];
+                            if (!EcArray.isArray(relation)) {
+                                var array = [relation];
+                                (f)["skos:closeMatch"] = array;
+                            }
+                        }
+                        if ((e)["skos:exactMatch"] != null) {
+                            var relation = (e)["skos:exactMatch"];
+                            if (!EcArray.isArray(relation)) {
+                                var array = [relation];
+                                (f)["skos:exactMatch"] = array;
+                            }
+                        }
+                        if ((e)["skos:narrowMatch"] != null) {
+                            var relation = (e)["skos:narrowMatch"];
+                            if (!EcArray.isArray(relation)) {
+                                var array = [relation];
+                                (f)["skos:narrowMatch"] = array;
+                            }
+                        }
+                        if ((e)["skos:relatedMatch"] != null) {
+                            var relation = (e)["skos:relatedMatch"];
+                            if (!EcArray.isArray(relation)) {
+                                var array = [relation];
+                                (f)["skos:relatedMatch"] = array;
+                            }
+                        }
+                        (f)["schema:dateModified"] = new Date().toISOString();
+                        if ((e)["schema:dateCreated"] == null) {
+                            (f)["schema:dateCreated"] = new Date().toISOString();
+                        }
+                        concepts.push(f);
+                        callback0();
+                    }, failure);
+                } else if ((pretranslatedE)["@type"] == null || (pretranslatedE)["@type"] == "") {
+                    callback0();
+                    return;
+                } else {
+                    this.error("Found unknown type:" + (pretranslatedE)["@type"]);
+                    callback0();
+                    return;
+                }
+            }, function(strings) {
+                success(schemeArray, concepts);
+            });
+        }, error: failure});
+    };
+}, {}, {});

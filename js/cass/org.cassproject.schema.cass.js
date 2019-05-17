@@ -26,6 +26,59 @@ AssertionCodebook = stjs.extend(AssertionCodebook, null, [], function(constructo
     prototype.assertionShortId = null;
 }, {agent: "EbacEncryptedSecret", subject: "EbacEncryptedSecret", assertionDate: "EbacEncryptedSecret", expirationDate: "EbacEncryptedSecret", decayFunction: "EbacEncryptedSecret", negative: "EbacEncryptedSecret", evidence: {name: "Array", arguments: ["EbacEncryptedSecret"]}}, {});
 /**
+ *  Competencies include skills, knowledge, abilities, traits, and combinations thereof that are needed to perform a task or job. In CASS, competencies are identified and located using a globally unique ID. Competencies can be further described using titles, descriptions, levels, indicators (coming soon), roll-up rules, and relationships to other competencies.
+ * 
+ *  @author fritz.ray@eduworks.com
+ *  @class Competency
+ *  @module org.cassproject
+ *  @extends CreativeWork
+ */
+var Competency = function() {
+    CreativeWork.call(this);
+    this.setContextAndType(Cass.context, Competency.myType);
+};
+Competency = stjs.extend(Competency, CreativeWork, [], function(constructor, prototype) {
+    constructor.TYPE_0_1 = "http://schema.eduworks.com/cass/0.1/competency";
+    constructor.TYPE_0_2 = "http://schema.eduworks.com/cass/0.2/competency";
+    constructor.TYPE_0_3 = "http://schema.cassproject.org/0.2/Competency";
+    constructor.TYPE_0_4 = "http://schema.cassproject.org/0.3/Competency";
+    constructor.myType = Competency.TYPE_0_4;
+    /**
+     *  Scope in which the competency may be applied. e.g. Underwater.
+     * 
+     *  @property scope
+     *  @type string
+     */
+    prototype.scope = null;
+    prototype.upgrade = function() {
+        EcLinkedData.prototype.upgrade.call(this);
+        if (Competency.TYPE_0_1.equals(this.type)) {
+            if (this.url != null && this.sameAs == null) {
+                this.sameAs = this.url;
+                this.url = null;
+            }
+            var me = (this);
+            if (me["@context"] == null && me["@schema"] != null) 
+                me["@context"] = me["@schema"];
+            this.setContextAndType(Cass.context_0_2, Competency.TYPE_0_2);
+        }
+        if (Competency.TYPE_0_2.equals(this.getFullType())) {
+            this.setContextAndType(Cass.context_0_3, Competency.TYPE_0_3);
+        }
+        if (Competency.TYPE_0_3.equals(this.getFullType())) {
+            this.setContextAndType(Cass.context_0_4, Competency.TYPE_0_4);
+        }
+    };
+    prototype.getTypes = function() {
+        var a = new Array();
+        a.push(Competency.TYPE_0_4);
+        a.push(Competency.TYPE_0_3);
+        a.push(Competency.TYPE_0_2);
+        a.push(Competency.TYPE_0_1);
+        return a;
+    };
+}, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+/**
  *  When an individual's performance in a competency can be measured, a level specifies milestones that an individual can reach, creating fine-grained distinction between the proficient and the adept.
  * 
  *  @author fritz.ray@eduworks.com
@@ -89,6 +142,124 @@ Level = stjs.extend(Level, CreativeWork, [], function(constructor, prototype) {
         return a;
     };
 }, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+/**
+ *  A segment of script that defines in a domain specific language how competence is transferred from one competency to another.
+ * 
+ *  @author fritz.ray@eduworks.com
+ *  @class RollupRule
+ *  @module org.cassproject
+ *  @extends CreativeWork
+ */
+var RollupRule = function() {
+    CreativeWork.call(this);
+    this.setContextAndType(Cass.context, RollupRule.myType);
+};
+RollupRule = stjs.extend(RollupRule, CreativeWork, [], function(constructor, prototype) {
+    constructor.TYPE_0_2 = "http://schema.eduworks.com/cass/0.2/rollupRule";
+    constructor.TYPE_0_3 = "http://schema.cassproject.org/0.2/RollupRule";
+    constructor.TYPE_0_4 = "http://schema.cassproject.org/0.3/RollupRule";
+    constructor.myType = RollupRule.TYPE_0_4;
+    /**
+     *  The rollup rule encoded as source code that is understandable to the assertion processor.
+     * 
+     *  @property rule
+     *  @type string
+     */
+    prototype.rule = null;
+    /**
+     *  Specifies the URL of the competency that the rollup rule pertains to.
+     * 
+     *  @property competency
+     *  @type string
+     */
+    prototype.competency = null;
+    prototype.upgrade = function() {
+        EcLinkedData.prototype.upgrade.call(this);
+        if (RollupRule.TYPE_0_2.equals(this.getFullType())) {
+            this.setContextAndType(Cass.context_0_3, RollupRule.TYPE_0_3);
+        }
+        if (RollupRule.TYPE_0_3.equals(this.getFullType())) {
+            this.setContextAndType(Cass.context_0_4, RollupRule.TYPE_0_4);
+        }
+    };
+    prototype.getTypes = function() {
+        var a = new Array();
+        a.push(RollupRule.TYPE_0_4);
+        a.push(RollupRule.TYPE_0_3);
+        a.push(RollupRule.TYPE_0_2);
+        return a;
+    };
+}, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
+/**
+ *  A Competency Framework or simply Framework is a collection of competencies and relations between competencies in the framework and potentially between competencies in the framework and competencies in other frameworks. In practice, a Framework represents competencies related to a specific job, task, organization, career, knowledge domain, etc.
+ * 
+ *  @author fritz.ray@eduworks.com
+ *  @class Framework
+ *  @module org.cassproject
+ *  @extends CreativeWork
+ */
+var Framework = function() {
+    CreativeWork.call(this);
+    this.setContextAndType(Cass.context, Framework.myType);
+};
+Framework = stjs.extend(Framework, CreativeWork, [], function(constructor, prototype) {
+    constructor.TYPE_0_1 = "http://schema.eduworks.com/cass/0.1/framework";
+    constructor.TYPE_0_2 = "http://schema.eduworks.com/cass/0.2/framework";
+    constructor.TYPE_0_3 = "http://schema.cassproject.org/0.2/Framework";
+    constructor.TYPE_0_4 = "http://schema.cassproject.org/0.3/Framework";
+    constructor.myType = Framework.TYPE_0_4;
+    /**
+     *  URLs of competencies included in this framework.
+     * 
+     *  @property competency
+     *  @type string[]
+     */
+    prototype.competency = null;
+    /**
+     *  URLs of relations included in this framework.
+     * 
+     *  @property relation
+     *  @type string[]
+     */
+    prototype.relation = null;
+    /**
+     *  URLs of levels included in this framework.
+     * 
+     *  @property level
+     *  @type string[]
+     */
+    prototype.level = null;
+    /**
+     *  URLs of RollupRules included in this framework.
+     * 
+     *  @property rollupRule
+     *  @type string[]
+     */
+    prototype.rollupRule = null;
+    prototype.upgrade = function() {
+        EcLinkedData.prototype.upgrade.call(this);
+        if (Framework.TYPE_0_1.equals(this.type)) {
+            var me = (this);
+            if (me["@context"] == null && me["@schema"] != null) 
+                me["@context"] = me["@schema"];
+            this.setContextAndType(Cass.context_0_2, Framework.TYPE_0_2);
+        }
+        if (Framework.TYPE_0_2.equals(this.getFullType())) {
+            this.setContextAndType(Cass.context_0_3, Framework.TYPE_0_3);
+        }
+        if (Framework.TYPE_0_3.equals(this.getFullType())) {
+            this.setContextAndType(Cass.context_0_4, Framework.TYPE_0_4);
+        }
+    };
+    prototype.getTypes = function() {
+        var a = new Array();
+        a.push(Framework.TYPE_0_4);
+        a.push(Framework.TYPE_0_3);
+        a.push(Framework.TYPE_0_2);
+        a.push(Framework.TYPE_0_1);
+        return a;
+    };
+}, {competency: {name: "Array", arguments: [null]}, relation: {name: "Array", arguments: [null]}, level: {name: "Array", arguments: [null]}, rollupRule: {name: "Array", arguments: [null]}, about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
 /**
  *  A relation between two objects.
  * 
@@ -224,177 +395,6 @@ Relation = stjs.extend(Relation, CreativeWork, [], function(constructor, prototy
         a.push(Relation.TYPE_0_3);
         a.push(Relation.TYPE_0_2);
         a.push(Relation.TYPE_0_1);
-        return a;
-    };
-}, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  A segment of script that defines in a domain specific language how competence is transferred from one competency to another.
- * 
- *  @author fritz.ray@eduworks.com
- *  @class RollupRule
- *  @module org.cassproject
- *  @extends CreativeWork
- */
-var RollupRule = function() {
-    CreativeWork.call(this);
-    this.setContextAndType(Cass.context, RollupRule.myType);
-};
-RollupRule = stjs.extend(RollupRule, CreativeWork, [], function(constructor, prototype) {
-    constructor.TYPE_0_2 = "http://schema.eduworks.com/cass/0.2/rollupRule";
-    constructor.TYPE_0_3 = "http://schema.cassproject.org/0.2/RollupRule";
-    constructor.TYPE_0_4 = "http://schema.cassproject.org/0.3/RollupRule";
-    constructor.myType = RollupRule.TYPE_0_4;
-    /**
-     *  The rollup rule encoded as source code that is understandable to the assertion processor.
-     * 
-     *  @property rule
-     *  @type string
-     */
-    prototype.rule = null;
-    /**
-     *  Specifies the URL of the competency that the rollup rule pertains to.
-     * 
-     *  @property competency
-     *  @type string
-     */
-    prototype.competency = null;
-    prototype.upgrade = function() {
-        EcLinkedData.prototype.upgrade.call(this);
-        if (RollupRule.TYPE_0_2.equals(this.getFullType())) {
-            this.setContextAndType(Cass.context_0_3, RollupRule.TYPE_0_3);
-        }
-        if (RollupRule.TYPE_0_3.equals(this.getFullType())) {
-            this.setContextAndType(Cass.context_0_4, RollupRule.TYPE_0_4);
-        }
-    };
-    prototype.getTypes = function() {
-        var a = new Array();
-        a.push(RollupRule.TYPE_0_4);
-        a.push(RollupRule.TYPE_0_3);
-        a.push(RollupRule.TYPE_0_2);
-        return a;
-    };
-}, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  A Competency Framework or simply Framework is a collection of competencies and relations between competencies in the framework and potentially between competencies in the framework and competencies in other frameworks. In practice, a Framework represents competencies related to a specific job, task, organization, career, knowledge domain, etc.
- * 
- *  @author fritz.ray@eduworks.com
- *  @class Framework
- *  @module org.cassproject
- *  @extends CreativeWork
- */
-var Framework = function() {
-    CreativeWork.call(this);
-    this.setContextAndType(Cass.context, Framework.myType);
-};
-Framework = stjs.extend(Framework, CreativeWork, [], function(constructor, prototype) {
-    constructor.TYPE_0_1 = "http://schema.eduworks.com/cass/0.1/framework";
-    constructor.TYPE_0_2 = "http://schema.eduworks.com/cass/0.2/framework";
-    constructor.TYPE_0_3 = "http://schema.cassproject.org/0.2/Framework";
-    constructor.TYPE_0_4 = "http://schema.cassproject.org/0.3/Framework";
-    constructor.myType = Framework.TYPE_0_4;
-    /**
-     *  URLs of competencies included in this framework.
-     * 
-     *  @property competency
-     *  @type string[]
-     */
-    prototype.competency = null;
-    /**
-     *  URLs of relations included in this framework.
-     * 
-     *  @property relation
-     *  @type string[]
-     */
-    prototype.relation = null;
-    /**
-     *  URLs of levels included in this framework.
-     * 
-     *  @property level
-     *  @type string[]
-     */
-    prototype.level = null;
-    /**
-     *  URLs of RollupRules included in this framework.
-     * 
-     *  @property rollupRule
-     *  @type string[]
-     */
-    prototype.rollupRule = null;
-    prototype.upgrade = function() {
-        EcLinkedData.prototype.upgrade.call(this);
-        if (Framework.TYPE_0_1.equals(this.type)) {
-            var me = (this);
-            if (me["@context"] == null && me["@schema"] != null) 
-                me["@context"] = me["@schema"];
-            this.setContextAndType(Cass.context_0_2, Framework.TYPE_0_2);
-        }
-        if (Framework.TYPE_0_2.equals(this.getFullType())) {
-            this.setContextAndType(Cass.context_0_3, Framework.TYPE_0_3);
-        }
-        if (Framework.TYPE_0_3.equals(this.getFullType())) {
-            this.setContextAndType(Cass.context_0_4, Framework.TYPE_0_4);
-        }
-    };
-    prototype.getTypes = function() {
-        var a = new Array();
-        a.push(Framework.TYPE_0_4);
-        a.push(Framework.TYPE_0_3);
-        a.push(Framework.TYPE_0_2);
-        a.push(Framework.TYPE_0_1);
-        return a;
-    };
-}, {competency: {name: "Array", arguments: [null]}, relation: {name: "Array", arguments: [null]}, level: {name: "Array", arguments: [null]}, rollupRule: {name: "Array", arguments: [null]}, about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
-/**
- *  Competencies include skills, knowledge, abilities, traits, and combinations thereof that are needed to perform a task or job. In CASS, competencies are identified and located using a globally unique ID. Competencies can be further described using titles, descriptions, levels, indicators (coming soon), roll-up rules, and relationships to other competencies.
- * 
- *  @author fritz.ray@eduworks.com
- *  @class Competency
- *  @module org.cassproject
- *  @extends CreativeWork
- */
-var Competency = function() {
-    CreativeWork.call(this);
-    this.setContextAndType(Cass.context, Competency.myType);
-};
-Competency = stjs.extend(Competency, CreativeWork, [], function(constructor, prototype) {
-    constructor.TYPE_0_1 = "http://schema.eduworks.com/cass/0.1/competency";
-    constructor.TYPE_0_2 = "http://schema.eduworks.com/cass/0.2/competency";
-    constructor.TYPE_0_3 = "http://schema.cassproject.org/0.2/Competency";
-    constructor.TYPE_0_4 = "http://schema.cassproject.org/0.3/Competency";
-    constructor.myType = Competency.TYPE_0_4;
-    /**
-     *  Scope in which the competency may be applied. e.g. Underwater.
-     * 
-     *  @property scope
-     *  @type string
-     */
-    prototype.scope = null;
-    prototype.upgrade = function() {
-        EcLinkedData.prototype.upgrade.call(this);
-        if (Competency.TYPE_0_1.equals(this.type)) {
-            if (this.url != null && this.sameAs == null) {
-                this.sameAs = this.url;
-                this.url = null;
-            }
-            var me = (this);
-            if (me["@context"] == null && me["@schema"] != null) 
-                me["@context"] = me["@schema"];
-            this.setContextAndType(Cass.context_0_2, Competency.TYPE_0_2);
-        }
-        if (Competency.TYPE_0_2.equals(this.getFullType())) {
-            this.setContextAndType(Cass.context_0_3, Competency.TYPE_0_3);
-        }
-        if (Competency.TYPE_0_3.equals(this.getFullType())) {
-            this.setContextAndType(Cass.context_0_4, Competency.TYPE_0_4);
-        }
-    };
-    prototype.getTypes = function() {
-        var a = new Array();
-        a.push(Competency.TYPE_0_4);
-        a.push(Competency.TYPE_0_3);
-        a.push(Competency.TYPE_0_2);
-        a.push(Competency.TYPE_0_1);
         return a;
     };
 }, {about: "Thing", educationalAlignment: "AlignmentObject", associatedMedia: "MediaObject", funder: "Person", audio: "AudioObject", workExample: "CreativeWork", provider: "Person", encoding: "MediaObject", character: "Person", audience: "Audience", sourceOrganization: "Organization", isPartOf: "CreativeWork", video: "VideoObject", publication: "PublicationEvent", contributor: "Organization", reviews: "Review", hasPart: "CreativeWork", releasedEvent: "PublicationEvent", contentLocation: "Place", aggregateRating: "AggregateRating", locationCreated: "Place", accountablePerson: "Person", spatialCoverage: "Place", offers: "Offer", editor: "Person", copyrightHolder: "Person", recordedAt: "Event", publisher: "Person", interactionStatistic: "InteractionCounter", exampleOfWork: "CreativeWork", mainEntity: "Thing", author: "Person", timeRequired: "Duration", translator: "Person", comment: "Comment", inLanguage: "Language", review: "Review", license: "CreativeWork", encodings: "MediaObject", isBasedOn: "Product", creator: "Person", sponsor: "Organization", producer: "Person", mentions: "Thing", identifier: "Object", image: "Object", potentialAction: "Action", mainEntityOfPage: "Object", owner: {name: "Array", arguments: [null]}, signature: {name: "Array", arguments: [null]}, reader: {name: "Array", arguments: [null]}, atProperties: {name: "Array", arguments: [null]}}, {});
