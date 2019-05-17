@@ -846,11 +846,11 @@ Vue.component('competency', {
     '<button class="inline" v-if="badged == false" style="color:gray;" v-on:click="badgeAssertion" title="Issue a badge for my claim."><i class="mdi mdi-18px mdi-shield-outline" aria-hidden="true"></i> Badge</button>' +
     '</span>' +
     '</div>' +
-    '<div class="btop" v-if="competent == true || incompetent == true">' +
+    '<div class="btop" v-if="competent != false || incompetent != false">' +
     '<input class="inline antitile" style="width:25rem;max-width:100%" v-model="evidenceInput" v-on:keyup.enter="evidenceAssertion" v-on:keyup.esc="evidenceInput = null" :placeholder="becausePhrase" title="Text or URL Link">' +
     //'<button class="inline wider" v-on:click="evidenceAssertion" title="Add Evidence as URL or Text."><i class="mdi mdi-18px mdi-fingerprint" aria-hidden="true"></i>Add Evidence</button>' +
     '</div>' +
-    '<small class="buttons" v-if="evidenceText">' +
+    '<small class="buttons" v-if="evidenceText && (competent != false || incompetent != false)">' +
     '<ul>' +
     '<li class="pbottom" v-for="(evidence, index) in evidenceText">' +
     '<span v-on:click="unevidenceAssertion(evidence.original)" style="float:right;cursor:pointer;">X</span>' +
