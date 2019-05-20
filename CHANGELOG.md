@@ -1,5 +1,27 @@
 # Change Log
 
+## [Unreleased](https://github.com/cassproject/cass-vlrc/tree/HEAD)
+
+[Full Changelog](https://github.com/cassproject/cass-vlrc/compare/1.2.9...HEAD)
+
+**Closed issues:**
+
+- Allow people you add to the contacts list to see your Person object. [\#44](https://github.com/cassproject/cass-vlrc/issues/44)
+
+## [1.2.9](https://github.com/cassproject/cass-vlrc/tree/1.2.9) (2019-05-17)
+[Full Changelog](https://github.com/cassproject/cass-vlrc/compare/1.2.8...1.2.9)
+
+**Fixed bugs:**
+
+- Edited name displays incorrectly upon save [\#18](https://github.com/cassproject/cass-vlrc/issues/18)
+
+**Closed issues:**
+
+- Timeline timestamp should update on view. [\#45](https://github.com/cassproject/cass-vlrc/issues/45)
+- Biggify the sharing buttons in the Contact control. [\#42](https://github.com/cassproject/cass-vlrc/issues/42)
+- Unbork contact search. [\#41](https://github.com/cassproject/cass-vlrc/issues/41)
+- Evidence doesn't disappear when a claim is made. [\#35](https://github.com/cassproject/cass-vlrc/issues/35)
+
 ## [1.2.8](https://github.com/cassproject/cass-vlrc/tree/1.2.8) (2019-05-10)
 [Full Changelog](https://github.com/cassproject/cass-vlrc/compare/1.2.7...1.2.8)
 
