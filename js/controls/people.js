@@ -5,7 +5,7 @@ Vue.component('people', {
             search: ""
         };
     },
-    computed: {
+    recomputed: {
         people: {
             get: function () {
                 if (app.people == null) return null;
@@ -17,7 +17,7 @@ Vue.component('people', {
                         continue;
                     if (app.people[i].getName() == null)
                         continue;
-                    if (app.people[i].getName().toLowerCase().indexOf(this.search.toLowerCase()) != -1)
+                    if (this.search == "" || app.people[i].getName().toLowerCase().indexOf(this.search.toLowerCase()) != -1)
                         results.push(app.people[i]);
                 }
                 return results;
@@ -38,7 +38,11 @@ Vue.component('people', {
             size: 5000
         });
     },
-    watch: {},
+    watch: {
+        search: function(newSearch){
+            this.$recompute("people");
+        }
+    },
     methods: {
         changeSelected: function (pk) {
             app.subject = pk;

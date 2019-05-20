@@ -22,7 +22,7 @@ Vue.component('frameworks', {
                 var f = EcFramework.search(repo, search, function (frameworks) {
                     me.frameworksResult = frameworks;
                 }, console.error, {
-                    size: 50
+                    size: 500
                 });
                 return this.frameworksResult;
             }

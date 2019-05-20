@@ -1,3 +1,4 @@
+var vueProfiles = [];
 Vue.component('profile', {
     props: ['pk', 'displayName', 'onClick'],
     data: function () {
@@ -8,7 +9,7 @@ Vue.component('profile', {
             inContactList: null
         }
     },
-    computed: {
+    recomputed: {
         person: {
             get: function () {
                 if (this.personObj != null)
@@ -18,10 +19,14 @@ Vue.component('profile', {
                 this.getPerson();
                 return null;
             },
-            set: function(person){
-            	this.personObj = person;
+            set: function (person) {
+                this.personObj = person;
+                this.$recompute("person");
             }
-        },
+        }
+
+    },
+    computed: {
         name: {
             get: function () {
                 if (this.person == null)
@@ -65,7 +70,9 @@ Vue.component('profile', {
             get: function () {
                 if (this.personObj == null)
                     return null;
-                setTimeout(function(){jdenticon()},100);
+                setTimeout(function () {
+                    jdenticon()
+                }, 100);
                 return this.personObj.getGuid();
             }
         },
@@ -101,6 +108,12 @@ Vue.component('profile', {
             }
         }
     },
+    created: function () {
+        EcArray.setAdd(vueProfiles, this);
+    },
+    destroyed: function () {
+        EcArray.setRemove(vueProfiles, this);
+    },
     watch: {
         pk: function () {
             this.personObj = null;
@@ -109,7 +122,8 @@ Vue.component('profile', {
             this.inContactList = null;
             this.getPerson();
         },
-        private: function () {}
+        private: function () {
+        }
     },
     methods: {
         savePerson: function () {
@@ -119,18 +133,29 @@ Vue.component('profile', {
             if (this.private) {
                 EcEncryptedValue.toEncryptedValueAsync(thingToSave, false, function (thingToSave) {
                     thingToSave.name = null; //Delete PII.
-                    EcRepository.save(thingToSave, me.getPerson, console.error);
+                    EcRepository.save(thingToSave, function () {
+                        me.getPerson();
+                        for (var i = 0; i < vueProfiles.length; i++)
+                            if (vueProfiles[i].pk == me.pk)
+                                vueProfiles[i].getPerson();
+                    }, console.error);
                 }, console.error);
             } else {
-                EcRepository.save(thingToSave, me.getPerson, console.error);
+                EcRepository.save(thingToSave, function () {
+                    me.getPerson();
+                    for (var i = 0; i < vueProfiles.length; i++)
+                        if (vueProfiles[i].pk == me.pk)
+                            vueProfiles[i].getPerson();
+                }, console.error);
             }
         },
-        setPerson: function(person){
+        setPerson: function (person) {
             var p = new Person();
             p.copyFrom(person);
             if (p.seeks == null)
                 p.seeks = [];
             this.personObj = p;
+            this.$recompute("person");
             if (this.pk == app.subject)
                 app.subjectPerson = p;
             if (this.pk == app.me)
@@ -184,6 +209,8 @@ Vue.component('profile', {
             c.displayName = this.name;
             EcIdentityManager.addContact(c);
             this.inContactList = true;
+            app.mePerson.addReader(EcPk.fromPem(this.pk));
+            repo.saveTo(app.mePerson, console.log, console.error);
         },
         uncontact: function () {
             for (var i = 0; i < EcIdentityManager.contacts.length; i++) {
@@ -191,6 +218,8 @@ Vue.component('profile', {
                     EcIdentityManager.contactChanged(EcIdentityManager.contacts.splice(i, 1));
             }
             this.inContactList = false;
+            app.mePerson.removeReader(EcPk.fromPem(this.pk));
+            repo.saveTo(app.mePerson, console.log, console.error);
         },
         shareAssertionsAboutSubjectWith: function () {
             var me = this;
@@ -268,24 +297,24 @@ Vue.component('profile', {
     template: '<div class="profileRow" v-if="person">' +
         '<span v-if="mine">' +
         '<span v-if="editing">' +
-        '<i class="mdi mdi-content-save" aria-hidden="true" style="float:right;font-size:large" title="Save your person." v-on:click="savePerson()"></i>' +
-        '<i class="mdi mdi-cancel" aria-hidden="true" style="float:right;font-size:large" title="Cancel editing." v-on:click="cancelSave();"></i>' +
+        '<i class="mdi mdi-content-save mdi-36px" aria-hidden="true" style="float:right;font-size:large" title="Save your personal information." v-on:click="savePerson()"></i>' +
+        '<i class="mdi mdi-cancel mdi-36px" aria-hidden="true" style="float:right;font-size:large" title="Cancel editing." v-on:click="cancelSave();"></i>' +
         '</span>' +
         '<span v-else>' +
-        '<i class="mdi mdi-pencil" aria-hidden="true" style="float:right;font-size:large" title="Edit your person." v-on:click="editing = true;"></i>' +
+        '<i class="mdi mdi-pencil mdi-36px" aria-hidden="true" style="float:right;font-size:large" title="Edit your personal information." v-on:click="editing = true;"></i>' +
         '</span>' +
         '</span>' +
         '<span v-else>' +
-        '<i class="mdi mdi-account-circle" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i> ' +
-        '<i class="mdi mdi-account-circle-outline" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i> ' +
-        '<i class="mdi mdi-comment-processing-outline" aria-hidden="true" style="float:right;font-size:large" :title="unshareStatement" v-if="isSubject == false" v-on:click="unshareAssertionsAboutSubjectWith();"></i> ' +
-        '<i class="mdi mdi-comment-account" aria-hidden="true" style="float:right;font-size:large" :title="shareStatement" v-if="isSubject == false" v-on:click="shareAssertionsAboutSubjectWith();"></i> ' +
+        '<i class="mdi mdi-account-circle mdi-36px" aria-hidden="true" style="float:right;font-size:large" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i> ' +
+        '<i class="mdi mdi-account-circle-outline mdi-36px" aria-hidden="true" style="float:right;font-size:large" title="Add person to contacts." v-else v-on:click="contact();"></i> ' +
+        '<i class="mdi mdi-comment-processing-outline mdi-36px" aria-hidden="true" style="float:right;font-size:large" :title="unshareStatement" v-if="isSubject == false" v-on:click="unshareAssertionsAboutSubjectWith();"></i> ' +
+        '<i class="mdi mdi-comment-account mdi-36px" aria-hidden="true" style="float:right;font-size:large" :title="shareStatement" v-if="isSubject == false" v-on:click="shareAssertionsAboutSubjectWith();"></i> ' +
         '</span>' +
-        '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="fingerprint"/>'+
-        '<svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprint" :title="fingerprint"></svg>'+
-        ' <span v-if="editing">Name:</span>'+
-        '<input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">'+
-        ' <span v-if="editing">Email:</span>'+
+        '<img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="fingerprint"/>' +
+        '<svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprint" :title="fingerprint"></svg>' +
+        ' <span v-if="editing">Name:</span>' +
+        '<input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="name">' +
+        ' <span v-if="editing">Email:</span>' +
         '<input type="text" v-if="editing" v-on:keyup.esc="cancelSave()" v-on:keyup.enter="savePerson()" v-model="email">' +
         '<h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>' +
         '<div v-if="editing"><br><br><input :id="pk" v-model="private" type="checkbox"><label :for="pk">Private</label></div>' +
