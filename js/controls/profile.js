@@ -6,7 +6,6 @@ Vue.component('profile', {
             editing: false,
             private: false,
             personObj: null,
-            refreshesStuff: true,
             inContactList: null
         }
     },
@@ -120,7 +119,6 @@ Vue.component('profile', {
             this.personObj = null;
             this.editing = false;
             this.private = false;
-            this.refreshesStuff = true;
             this.inContactList = null;
             this.getPerson();
         },
@@ -133,8 +131,6 @@ Vue.component('profile', {
             var thingToSave = this.personObj;
             var me = this;
             if (this.private) {
-                if (thingToSave.reader == null) //Can delete when https://github.com/Eduworks/ec/issues/21 is resolved and integrated.
-                    thingToSave.reader = []; //Can delete when https://github.com/Eduworks/ec/issues/21 is resolved and integrated.
                 EcEncryptedValue.toEncryptedValueAsync(thingToSave, false, function (thingToSave) {
                     thingToSave.name = null; //Delete PII.
                     EcRepository.save(thingToSave, function () {
