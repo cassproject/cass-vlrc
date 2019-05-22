@@ -302,3 +302,11 @@ openWebSocket = function (r) {
     };
 
 }
+
+if (queryParams.css != null) {
+    var ss = document.createElement("link");
+    ss.type = "text/css";
+    ss.rel = "stylesheet";
+    ss.href = queryParams.css;
+    document.getElementsByTagName("head")[0].appendChild(ss);
+}

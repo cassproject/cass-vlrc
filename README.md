@@ -25,6 +25,9 @@ Integrate the cass-vlrc into your website by nesting it into an iframe on your w
 </script>
 ```
 
+# CSS Inheritance
+To import a CSS file using a URL parameter, use `css=<url>`.
+
 # URL Parameters
 The cass-vlrc has many modes and options that can be enabled or disabled based on desired functionality. These options are passed as URL parameters.
 
