@@ -185,7 +185,7 @@ Vue.component('profile', {
                     p.name = "Unknown Person.";
                 else
                     p.name = me.displayName;
-                me.person = p;
+                me.setPerson(p);
                 me.private = true;
                 if (me.pk == app.subject)
                     app.subjectPerson = p;

@@ -269,22 +269,22 @@ Vue.component('competency', {
         },
         claimCompetencePhrase: {
             get: function () {
-                return "By selecting this, I think " + (this.subject == app.me ? "I" : this.subjectPerson.getName()) + " can demonstrate this.";
+                return "By selecting this, I think " + (this.subject == app.me ? "I" : (this.subjectPerson == null ? "they" : this.subjectPerson.getName())) + " can demonstrate this.";
             }
         },
         unclaimCompetencePhrase: {
             get: function () {
-                return "By deselecting this, I no longer think " + (this.subject == app.me ? "I" : this.subjectPerson.getName()) + " can demonstrate this.";
+                return "By deselecting this, I no longer think " + (this.subject == app.me ? "I" : (this.subjectPerson == null ? "they" : this.subjectPerson.getName())) + " can demonstrate this.";
             }
         },
         claimIncompetencePhrase: {
             get: function () {
-                return "By selecting this, I think " + (this.subject == app.me ? "I" : this.subjectPerson.getName()) + " could not demonstrate this.";
+                return "By selecting this, I think " + (this.subject == app.me ? "I" : (this.subjectPerson == null ? "they" : this.subjectPerson.getName())) + " could not demonstrate this.";
             }
         },
         unclaimIncompetencePhrase: {
             get: function () {
-                return "By deselecting this, I no longer think " + (this.subject == app.me ? "I" : this.subjectPerson.getName()) + " can't demonstrate this.";
+                return "By deselecting this, I no longer think " + (this.subject == app.me ? "I" : (this.subjectPerson == null ? "they" : this.subjectPerson.getName())) + " can't demonstrate this.";
             }
         },
         claimCompetencePhraseShort: {
@@ -309,17 +309,17 @@ Vue.component('competency', {
         },
         makeGoalPhrase: {
             get: function () {
-                return "By selecting this, I would like to add this to " + (this.subject == app.me ? "my" : this.subjectPerson.getName() + "'s") + " goals.";
+                return "By selecting this, I would like to add this to " + (this.subject == app.me ? "my" :(this.subjectPerson == null ? "their" : this.subjectPerson.getName() + "'s")) + " goals.";
             }
         },
         unmakeGoalPhrase: {
             get: function () {
-                return "By selecting this, I would like to remove this from " + (this.subject == app.me ? "my" : this.subjectPerson.getName() + "'s") + " goals.";
+                return "By selecting this, I would like to remove this from " + (this.subject == app.me ? "my" : (this.subjectPerson == null ? "their" : this.subjectPerson.getName() + "'s")) + " goals.";
             }
         },
         otherClaimsPhrase: {
             get: function () {
-                return "Others have made claims about " + (this.subject == app.me ? "you" : this.subjectPerson.getName()) + ". Click to expand.";
+                return "Others have made claims about " + (this.subject == app.me ? "you" : (this.subjectPerson == null ? "them" : this.subjectPerson.getName())) + ". Click to expand.";
             }
         },
         ithey: {
