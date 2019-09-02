@@ -12,3 +12,5 @@ pom\.xml\.versionsBackup
 node_modules/
 
 package-lock\.json
+
+.settings/
