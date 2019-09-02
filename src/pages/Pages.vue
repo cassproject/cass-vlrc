@@ -88,7 +88,7 @@
 .buttons button {
     display: flex;
     align-items: center;
-    width: 6.2rem;
+    min-width: 7rem;
     padding-right: .25rem;
 }
 
@@ -99,6 +99,39 @@
 .buttons button i {
     padding: .5rem;
     padding-left: .25rem;
+}
+
+.buttons button a {
+    padding: .5rem;
+    padding-left: .25rem;
+    margin:0;
+}
+
+button {
+    padding: 5px;
+}
+
+button.inline {
+    padding: 2px;
+    border: 0px;
+    background-color: transparent;
+}
+
+button.empty {
+    padding: 2px;
+    border: 0px;
+    background-color: transparent;
+}
+
+button.inline:hover {
+    padding: 1px;
+    border: 1px black solid;
+    background-color: rgba(0, 0, 0, .15);
+    cursor: pointer;
+}
+
+button.pressed {
+    background-color: gray;
 }
 
 .btop {
@@ -181,11 +214,53 @@ input.antitile {
     margin-top: .50rem;
     margin-bottom: .50rem;
 }
+hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
 
+#container {
+    padding-left: 20px;
+    background-color: rgba(0, 0, 0, .0);
+    height: calc(100vh - 25px);
+    width: calc(100vw);
+}
+
+.right {
+    float: right;
+}
+
+.block {
+    display: block;
+}
+
+.accslide li {
+    margin-left: 2rem;
+    list-style: none;
+}
+
+.accslide a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+ul.noIndent li {
+    margin-left: .5rem;
+}
+
+input[type='text'], textarea{
+    border-radius:.25rem;
+    width: 100%;
+    padding: .25rem;
+    margin: .25rem;
+}
 </style>
 <style lang="scss" scoped>
 #pages {
     min-height: calc(100vh - 28px);
+}
+.page {
+    width:100%;
 }
 .pagesLeft li {
     border-bottom: 0.25px black solid;

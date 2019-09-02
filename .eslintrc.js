@@ -16,7 +16,7 @@ module.exports = {
          * 'for-direction': 0, // eslint:recommended
          * 'getter-return': 2, // eslint:recommended
          */
-        'vue/no-async-in-computed-properties':1, 
+        'vue/no-async-in-computed-properties':0, 
         'no-async-promise-executor': 2,
         'no-await-in-loops': 0,
         /*
@@ -129,7 +129,7 @@ module.exports = {
          * 'no-sequences': 0,
          * 'no-throw-literal': 2, // notes: disallow throwing literals as exceptions
          * 'no-unified-loop-condition': 0,
-         * 'no-unused-expressions': 0,
+         * 
          * 'no-unused-labels': 2, // eslint: recommended
          * 'no-no-useless-call': 0,
          * 'no-useless-catch': 0,
@@ -139,6 +139,7 @@ module.exports = {
          * 'no-void': 0,
          * 'no-warning-comments': 0,
          */
+        'no-unused-expressions': 0,
         'no-with': 2,
         /*
          * 'no-prefer-promise-reject-errors': 2, notes: require using Error objects as Promise rejection reasons

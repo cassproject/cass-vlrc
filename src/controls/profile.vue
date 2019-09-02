@@ -36,6 +36,9 @@
 .profileRow {
     margin-bottom: .5rem;
 }
+img {
+    margin-right:.5rem;
+}
 </style>
 <script>
 import jdenticon from 'jdenticon';
@@ -55,15 +58,13 @@ export default {
                 if (this.personObj != null) {
                     return this.personObj;
                 }
-                if (this.pk == null) {
-                    return null;
+                if (this.pk != null) {
+                    this.getPerson();
                 }
-                this.getPerson();
                 return null;
             },
             set: function(person) {
                 this.personObj = person;
-                this.$recompute("person");
             }
         },
         name: {

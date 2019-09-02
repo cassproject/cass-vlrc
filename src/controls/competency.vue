@@ -10,7 +10,7 @@
                     <div v-observe-visibility="{callback: initialize,once: true}">{{ name }}</div>
                     <small v-if="description" class="block">{{ description }}</small>
                 </div>
-                <div class="buttons btop">
+                <div class="buttons btop" v-if="visible">
                     <span v-if="subject != null">
                         <button class="inline" v-if="competent == null">
                             <i class="mdi mdi-18px mdi-loading mdi-spin" aria-hidden="true"></i>
@@ -159,13 +159,9 @@ export default {
     data: function() {
         return {
             resources: null,
-            assertionCounter: -1,
             creativeWorkCounter: -1,
-            competentStateEah: null,
-            competentStateNew: null,
             badged: null,
             badgeLink: null,
-            incompetentStateNew: null,
             competentState: null,
             incompetentState: null,
             assertionsByOthers: [],
@@ -178,7 +174,9 @@ export default {
             collapseState: null,
             evidence: null,
             evidenceExplanation: null,
-            evidenceInput: null
+            evidenceInput: null,
+            recomputeAssertions: true,
+            assertions: []
         };
     },
     computed: {
@@ -274,13 +272,15 @@ export default {
         },
         competent: {
             get: function() {
-                this.myAssertion();
+                this.assertionsCompute;
+                this.computeAssertionState();
                 return this.competentState;
             }
         },
         incompetent: {
             get: function() {
-                this.myAssertion();
+                this.assertionsCompute;
+                this.computeAssertionState();
                 return this.incompetentState;
             }
         },
@@ -412,14 +412,27 @@ export default {
             }
         },
         ...{
-            assertions: {
+            assertionsCompute: {
                 get: function() {
-                    return this.$store.state.assertions;
-                }
-            },
-            assertionsChanges: {
-                get: function() {
-                    return this.$store.state.assertionsChanges;
+                    var ary = this.$store.state.assertions.filter(assertion => this.competency.isId(assertion.competency));
+                    if (this.assertions.length !== ary.length) {
+                        this.assertions.splice(0, this.assertions.length);
+                        for (var i = 0; i < ary.length; i++) {
+                            this.assertions[i] = ary[i];
+                        }
+                        this.recomputeAssertions = true;
+                    } else {
+                        for (var i = 0; i < ary.length && i < this.assertions.length; i++) {
+                            if (ary[i] !== this.assertions[i]) {
+                                this.assertions.splice(0, this.assertions.length);
+                                for (var i = 0; i < ary.length; i++) {
+                                    this.assertions[i] = ary[i];
+                                }
+                                this.recomputeAssertions = true;
+                                return;
+                            }
+                        }
+                    }
                 }
             },
             me: {
@@ -462,79 +475,70 @@ export default {
     methods: {
         initialize: function(isVisible, entry) {
             this.visible = isVisible;
-            if (isVisible && this.once == null) {
-                this.once = true;
-            }
         },
-        myAssertion: function() {
+        computeAssertionState: function() {
             var me = this;
             if (this.competency == null) { return; }
             if (this.assertions == null) { return; }
-            if (this.visible && this.assertionsChanges !== this.assertionCounter) {
-                var assertions = [];
-                for (var i = 0; i < this.assertions.length; i++) {
-                    if (this.competency.isId(this.assertions[i].competency)) { assertions.push(this.assertions[i]); }
-                }
-                if (this.competentStateEah != null) { this.competentStateEah.stop(); }
-                this.competentStateNew = null;
-                this.incompetentStateNew = null;
-                this.competentStateEah = new EcAsyncHelper();
-                this.competentStateEah.each(assertions, function(assertion, callback) {
-                    if (assertion != null) {
-                        assertion.getSubjectAsync(function(subject) {
-                            if (me.subject === subject.toPem()) {
-                                assertion.getAgentAsync(function(agent) {
-                                    if (me.me === agent.toPem()) {
-                                        var negativeCallback = function() {
-                                            if (assertion.negative != null) {
-                                                assertion.getNegativeAsync(function(negative) {
-                                                    if (negative) {
-                                                        me.incompetentStateNew = true;
-                                                        me.badged = null;
-                                                    } else {
-                                                        me.badged = assertion.hasReader(me.badgePk);
-                                                        me.badgeLink = EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + assertion.getGuid();
-                                                        me.competentStateNew = true;
-                                                    }
-                                                    callback();
-                                                }, callback);
-                                            } else {
-                                                me.competentStateNew = true;
-                                                me.badged = assertion.hasReader(me.badgePk);
-                                                me.badgeLink = EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + assertion.getGuid();
+            if (!this.visible) { return; }
+            if (!this.recomputeAssertions) { return; }
+            console.log("Computing assertions");
+            this.recomputeAssertions = false;
+            this.competentState = null;
+            this.incompetentState = null;
+            new EcAsyncHelper().each(this.assertions, function(assertion, callback) {
+                if (assertion != null) {
+                    assertion.getSubjectAsync(function(subject) {
+                        if (me.subject === subject.toPem()) {
+                            assertion.getAgentAsync(function(agent) {
+                                if (me.me === agent.toPem()) {
+                                    var negativeCallback = function() {
+                                        if (assertion.negative != null) {
+                                            assertion.getNegativeAsync(function(negative) {
+                                                if (negative) {
+                                                    me.incompetentState = true;
+                                                    me.badged = null;
+                                                } else {
+                                                    me.badged = assertion.hasReader(me.badgePk);
+                                                    me.badgeLink = EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + assertion.getGuid();
+                                                    me.competentState = true;
+                                                }
                                                 callback();
-                                            }
-                                        };
-                                        if (assertion.evidence != null) {
-                                            assertion.getEvidencesAsync(function(evidences) {
-                                                me.evidence = evidences;
-                                                app.computeBecause(me.evidence, function(because) {
-                                                    me.evidenceExplanation = because;
-                                                });
-                                                negativeCallback();
                                             }, callback);
                                         } else {
-                                            me.evidence = null;
-                                            me.evidenceExplanation = null;
-                                            negativeCallback();
+                                            me.competentState = true;
+                                            me.badged = assertion.hasReader(me.badgePk);
+                                            me.badgeLink = EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + assertion.getGuid();
+                                            callback();
                                         }
+                                    };
+                                    if (assertion.evidence != null) {
+                                        assertion.getEvidencesAsync(function(evidences) {
+                                            me.evidence = evidences;
+                                            app.computeBecause(me.evidence, function(because) {
+                                                me.evidenceExplanation = because;
+                                            });
+                                            negativeCallback();
+                                        }, callback);
                                     } else {
-                                        EcArray.setRemove(me.assertionsByOthers, assertion);
-                                        EcArray.setAdd(me.assertionsByOthers, assertion);
-                                        callback();
+                                        me.evidence = null;
+                                        me.evidenceExplanation = null;
+                                        negativeCallback();
                                     }
-                                }, callback);
-                            } else { callback(); }
-                        }, callback);
-                    } else { callback(); }
-                }, function(assertions) {
-                    if (me.competentStateNew == null) { me.competentStateNew = false; }
-                    if (me.incompetentStateNew == null) { me.incompetentStateNew = false; }
-                    me.competentState = me.competentStateNew;
-                    me.incompetentState = me.incompetentStateNew;
-                    me.assertionCounter = me.assertionsChanges;
-                });
-            }
+                                } else {
+                                    EcArray.setRemove(me.assertionsByOthers, assertion);
+                                    EcArray.setAdd(me.assertionsByOthers, assertion);
+                                    callback();
+                                }
+                            }, callback);
+                        } else { callback(); }
+                    }, callback);
+                } else { callback(); }
+            }, function(assertions) {
+                if (me.competentState == null) { me.competentState = false; }
+                if (me.incompetentState == null) { me.incompetentState = false; }
+            });
+            return null;
         },
         getResourceCount: function() {
             var me = this;
@@ -630,12 +634,12 @@ export default {
                                                         if (evidences.length > 0) {
                                                             a.setEvidenceAsync(evidences, function() {
                                                                 EcRepository.save(a, function() {
-                                                                    me.competentState = null;
+                                                                    // me.competentState = null;
                                                                 }, console.error);
                                                             }, console.error);
                                                         } else {
                                                             EcRepository.save(a, function() {
-                                                                me.competentState = null;
+                                                                // me.competentState = null;
                                                             }, console.error);
                                                         }
                                                     }
@@ -645,7 +649,7 @@ export default {
                                         );
                                     } else {
                                         EcRepository.save(a, function() {
-                                            me.competentState = null;
+                                            // me.competentState = null;
                                         }, console.error);
                                     }
                                 }, console.error); // This is an assertion that an individual *can* do something, not that they *cannot*.
@@ -670,16 +674,14 @@ export default {
                                     if (me.me === agent.toPem()) {
                                         if (assertion.negative == null) {
                                             EcRepository._delete(assertion, function() {
-                                                EcArray.setRemove(me.assertions, assertion);
-                                                me.competentState = null;
+                                                // me.competentState = null;
                                                 callback();
                                             }, callback);
                                         } else {
                                             assertion.getNegativeAsync(function(negative) {
                                                 if (!negative) {
                                                     EcRepository._delete(assertion, function() {
-                                                        EcArray.setRemove(me.assertions, assertion);
-                                                        me.competentState = null;
+                                                        // me.competentState = null;
                                                         callback();
                                                     }, callback);
                                                 } else { callback(); }
@@ -711,7 +713,7 @@ export default {
                                 a.setNegativeAsync(true, function() {
                                     a.setConfidence(1.0);
                                     EcRepository.save(a, function() {
-                                        me.incompetentState = null;
+                                        // me.incompetentState = null;
                                     }, console.error);
                                 }, console.error); // This is an assertion that an individual *cannot* do something, not that they *can*.
                             }, console.error); // UTC Milliseconds, 365 days in the future.
@@ -737,8 +739,7 @@ export default {
                                             assertion.getNegativeAsync(function(negative) {
                                                 if (negative) {
                                                     EcRepository._delete(assertion, function() {
-                                                        EcArray.setRemove(me.assertions, assertion);
-                                                        me.incompetentState = null;
+                                                        // me.incompetentState = null;
                                                         callback();
                                                     }, callback);
                                                 } else callback();
@@ -770,7 +771,6 @@ export default {
                                         if (assertion.negative == null) {
                                             assertion.addReader(me.badgePk);
                                             EcRepository.save(assertion, function() {
-                                                me.assertionsChanges++;
                                                 callback();
                                             }, callback);
                                         } else {
@@ -778,7 +778,6 @@ export default {
                                                 if (!negative) {
                                                     assertion.addReader(me.badgePk);
                                                     EcRepository.save(assertion, function() {
-                                                        me.assertionsChanges++;
                                                         callback();
                                                     }, callback);
                                                 } else { callback(); }
@@ -809,7 +808,6 @@ export default {
                                         if (assertion.negative == null) {
                                             assertion.removeReader(me.badgePk);
                                             EcRepository.save(assertion, function() {
-                                                me.assertionsChanges++;
                                                 callback();
                                             }, callback);
                                         } else {
@@ -817,7 +815,6 @@ export default {
                                                 if (!negative) {
                                                     assertion.removeReader(me.badgePk);
                                                     EcRepository.save(assertion, function() {
-                                                        me.assertionsChanges++;
                                                         callback();
                                                     }, callback);
                                                 } else { callback(); }
@@ -850,7 +847,6 @@ export default {
                                             me.evidenceInput = "";
                                             assertion.setEvidence(evidences);
                                             EcRepository.save(assertion, function() {
-                                                me.assertionsChanges++;
                                                 callback();
                                             }, callback);
                                         }, callback);
@@ -880,7 +876,6 @@ export default {
                                             EcArray.setRemove(evidences, url);
                                             assertion.setEvidence(evidences);
                                             EcRepository.save(assertion, function() {
-                                                me.assertionsChanges++;
                                                 callback();
                                             }, callback);
                                         }, callback);

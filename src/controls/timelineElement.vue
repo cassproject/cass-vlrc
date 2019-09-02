@@ -52,12 +52,6 @@
     margin-left: 13rem;
 }
 
-.timelineElement {
-    left: 0rem;
-    width:100%;
-    min-height: 4rem;
-}
-
 .timelineElement img,.timelineElement svg {
     float: left;
     clip-path: circle(22px at center);
@@ -68,7 +62,9 @@
 .timelineElement {
     margin-top: .25rem;
     padding: .5rem;
-    min-height: 30px;
+    left: 0rem;
+    width:100%;
+    min-height: 5rem;
 }
 
 </style>
@@ -97,7 +93,7 @@ export default {
     },
     computed: {
         timeAgo: function() {
-            var m = this.$store.state.minute;
+            this.$store.state.minute;
             return moment(this.timestamp).fromNow();
         },
         ok: {
@@ -309,7 +305,7 @@ export default {
                 if (frameworks.length > 0) {
                     me.$store.commit("selectedFramework", frameworks[0]);
                     me.$store.commit("selectedCompetency", EcCompetency.getBlocking(me.assertion.competency));
-                    me.$store.commit("subject",me.subjectPk);
+                    me.$store.commit("subject", me.subjectPk);
                     me.$router.push("framework");
                 }
             }, console.error);

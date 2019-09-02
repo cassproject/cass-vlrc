@@ -34,6 +34,12 @@
     margin-bottom: .5rem;
 }
 
+textarea{
+    border-radius:.25rem;
+    width: 100%;
+    padding: .25rem;
+    margin: .25rem;
+}
 </style>
 <script>
 import profile from "@/controls/profile.vue";

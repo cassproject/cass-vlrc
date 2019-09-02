@@ -40,7 +40,6 @@ export const store = new Vuex.Store({
             if (state.assertions == null) {
                 state.assertions = [];
             }
-            var found = false;
             for (var i = 0; i < state.assertions.length; i++) {
                 if (state.assertions[i].isId(a.shortId())) {
                     state.assertions.splice(i, 1);
