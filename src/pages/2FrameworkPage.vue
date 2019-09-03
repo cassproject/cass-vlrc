@@ -1,6 +1,6 @@
 <template>
     <div class="page">
-        <profile :pk="subject"></profile>
+        <profile v-if="subject" :pk="subject"></profile>
         <framework id="leftFramework" v-if="selectedFramework" :uri="selectedFramework.id"
                     :subjectperson="subjectPerson" :subject="subject"></framework>
         <div v-else>No subject has been selected.</div>

@@ -1,33 +1,38 @@
 <template>
     <li class="resource tile">
-        <div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>
-        <button class="inline" v-if="upvoted" v-on:click="unupvote" title="Remove Upvote">
-            <i class="mdi mdi-thumb-up-outline" aria-hidden="true"> {{upvotes}}</i></button>
-        <button class="inline" v-else v-on:click="upvote" title="Upvote">
-            <i class="mdi mdi-thumb-up" aria-hidden="true"> {{upvotes}}</i></button>
-        <button class="inline" v-if="downvoted" v-on:click="undownvote" title="Remove Downvote">
-            <i class="mdi mdi-thumb-down-outline" aria-hidden="true"> {{downvotes}}</i></button>
-        <button class="inline" v-else v-on:click="downvote" title="Remove Downvote">
-            <i class="mdi mdi-thumb-down" aria-hidden="true"> {{downvotes}}</i></button>
-        <button class="inline" v-if="viewed" v-on:click="unview" title="By clicking this, I did not really view this.">
-            <i class="mdi mdi-eye-off-outline" aria-hidden="true"> {{views}}</i></button>
-        <button class="inline" v-else v-on:click="view" title="By clicking this, I viewed this already.">
-            <i class="mdi mdi-eye-outline" aria-hidden="true"> {{views}}</i></button>
-        <a v-on:click="setResource" :href="url" :target="urlTarget" style="cursor:pointer;">
-        <i class="mdi mdi-link-variant" aria-hidden="true"></i>
-        {{ name }}
-        </a>
-        <small v-on:click="setResource" v-if="description" class="block">{{ description }}</small>
-        </li>
+        <div>
+            <div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>
+            <button class="inline" v-if="upvoted" v-on:click="unupvote" title="Remove Upvote">
+                <i class="mdi mdi-thumb-up-outline" aria-hidden="true"> {{upvotes}}</i></button>
+            <button class="inline" v-else v-on:click="upvote" title="Upvote">
+                <i class="mdi mdi-thumb-up" aria-hidden="true"> {{upvotes}}</i></button>
+            <button class="inline" v-if="downvoted" v-on:click="undownvote" title="Remove Downvote">
+                <i class="mdi mdi-thumb-down-outline" aria-hidden="true"> {{downvotes}}</i></button>
+            <button class="inline" v-else v-on:click="downvote" title="Remove Downvote">
+                <i class="mdi mdi-thumb-down" aria-hidden="true"> {{downvotes}}</i></button>
+            <button class="inline" v-if="viewed" v-on:click="unview" title="By clicking this, I did not really view this.">
+                <i class="mdi mdi-eye-off-outline" aria-hidden="true"> {{views}}</i></button>
+            <button class="inline" v-else v-on:click="view" title="By clicking this, I viewed this already.">
+                <i class="mdi mdi-eye-outline" aria-hidden="true"> {{views}}</i></button>
+            <a v-on:click="setResource" :href="url" :target="urlTarget" style="cursor:pointer;">
+            <i class="mdi mdi-link-variant" aria-hidden="true"></i>
+            {{ name }}
+            </a>
+            <small v-on:click="setResource" v-if="description" class="block">{{ description }}</small>
+        </div>
+    </li>
 </template>
+<style scoped>
+.inline{display:inline;}
+</style>
 <script>
 export default {
     props: ['uri'],
     data: function() {
         return {
-            upvotes: 0,
+            upvotes: "...",
             upvoted: false,
-            downvotes: 0,
+            downvotes: "...",
             downvoted: false,
             views: 0,
             viewed: false
@@ -186,19 +191,27 @@ export default {
                 likeAction.generateId(repo.selectedServer);
                 likeAction.addOwner(EcIdentityManager.ids[0].ppk.toPk());
                 likeAction.object = me.uri;
-                EcRepository.save(likeAction, me.getVotes, console.error);
+                EcRepository.save(likeAction, after == null ? me.getVotes : after, console.error);
             });
         },
         unupvote: function(evt, after) {
             var me = this;
-            var a = after;
             repo.search(
                 "@type:LikeAction AND object:\"" + this.uri + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function(like) {
-                    EcRepository._delete(like, me.getVotes, console.error);
                 },
                 function(likes) {
-                    if (a != null) a();
+                    new EcAsyncHelper().each(likes,
+                        function(like, callback) {
+                            EcRepository._delete(like, callback, callback);
+                        },
+                        function(likes) {
+                            if (after != null && after !== undefined) {
+                                after();
+                            } else {
+                                me.getVotes();
+                            }
+                        });
                 }, console.error);
         },
         downvote: function(evt, after) {
@@ -208,19 +221,27 @@ export default {
                 dislikeAction.generateId(repo.selectedServer);
                 dislikeAction.addOwner(EcIdentityManager.ids[0].ppk.toPk());
                 dislikeAction.object = me.uri;
-                EcRepository.save(dislikeAction, me.getVotes, console.error);
+                EcRepository.save(dislikeAction, after == null ? me.getVotes : after, console.error);
             });
         },
         undownvote: function(evt, after) {
             var me = this;
-            var a = after;
             repo.search(
                 "@type:DislikeAction AND object:\"" + this.uri + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function(dislike) {
-                    EcRepository._delete(dislike, me.getVotes, console.error);
                 },
                 function(dislikes) {
-                    if (a != null) a();
+                    new EcAsyncHelper().each(dislikes,
+                        function(dislike, callback) {
+                            EcRepository._delete(dislike, callback, callback);
+                        },
+                        function(dislikes) {
+                            if (after != null && after !== undefined) {
+                                after();
+                            } else {
+                                me.getVotes();
+                            }
+                        });
                 }, console.error);
         }
     }

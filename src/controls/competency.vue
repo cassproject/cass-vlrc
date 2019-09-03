@@ -10,7 +10,7 @@
                     <div v-observe-visibility="{callback: initialize,once: true}">{{ name }}</div>
                     <small v-if="description" class="block">{{ description }}</small>
                 </div>
-                <div class="buttons btop" v-if="visible">
+                <div class="buttons btop">
                     <span v-if="subject != null">
                         <button class="inline" v-if="competent == null">
                             <i class="mdi mdi-18px mdi-loading mdi-spin" aria-hidden="true"></i>
@@ -58,7 +58,7 @@
                             <i class="mdi mdi-18px mdi-shield-outline" aria-hidden="true"></i> Badge</button>
                     </span>
                 </div>
-                <div class="btop" v-if="competent != false || incompetent != false">
+                <div class="btop" v-if="competent == true || incompetent == true">
                     <input class="inline antitile" style="width:25rem;max-width:100%" v-model="evidenceInput"
                         v-on:keyup.enter="evidenceAssertion" v-on:keyup.esc="evidenceInput = null" :placeholder="becausePhrase" title="Text or URL Link">
                 </div>
@@ -165,7 +165,6 @@ export default {
             competentState: null,
             incompetentState: null,
             assertionsByOthers: [],
-            competencyObj: null,
             estimatedCompetenceValue: null,
             estimatedCompetenceTitle: null,
             visible: false,
@@ -207,10 +206,10 @@ export default {
         },
         estimatedCompetenceTrue: {
             get: function() {
-                if (this.competencyObj == null) return null;
+                if (this.competency == null) return null;
                 if (this.computedState == null) return null;
                 if (this.computedState === 0) return null;
-                var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
+                var msc = this.computedState.getMetaStateCompetency(this.competency);
                 if (msc != null) {
                     if (msc.negativeAssertion == null && msc.positiveAssertion != null) {
                         // this.estimatedCompetenceTitle = "The system believes you hold this competency. Click for details.";
@@ -222,10 +221,10 @@ export default {
         },
         estimatedCompetenceFalse: {
             get: function() {
-                if (this.competencyObj == null) return null;
+                if (this.competency == null) return null;
                 if (this.computedState == null) return null;
                 if (this.computedState === 0) return null;
-                var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
+                var msc = this.computedState.getMetaStateCompetency(this.competency);
                 if (msc != null) {
                     if (msc.negativeAssertion != null && msc.positiveAssertion == null) {
                         // this.estimatedCompetenceTitle = "The system believes you do not hold this competency. Click for details.";
@@ -237,10 +236,10 @@ export default {
         },
         estimatedCompetenceIndeterminant: {
             get: function() {
-                if (this.competencyObj == null) return null;
+                if (this.competency == null) return null;
                 if (this.computedState == null) return null;
                 if (this.computedState === 0) return null;
-                var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
+                var msc = this.computedState.getMetaStateCompetency(this.competency);
                 if (msc != null) {
                     if (msc.negativeAssertion != null && msc.positiveAssertion != null) {
                         // this.estimatedCompetenceTitle = "There is conflicting evidence that you hold this competency. Click for details.";
@@ -252,10 +251,10 @@ export default {
         },
         estimatedCompetenceUnknown: {
             get: function() {
-                if (this.competencyObj == null) return null;
+                if (this.competency == null) return null;
                 if (this.computedState == null) return null;
                 if (this.computedState === 0) return null;
-                var msc = this.computedState.getMetaStateCompetency(this.competencyObj);
+                var msc = this.computedState.getMetaStateCompetency(this.competency);
                 if (msc != null) {
                     if (msc.negativeAssertion == null && msc.positiveAssertion == null) {
                         // this.estimatedCompetenceTitle = "It is not known if you hold this competency. Click for details.";
@@ -452,7 +451,6 @@ export default {
     watch: {
         uri: function(newUri, oldUri) {
             this.assertionsByOthers = [];
-            this.competencyObj = null;
             this.assertionCounter = -1;
             this.competentState = null;
             this.incompetentState = null;
@@ -567,7 +565,7 @@ export default {
             var additionalSignatures = null;
             ep.has(
                 subject,
-                this.competencyObj,
+                this.competency,
                 null,
                 EcFramework.getBlocking(this.frameworkUri),
                 additionalSignatures,
@@ -663,11 +661,11 @@ export default {
             var me = this;
             this.competentState = null;
             EcCompetency.get(this.uri, function(c) {
-                me.competencyObj = c;
+                me.competency = c;
                 if (me.assertions == null) { return; }
                 var eah = new EcAsyncHelper();
                 eah.each(me.assertions, function(assertion, callback) {
-                    if (me.competencyObj.isId(assertion.competency)) {
+                    if (me.competency.isId(assertion.competency)) {
                         assertion.getSubjectAsync(function(subject) {
                             if (me.subject === subject.toPem()) {
                                 assertion.getAgentAsync(function(agent) {
@@ -726,11 +724,11 @@ export default {
             var me = this;
             this.incompetentState = null;
             EcCompetency.get(this.uri, function(c) {
-                me.competencyObj = c;
+                me.competency = c;
                 if (me.assertions == null) { return; }
                 var eah = new EcAsyncHelper();
                 eah.each(me.assertions, function(assertion, callback) {
-                    if (me.competencyObj.isId(assertion.competency)) {
+                    if (me.competency.isId(assertion.competency)) {
                         assertion.getSubjectAsync(function(subject) {
                             if (me.subject === subject.toPem()) {
                                 assertion.getAgentAsync(function(agent) {
@@ -759,11 +757,11 @@ export default {
         badgeAssertion: function(evt, after) {
             var me = this;
             EcCompetency.get(this.uri, function(c) {
-                me.competencyObj = c;
+                me.competency = c;
                 if (me.assertions == null) { return; }
                 var eah = new EcAsyncHelper();
                 eah.each(me.assertions, function(assertion, callback) {
-                    if (me.competencyObj.isId(assertion.competency)) {
+                    if (me.competency.isId(assertion.competency)) {
                         assertion.getSubjectAsync(function(subject) {
                             if (me.subject === subject.toPem()) {
                                 assertion.getAgentAsync(function(agent) {
@@ -796,11 +794,11 @@ export default {
         unbadgeAssertion: function(evt, after) {
             var me = this;
             EcCompetency.get(this.uri, function(c) {
-                me.competencyObj = c;
+                me.competency = c;
                 if (me.assertions == null) { return; }
                 var eah = new EcAsyncHelper();
                 eah.each(me.assertions, function(assertion, callback) {
-                    if (me.competencyObj.isId(assertion.competency)) {
+                    if (me.competency.isId(assertion.competency)) {
                         assertion.getSubjectAsync(function(subject) {
                             if (me.subject === subject.toPem()) {
                                 assertion.getAgentAsync(function(agent) {
@@ -833,11 +831,11 @@ export default {
         evidenceAssertion: function(evt, after) {
             var me = this;
             EcCompetency.get(this.uri, function(c) {
-                me.competencyObj = c;
+                me.competency = c;
                 if (me.assertions == null) { return; }
                 var eah = new EcAsyncHelper();
                 eah.each(me.assertions, function(assertion, callback) {
-                    if (me.competencyObj.isId(assertion.competency)) {
+                    if (me.competency.isId(assertion.competency)) {
                         assertion.getSubjectAsync(function(subject) {
                             if (me.subject === subject.toPem()) {
                                 assertion.getAgentAsync(function(agent) {
@@ -863,11 +861,11 @@ export default {
         unevidenceAssertion: function(url, after) {
             var me = this;
             EcCompetency.get(this.uri, function(c) {
-                me.competencyObj = c;
+                me.competency = c;
                 if (me.assertions == null) { return; }
                 var eah = new EcAsyncHelper();
                 eah.each(me.assertions, function(assertion, callback) {
-                    if (me.competencyObj.isId(assertion.competency)) {
+                    if (me.competency.isId(assertion.competency)) {
                         assertion.getSubjectAsync(function(subject) {
                             if (me.subject === subject.toPem()) {
                                 assertion.getAgentAsync(function(agent) {
@@ -894,7 +892,7 @@ export default {
             var d = new Demand();
             d.itemOffered = new Service();
             d.itemOffered.serviceOutput = new Assertion();
-            d.itemOffered.serviceOutput.competency = this.competencyObj.shortId();
+            d.itemOffered.serviceOutput.competency = this.competency.shortId();
             d.itemOffered.serviceOutput.framework = this.frameworkUri;
             this.subjectPerson.seeks.push(d);
             EcRepository.save(this.subjectPerson, function() {

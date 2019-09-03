@@ -7,30 +7,31 @@ Vue.use(Vuex);
 
 export const store = new Vuex.Store({
     state: {
+        assertions: null,
+        assertionsChanges: 0,
+        collapseState: {},
+        creativeWorks: {},
+        creativeWorksChanges: 0,
+        identities: EcIdentityManager.ids,
+        inputUrl: "",
+        inputName: "",
+        inputDescription: "",
+        jobPostings: null,
         login: false,
+        me: null,
+        mePerson: null,
+        profiles: EcIdentityManager.contacts,
+        processing: false,
+        processingMessage: "",
+        people: null,
         subject: null,
         subjectName: "Not loaded yet...",
         subjectPerson: null,
-        me: null,
-        mePerson: null,
         status: 'loading...',
         selectedFramework: null,
         selectedCompetency: null,
         selectedResource: null,
-        selectedJobPosting: null,
-        profiles: EcIdentityManager.contacts,
-        inputUrl: "",
-        inputName: "",
-        inputDescription: "",
-        processing: false,
-        processingMessage: "",
-        assertions: null,
-        assertionsChanges: 0,
-        creativeWorks: {},
-        creativeWorksChanges: 0,
-        jobPostings: null,
-        people: null,
-        collapseState: {}
+        selectedJobPosting: null
     },
     mutations: {
         setAssertions(state, as) {
@@ -56,6 +57,13 @@ export const store = new Vuex.Store({
             app.saveAssertionToIndexedDb(a);
             state.assertionsChanges++;
         },
+        creativeWorks(state, obj) {
+            if (state.creativeWorks == null) {
+                state.creativeWorks = {};
+            }
+            state.creativeWorks[obj.url] = obj.resources;
+            state.creativeWorksChanges++;
+        },
         addCreativeWork(state, a) {
             if (state.creativeWorks == null) {
                 state.creativeWorks = {};
@@ -72,7 +80,10 @@ export const store = new Vuex.Store({
         },
         login(state) { state.login = true; },
         me(state, pk) { state.me = pk; },
+        people(state, people) { state.people = people; },
+        mePerson(state, person) { state.mePerson = person; },
         subject(state, pk) { state.subject = pk; },
+        subjectPerson(state, person) { state.subjectPerson = person; },
         selectedFramework(state, framework) {
             state.selectedFramework = framework;
             localStorage.selectedFramework = framework.shortId();
@@ -89,9 +100,11 @@ export const store = new Vuex.Store({
                     state.assertions.splice(i, 1);
                 }
             }
-            for (var i = 0; i < state.creativeWorks.length; i++) {
-                if (state.creativeWorks[i].isId(uri)) {
-                    state.creativeWorks.splice(i, 1);
+            for (var key in state.creativeWorks) {
+                for (var i = 0; i < state.creativeWorks[key].length; i++) {
+                    if (state.creativeWorks[key][i].isId(uri)) {
+                        state.creativeWorks[key].splice(i, 1);
+                    }
                 }
             }
         }

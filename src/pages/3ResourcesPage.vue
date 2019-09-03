@@ -4,11 +4,11 @@
             <profile :pk="me"></profile>
             <div>
                 <h4>The following resources exist for:</h4>
-                <competency :uri="selectedCompetency.id" :subject="me"/>
+                <competency :uri="selectedCompetency.shortId()" :subject="me"/>
             </div>
 
             <hr>
-            <resources :url="selectedCompetency.id"></resources>
+            <resources :url="selectedCompetency.shortId()"></resources>
             <hr>
             <!--<div>You have the following history:</div>
                 <history></history>
@@ -57,6 +57,23 @@ export default {
         }
     },
     data: function() { return {inputUrl: null, inputName: null, inputDescription: null}; },
-    components: {profile, competency, resources}
+    components: {profile, competency, resources},
+    methods: {
+        searchGoogle: function() {
+            window.open("https://google.com/search?q=" + this.selectedCompetency.getName(), "lernnit");
+        },
+        addResource: function() {
+            var c = new CreativeWork();
+            c.assignId(window.repo.selectedServer, EcCrypto.md5(this.inputUrl + this.selectedCompetency.shortId()));
+            c.name = this.inputName;
+            c.description = this.inputDescription;
+            c.url = this.inputUrl;
+            c.educationalAlignment = new AlignmentObject();
+            c.educationalAlignment.targetUrl = this.selectedCompetency.shortId();
+            c.educationalAlignment.alignmentType = "teaches";
+            c.addOwner(EcIdentityManager.ids[0].ppk.toPk());
+            EcRepository.save(c, console.log, console.error);
+        }
+    }
 };
 </script>

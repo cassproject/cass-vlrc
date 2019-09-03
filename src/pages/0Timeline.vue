@@ -1,6 +1,6 @@
 <template>
     <div class="page">
-        <profile :pk="me"></profile>
+        <profile v-if="me" :pk="me"></profile>
         <timeline/>
     </div>
 </template>

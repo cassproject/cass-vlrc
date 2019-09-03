@@ -59,7 +59,7 @@ export default {
                     return this.personObj;
                 }
                 if (this.pk != null) {
-                    this.getPerson();
+                    return this.getPerson();
                 }
                 return null;
             },
@@ -184,9 +184,9 @@ export default {
             var p = new Person();
             p.copyFrom(person);
             if (p.seeks == null) { p.seeks = []; }
-            this.personObj = p;
-            if (this.pk === app.subject) { app.subjectPerson = p; }
-            if (this.pk === app.me) { app.mePerson = p; }
+            this.person = p;
+            if (this.pk === this.$store.state.subject) { this.$store.commit("subjectPerson", p); }
+            if (this.pk === this.$store.state.me) { this.$store.commit("mePerson", p); }
         },
         getPerson: function() {
             this.personObj = null;
@@ -211,10 +211,11 @@ export default {
                 if (me.displayName == null) { p.name = "Unknown Person."; } else { p.name = me.displayName; }
                 me.setPerson(p);
                 me.isPrivate = true;
-                if (me.pk === app.subject) { app.subjectPerson = p; }
-                if (me.pk === app.me) { app.mePerson = p; }
+                if (me.pk === me.$store.state.subject) { this.$store.commit("subjectPerson", p); }
+                if (me.pk === me.$store.state.me) { this.$store.commit("mePerson", p); }
                 if (me.mine) { me.savePerson(); }
             });
+            return this.personObj;
         },
         cancelSave: function() {
             this.editing = false;

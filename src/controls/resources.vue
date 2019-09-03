@@ -19,16 +19,15 @@ export default {
     },
     computed: {
         resources: function() {
-            if (this.resourceCount !== app.creativeWorksChanges) { this.getResources(); }
-            return app.creativeWorks[this.url];
+            return this.$store.state.creativeWorks[this.url];
         },
-        resourceCount: function() { return app.creativeWorksChanges; },
         empty: function() {
             if (this.resources == null) { return true; }
             return this.resources.length === 0;
         }
     },
     created: function() {
+        this.getResources();
     },
     watch: {
         url: function(newUrl) {
@@ -45,8 +44,7 @@ export default {
             },
             null,
             function(resources) {
-                app.creativeWorks[me.url] = resources;
-                me.resourceCount = resources.length;
+                me.$store.commit("creativeWorks", {url: me.url, resources: resources});
             }, console.error);
         }
     }

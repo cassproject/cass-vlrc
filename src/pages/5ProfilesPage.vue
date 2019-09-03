@@ -1,10 +1,14 @@
 <template>
     <div class="page">
-        <h1>Selected:</h1>
-        <profile :pk="subject"></profile>
+        <h1>Select a contact</h1>
+        <p>This page allows you to switch your focus from yourself to others.</p>
         <hr>
-        <h1>Contacts:</h1>
-        <profiles :profiles="profiles" :identities="identities"></profiles>
+        <h3>Selected:</h3>
+        <profile :pk="this.$store.state.subject"></profile>
+        <h3>My Identities:</h3>
+        <profiles :identities="this.$store.state.identities"></profiles>
+        <h3>Contacts:</h3>
+        <profiles :profiles="this.$store.state.profiles"></profiles>
     </div>
 </template>
 <script>

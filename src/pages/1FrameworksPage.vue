@@ -1,6 +1,6 @@
 <template>
     <div class="page">
-        <profile :pk="subject"></profile>
+        <profile v-if="subject" :pk="subject"></profile>
         <frameworks/>
     </div>
 </template>

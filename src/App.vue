@@ -45,6 +45,8 @@ export default {
             repo.selectedServer = "https://dev.cassproject.org/api/";
         } else if (window.location.origin.indexOf("localhost:8080") !== -1) {
             repo.autoDetectRepository();
+        } else if (window.location.origin.indexOf("localhost:8000") !== -1) {
+            repo.selectedServer = "http://localhost/api/";
         } else if (window.location.origin.indexOf("localhost:63342") !== -1) {
             repo.selectedServer = "https://dev.cassproject.org/api/";
         } else if (window.location.origin.indexOf("localhost") !== -1) {
@@ -86,7 +88,6 @@ export default {
                 me.badgePk = EcPk.fromPem(badgePk);
             }, console.error);
             me.identities = EcIdentityManager.ids;
-            var assertions = [];
             var request = indexedDB.open("assertions", 1);
             request.onerror = console.error;
             request.onupgradeneeded = me.indexedDbCreate;
@@ -94,12 +95,13 @@ export default {
                 var db = event.target.result;
                 var objectStore = db.transaction("assertions").objectStore("assertions");
 
+                var assertions = [];
                 objectStore.openCursor().onsuccess = function(event) {
                     var cursor = event.target.result;
                     if (cursor) {
                         var a = new EcAssertion();
                         a.copyFrom(cursor.value);
-                        me.$store.commit("addAssertion", a);
+                        assertions.push(a);
                         cursor.continue();
                     } else {
                         var eah = new EcAsyncHelper();
@@ -115,9 +117,9 @@ export default {
                             });
                             me.$store.commit("setAssertions", assertions);
                             console.log("Finished loading assertions. " + assertions.length + " loaded.");
+                            me.searchForAssertions(5000);
                         });
                     }
-                    me.searchForAssertions(5000);
                 };
             };
         }
@@ -309,7 +311,7 @@ export default {
                     }
 
                     if (new CreativeWork().isA(wut.getFullType())) {
-                        var a = new EcCreativeWork();
+                        var a = new CreativeWork();
                         a.copyFrom(wut);
                         app.$store.commit('addCreativeWork', a);
                     }
@@ -346,28 +348,32 @@ export default {
     methods: {
         searchForAssertions: function(count) {
             var me = this;
-            EcAssertion.search(window.repo, "\"" + this.$store.state.me + "\"", function(assertions) {
-                var eah = new EcAsyncHelper();
-                eah.each(assertions, function(assertion, callback) {
-                    if (assertion.assertionDateDecrypted != null) { callback(); } else {
-                        assertion.getAssertionDateAsync(function(date) {
-                            assertion.assertionDateDecrypted = date;
-                            callback();
-                        }, callback)
-                        ;
-                    }
-                },
+            EcAssertion.search(window.repo, "\"" + this.$store.state.me + "\"",
                 function(assertions) {
-                    assertions = assertions.sort(function(a, b) {
-                        return b.assertionDateDecrypted - a.assertionDateDecrypted;
+                    var eah = new EcAsyncHelper();
+                    eah.each(assertions, function(assertion, callback) {
+                        if (assertion.assertionDateDecrypted != null) {
+                            callback();
+                        } else {
+                            assertion.getAssertionDateAsync(
+                                function(date) {
+                                    assertion.assertionDateDecrypted = date;
+                                    callback();
+                                }, callback
+                            );
+                        }
+                    },
+                    function(assertions) {
+                        assertions = assertions.sort(function(a, b) {
+                            return b.assertionDateDecrypted - a.assertionDateDecrypted;
+                        });
+                        me.$store.commit("setAssertions", assertions);
+                        me.saveAssertionsToIndexedDb();
                     });
-                    me.$store.commit("setAssertions", assertions);
-                    me.saveAssertionsToIndexedDb();
+                }, console.error, {
+                    sort: '[ { "@version": {"order" : "desc" , "missing" : "_last"}} ]',
+                    size: count
                 });
-            }, console.error, {
-                sort: '[ { "@version": {"order" : "desc" , "missing" : "_last"}} ]',
-                size: count
-            });
         },
         removeAssertionFromIndexedDb: function(a, success) {
             var request = indexedDB.open("assertions", 1);
@@ -424,9 +430,6 @@ export default {
             };
             localStorage.removeItem("assertions");
         },
-        searchGoogle: function() {
-            window.open("https://google.com/search?q=" + app.selectedCompetency.getName(), "lernnit");
-        },
         switchPage: function(goTo) {
             if (goTo !== "") {
                 this.page = goTo;
@@ -442,20 +445,6 @@ export default {
         indexedDbCreate: function(event) {
             var db = event.target.result;
             db.createObjectStore("assertions", {keyPath: "id"});
-        },
-        addResource: function() {
-            var c = new CreativeWork();
-            c.assignId(window.repo.selectedServer, EcCrypto.md5(app.inputUrl + app.selectedCompetency.shortId()));
-            c.name = app.inputName;
-            c.description = app.inputDescription;
-            c.url = app.inputUrl;
-            c.educationalAlignment = new AlignmentObject();
-            c.educationalAlignment.targetUrl = app.selectedCompetency.shortId();
-            c.educationalAlignment.alignmentType = "teaches";
-            c.addOwner(EcIdentityManager.ids[0].ppk.toPk());
-            EcRepository.save(c, function() {
-                app.creativeWorksChanges++;
-            }, console.error);
         },
         computeBecause: function(evidences, success) {
             var explanations = [];

@@ -7,7 +7,6 @@ import Pages from "@/pages/Pages.vue";
 import VueObserveVisibility from 'vue-observe-visibility';
 import '@mdi/font/css/materialdesignicons.css'; // Ensure you are using css-loader
 
-
 require("cassproject");
 
 Vue.use(Vuex);
