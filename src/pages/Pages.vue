@@ -1,5 +1,8 @@
 <template>
-    <div id="pages" class>
+    <div id="pages" v-if="this.$store.state.processing">
+        <h2>{{this.$store.state.processingMessage}}</h2>
+    </div>
+    <div id="pages" class v-else>
         <!-- nav bar navigation -->
         <nav class="navbar is-info is-fixed-top" role="navigation" aria-label=" main-navigation">
             <div class="navbar-brand">

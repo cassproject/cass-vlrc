@@ -243,15 +243,15 @@ export default {
         },
         shareAssertionsAboutSubjectWith: function() {
             var me = this;
-            app.processing = true;
-            app.processingMessage = "Fetching assertions about " + app.subjectName;
+            this.$store.commit("processing", true);
+            this.$store.commit("processingMessage", "Fetching assertions about " + app.subjectName);
             var complete = 0;
             var count = 0;
             EcAssertion.search(repo,
                 "@owner:\"" + app.me + "\" AND \\*@reader:\"" + app.subject + "\"",
                 function(assertions) {
                     count = assertions.length;
-                    app.processingMessage = count + " claims found. Sharing with " + me.name + ".";
+                    me.$store.commit("processingMessage", count + " claims found. Sharing with " + me.name + ".");
                     var eah = new EcAsyncHelper();
                     eah.each(assertions, function(assertion, after) {
                         assertion.getSubjectAsync(function(subject) {
@@ -260,7 +260,7 @@ export default {
                                     if (app.me === agent.toPem()) {
                                         assertion.addReaderAsync(EcPk.fromPem(me.pk), function() {
                                             EcRepository.save(assertion, function() {
-                                                app.processingMessage = ++complete + " of " + count + " claims shared with " + me.name + ".";
+                                                me.$store.commit("processingMessage", ++complete + " of " + count + " claims shared with " + me.name + ".");
                                                 after();
                                             }, after);
                                         }, after);
@@ -269,7 +269,7 @@ export default {
                             } else { after(); }
                         }, console.error);
                     }, function(assertions) {
-                        app.processing = false;
+                        me.$store.commit("processing", false);
                     });
                 }, console.error, {
                     size: 5000

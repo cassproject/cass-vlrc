@@ -88,8 +88,6 @@
 <style scoped>
 
 .competency {
-    text-size: 18px;
-    /* margin-top: .25rem; */
     display: flex;
     flex-direction: row;
     width:100%;

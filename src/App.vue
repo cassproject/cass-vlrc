@@ -1,11 +1,5 @@
 <template>
     <div id="app">
-        <!-- would be nice to have the nav, header, footer
-            as separate components. Would require their details
-            accessible in multiviews, should migrate to vuex
-        for local storage before that.-->
-        <!-- <div id="nav"></div>-->
-        <!-- <artHeaderf/> -->
         <Pages/>
     </div>
 </template>

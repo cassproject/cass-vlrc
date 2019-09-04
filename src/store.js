@@ -82,6 +82,8 @@ export const store = new Vuex.Store({
         me(state, pk) { state.me = pk; },
         people(state, people) { state.people = people; },
         mePerson(state, person) { state.mePerson = person; },
+        processing(state, processing) { state.processing = processing; },
+        processingMessage(state, processingMessage) { state.processingMessage = processingMessage; },
         subject(state, pk) { state.subject = pk; },
         subjectPerson(state, person) { state.subjectPerson = person; },
         selectedFramework(state, framework) {
