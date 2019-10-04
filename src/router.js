@@ -18,29 +18,39 @@ export default new Router({
             component: () => import(/* webpackChunkName: "frameworksPage" */ './pages/1FrameworksPage.vue')
         },
         {
+            path: '/devlearn/frameworks',
+            name: 'frameworks',
+            component: () => import(/* webpackChunkName: "frameworksPage" */ './pages/1FrameworksPage.vue')
+        },
+        {
             path: '/framework',
+            name: 'framework',
+            component: () => import(/* webpackChunkName: "frameworkPage" */ './pages/2FrameworkPage.vue')
+        },
+        {
+            path: '/devlearn/framework',
             name: 'framework',
             component: () => import(/* webpackChunkName: "frameworkPage" */ './pages/2FrameworkPage.vue')
         },
         {
             path: '/resources',
             name: 'resources',
-            component: () => import(/* webpackChunkName: "frameworkPage" */ './pages/3ResourcesPage.vue')
+            component: () => import(/* webpackChunkName: "resourcesPage" */ './pages/3ResourcesPage.vue')
         },
         {
             path: '/goals',
             name: 'goals',
-            component: () => import(/* webpackChunkName: "frameworkPage" */ './pages/4GoalsPage.vue')
+            component: () => import(/* webpackChunkName: "goalsPage" */ './pages/4GoalsPage.vue')
         },
         {
             path: '/profiles',
             name: 'profiles',
-            component: () => import(/* webpackChunkName: "frameworkPage" */ './pages/5ProfilesPage.vue')
+            component: () => import(/* webpackChunkName: "profilesPage" */ './pages/5ProfilesPage.vue')
         },
         {
             path: '/people',
             name: 'people',
-            component: () => import(/* webpackChunkName: "frameworkPage" */ './pages/6PeoplePage.vue')
+            component: () => import(/* webpackChunkName: "peoplePage" */ './pages/6PeoplePage.vue')
         }
         // ,
         // {

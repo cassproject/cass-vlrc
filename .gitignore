@@ -14,3 +14,7 @@ node_modules/
 package-lock\.json
 
 .settings/
+
+npm-debug.log
+
+dist/

@@ -1,7 +1,7 @@
 <template>
     <div class="framework" v-observe-visibility="{callback: initialize}">
     <div class="frameworkNameAndDescription">{{ name }}<small v-if="description" class="block">{{ description }}</small></div>
-    <span class="buttons btop fright">
+    <span v-if="showButtons" class="buttons btop fright">
         <button class="inline"><a style="float:right;cursor:pointer;" :href="permalink">
             <i class="mdi mdi-18px mdi-link" aria-hidden="true"></i>Permalink</a></button>
         <button class="inline" v-if="calculate == true" style="color:blue;" v-on:click="calculate = false" title="Turn off processing.">
@@ -69,6 +69,12 @@ export default {
         };
     },
     computed: {
+        queryParams: function() {
+            return queryParams == null ? {} : queryParams;
+        },
+        showButtons: function() {
+            return this.queryParams.hideFrameworkButtons == null;
+        },
         competencies: {
             get: function() {
                 var me = this;

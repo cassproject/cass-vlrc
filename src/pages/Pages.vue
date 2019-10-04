@@ -4,28 +4,14 @@
     </div>
     <div id="pages" class v-else>
         <!-- nav bar navigation -->
-        <nav class="navbar is-info is-fixed-top" role="navigation" aria-label=" main-navigation">
+        <nav class="navbar is-info is-fixed-top" role="navigation" aria-label="main-navigation">
             <div class="navbar-brand">
                 <a class="navbar-item">
-                    <img class="has-text-white" />
-                </a>
-
-                <a
-                    role="button"
-                    class="navbar-burger burger"
-                    :class="{ 'is-active': navBarActive}"
-                    aria-label="menu"
-                    aria-expanded="false"
-                    data-target="artPagesDropDown"
-                    @click="navBarActive = !navBarActive"
-                >
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
+                    CaSS Learning Center
                 </a>
             </div>
             <!-- nav bar tablet and mobile drop down side navigation -->
-            <div
+            <div v-if="showSideBar"
                 id="artPagesDropDown"
                 class="navbar-menu is-spaced"
                 :class="{ 'is-active': navBarActive}"
@@ -48,7 +34,7 @@
         <!-- right side of page -->
         <!--<div class="section">-->
         <!-- desktop side navigation -->
-        <aside class="menu is-info has-background-light is-hidden-touch">
+        <aside v-if="showSideBar" class="menu is-info has-background-light is-hidden-touch">
             <div class="section">
                 <ul class="menu-list">
                     <li v-for="navItem in navItems" :key="navItem.title">
@@ -57,10 +43,20 @@
                 </ul>
             </div>
         </aside>
-        <div class="section">
+        <div v-if="showSideBar" class="section">
             <div class="columns is-multiline is-dekstop is-centered">
                 <!-- right page content column -->
                 <div class="column is-full pagesRight">
+                    <div class="section" id="pagesSection">
+                        <router-view/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-else class="section">
+            <div class="columns is-multiline is-dekstop is-centered pagesRightFull">
+                <!-- right page content column -->
+                <div class="column is-full ">
                     <div class="section" id="pagesSection">
                         <router-view/>
                     </div>
@@ -282,6 +278,12 @@ input[type='text'], textarea{
     width: 100%;
     max-width: 1400px;
 }
+.pagesRightFull {
+    //height: calc(100vh - 4rem);
+    //max-height: calc(100vh - 4rem);
+    margin-left:1rem;
+    margin-right:1rem;
+}
 .menu {
     min-height: calc(100vh - 40px);
     z-index: 1;
@@ -314,6 +316,9 @@ export default {
     },
     created: function() {
         var me = this;
+        if (queryParams.action != null) {
+            me.$router.push(queryParams.action);
+        }
     },
     methods: {
     },
@@ -322,7 +327,6 @@ export default {
             localStorage.pagesPage = newPage;
         },
         me: function(newMe, oldMe) {
-            this.searchForAssertions(5000);
         },
         inputUrl: function(newUrl) {
             /*
@@ -381,8 +385,9 @@ export default {
     },
     data: function() {
         return {
-            page: localStorage.pagesPage,
+            page: queryParams.action == null ? localStorage.pagesPage : queryParams.action,
             navBarActive: false,
+            showSideBar: queryParams.action == null,
             navItems: [
                 {
                     title: "Timeline",

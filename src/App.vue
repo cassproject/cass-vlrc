@@ -13,7 +13,8 @@ export default {
     computed: mapState({
         me: "me",
         contacts: "contacts",
-        assertions: "assertions"
+        assertions: "assertions",
+        queryParams: "queryParams"
     }),
     created: function() {
         var me = this;
@@ -40,7 +41,7 @@ export default {
         } else if (window.location.origin.indexOf("localhost:8080") !== -1) {
             repo.autoDetectRepository();
         } else if (window.location.origin.indexOf("localhost:8000") !== -1) {
-            repo.selectedServer = "http://localhost/api/";
+            repo.selectedServer = "https://dev.cassproject.org/api/";
         } else if (window.location.origin.indexOf("localhost:63342") !== -1) {
             repo.selectedServer = "https://dev.cassproject.org/api/";
         } else if (window.location.origin.indexOf("localhost") !== -1) {
@@ -79,7 +80,7 @@ export default {
                         : EcCompetency.getBlocking(localStorage.selectedCompetency));
             }
             EcRemote.getExpectingString(window.repo.selectedServer, "badge/pk", function(badgePk) {
-                me.badgePk = EcPk.fromPem(badgePk);
+                me.$store.commit("badgePk", EcPk.fromPem(badgePk));
             }, console.error);
             me.identities = EcIdentityManager.ids;
             var request = indexedDB.open("assertions", 1);
@@ -116,6 +117,10 @@ export default {
                     }
                 };
             };
+            if (queryParams.person != null) {
+                me.$store.commit("subject", EcPerson.getBlocking(repo.selectedServer + "data/" + queryParams.person).owner[0]);
+                me.$store.commit("subjectPerson", EcPerson.getBlocking(repo.selectedServer + "data/" + queryParams.person));
+            }
         }
 
         /*
@@ -331,11 +336,73 @@ export default {
                 EcPpk.generateKeyAsync(function(ppk) {
                     i.ppk = ppk;
                     EcIdentityManager.addIdentity(i);
-                    ready2();
                     EcIdentityManager.saveIdentities();
+                    var person = EcPerson.getByPkBlocking(repo, ppk.toPk());
+                    if (person == null) {
+                        person = new Person();
+                        person.assignId(repo.selectedServer, ppk.toPk().fingerprint());
+                        person.addOwner(ppk.toPk());
+                        if (queryParams.anonymous == null) {
+                            person.name = prompt("Please enter your name. Hit cancel if you would like to remain anonymous.");
+                            if (person.name !== null) {
+                                person.email = prompt("Please enter your email address. Hit cancel if you would like to decline.");
+                            }
+                        }
+                        if (queryParams.person != null) {
+                            if (queryParams.anonymous == null && confirm(
+                                "By hitting OK, your name and email will be shared with " +
+                                EcPerson.getBlocking(repo.selectedServer + "data/" + queryParams.person).name +
+                                ". Hit Cancel to decline.")
+                            ) {
+                                person.addReader(EcPk.fromPem(EcPerson.getBlocking(repo.selectedServer + "data/" + queryParams.person).owner[0]));
+                            }
+                        }
+                        person = EcEncryptedValue.toEncryptedValue(person);
+                        if (person.name == null) {
+                            ready2();
+                        } else {
+                            repo.saveTo(person, ready2, console.error);
+                        }
+                    } else {
+                        if (queryParams.anonymous == null && queryParams.person != null) {
+                            if (confirm(
+                                "By hitting OK, your name and email will be shared with " +
+                                EcPerson.getBlocking(repo.selectedServer + "data/" + queryParams.person).name +
+                                ". Hit Cancel to decline.")
+                            ) {
+                                person.addReader(EcPk.fromPem(EcPerson.getBlocking(repo.selectedServer + "data/" + queryParams.person).owner[0]));
+                                repo.saveTo(person, ready2, console.error);
+                            }
+                        } else {
+                            ready2();
+                        }
+                    }
                 });
             } else {
-                ready2();
+                if (queryParams.person != null) {
+                    var person = EcPerson.getByPkBlocking(repo, EcIdentityManager.ids[0].ppk.toPk());
+                    if (person == null) {
+                        person = new Person();
+                        person.addOwner(EcIdentityManager.ids[0].ppk.toPk());
+                        person.assignId(repo.selectedServer, EcIdentityManager.ids[0].ppk.toPk().fingerprint());
+                    }
+                    if (queryParams.anonymous == null && (person.name == null || person.name === "Unknown Person.")) {
+                        person.name = prompt("Please enter your name. Hit cancel if you would like to remain anonymous.");
+                        if (person.name !== null) {
+                            person.email = prompt("Please enter your email address. Hit cancel if you would like to decline.");
+                        }
+                    }
+                    if (queryParams.anonymous == null && confirm(
+                        "By hitting OK, your name and email will be shared with " +
+                        EcPerson.getBlocking(repo.selectedServer + "data/" + queryParams.person).name +
+                        ". Hit Cancel to decline.")
+                    ) {
+                        person.addReader(EcPk.fromPem(EcPerson.getBlocking(repo.selectedServer + "data/" + queryParams.person).owner[0]));
+                    }
+                    repo.saveTo(person, ready2, console.error);
+                } else {
+                    ready2();
+                }
             }
         }
     },

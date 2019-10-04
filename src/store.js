@@ -9,6 +9,7 @@ export const store = new Vuex.Store({
     state: {
         assertions: null,
         assertionsChanges: 0,
+        badgePk: null,
         collapseState: {},
         creativeWorks: {},
         creativeWorksChanges: 0,
@@ -80,6 +81,7 @@ export const store = new Vuex.Store({
         },
         login(state) { state.login = true; },
         me(state, pk) { state.me = pk; },
+        badgePk(state, pk) { state.badgePk = pk; },
         people(state, people) { state.people = people; },
         mePerson(state, person) { state.mePerson = person; },
         processing(state, processing) { state.processing = processing; },

@@ -1,21 +1,21 @@
 <template>
     <div class="profileRow" v-if="person">
         <span v-if="mine">
-        <span v-if="editing">
-        <i class="mdi mdi-content-save mdi-36px right" aria-hidden="true" title="Save your personal information." v-on:click="savePerson()"></i>
-        <i class="mdi mdi-cancel mdi-36px right" aria-hidden="true" title="Cancel editing." v-on:click="cancelSave();"></i>
+            <span v-if="editing">
+                <i class="mdi mdi-content-save mdi-36px right" aria-hidden="true" title="Save your personal information." v-on:click="savePerson()"></i>
+                <i class="mdi mdi-cancel mdi-36px right" aria-hidden="true" title="Cancel editing." v-on:click="cancelSave();"></i>
+            </span>
+            <span v-else>
+                <i class="mdi mdi-pencil mdi-36px right" aria-hidden="true" title="Edit your personal information." v-on:click="editing = true;"></i>
+            </span>
         </span>
-        <span v-else>
-        <i class="mdi mdi-pencil mdi-36px right" aria-hidden="true" title="Edit your personal information." v-on:click="editing = true;"></i>
-        </span>
-        </span>
-        <span v-else>
-        <i class="mdi mdi-account-circle mdi-36px right" aria-hidden="true" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i>
-        <i class="mdi mdi-account-circle-outline mdi-36px right" aria-hidden="true" title="Add person to contacts." v-else v-on:click="contact();"></i>
-        <i class="mdi mdi-comment-processing-outline mdi-36px right" aria-hidden="true" :title="unshareStatement" v-if="isSubject == false"
-        v-on:click="unshareAssertionsAboutSubjectWith();"></i>
-        <i class="mdi mdi-comment-account mdi-36px right" aria-hidden="true" :title="shareStatement" v-if="isSubject == false"
-        v-on:click="shareAssertionsAboutSubjectWith();"></i>
+        <span v-else-if="showButtons">
+            <i class="mdi mdi-account-circle mdi-36px right" aria-hidden="true" title="Remove person from contacts." v-if="isContact" v-on:click="uncontact();"></i>
+            <i class="mdi mdi-account-circle-outline mdi-36px right" aria-hidden="true" title="Add person to contacts." v-else v-on:click="contact();"></i>
+            <i class="mdi mdi-comment-processing-outline mdi-36px right" aria-hidden="true" :title="unshareStatement" v-if="isSubject == false"
+            v-on:click="unshareAssertionsAboutSubjectWith();"></i>
+            <i class="mdi mdi-comment-account mdi-36px right" aria-hidden="true" :title="shareStatement" v-if="isSubject == false"
+            v-on:click="shareAssertionsAboutSubjectWith();"></i>
         </span>
         <img style="vertical-align: sub;" v-if="fingerprintUrl" :src="fingerprintUrl" :title="fingerprint"/>
         <svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprint" :title="fingerprint"></svg>
@@ -53,6 +53,12 @@ export default {
         };
     },
     computed: {
+        queryParams: function() {
+            return queryParams == null ? {} : queryParams;
+        },
+        showButtons: function() {
+            return this.queryParams.hideProfileButtons == null;
+        },
         person: {
             get: function() {
                 if (this.personObj != null) {

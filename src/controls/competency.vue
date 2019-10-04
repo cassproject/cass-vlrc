@@ -46,10 +46,10 @@
                             <button class="inline" v-if="isGoal == true" v-on:click="unmakeGoal" :title="unmakeGoalPhrase">
                                 <i class="mdi mdi-18px mdi-bullseye-arrow" style="color:green;" aria-hidden="true"></i> Goal</button>
                         </span>
-                        <button class="inline wider" v-on:click="setCompetency" title="View Learning Resources for this topic.">
+                        <button v-if="showResources" class="inline wider" v-on:click="setCompetency" title="View Learning Resources for this topic.">
                             <i class="mdi mdi-18px mdi-book-open" aria-hidden="true"></i>{{ countPhrase }}</button>
                     </span>
-                    <span v-if="competent == true || incompetent == true">
+                    <span v-if="showBadging && (competent == true || incompetent == true)">
                         <button class="inline" v-if="badged == true" style="color:green;" v-on:click="unbadgeAssertion" title="Remove the badge for my claim.">
                             <i class="mdi mdi-18px mdi-shield" aria-hidden="true"></i> Badge</button>
                         <button class="inline wider" v-if="badged == true"><i class="mdi mdi-18px mdi-shield-link-variant" style="color:darkblue;" aria-hidden="true"></i>
@@ -177,6 +177,15 @@ export default {
         };
     },
     computed: {
+        queryParams: function() {
+            return queryParams == null ? {} : queryParams;
+        },
+        showBadging: function() {
+            return this.queryParams.hideBadging == null;
+        },
+        showResources: function() {
+            return this.queryParams.hideResources == null;
+        },
         collapse:
             {
                 get: function() {
@@ -411,6 +420,9 @@ export default {
         ...{
             assertionsCompute: {
                 get: function() {
+                    if (this.$store.state.assertions == null) {
+                        return;
+                    }
                     var ary = this.$store.state.assertions.filter(assertion => this.competency.isId(assertion.competency));
                     if (this.assertions.length !== ary.length) {
                         this.assertions.splice(0, this.assertions.length);
