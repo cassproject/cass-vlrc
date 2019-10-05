@@ -1,21 +1,33 @@
-Vue.component('jobPostingSelect', {
-    props: ['uri'],
-    data: function () {
+<template>
+    <li class="jobPostingDetail">
+        <div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>
+        <h3>{{ name }}</h3>
+        <small><i>{{ type }}</i></small>
+        <p v-if="description" class="block">{{ description }}</p>
+        <h4>Required Skills:</h4>
+        <ul v-if="competencies">
+            <competency v-for="item in competencies" v-bind:key="item" :uri="item" :subject="subject"></competency>
+        </ul>
+    </li>
+</template>
+<script>
+import competency from "@/controls/competency.vue";
+export default {
+    name: "jobPostingDetail",
+    props: ['uri', 'subject'],
+    components: {competency},
+    data: function() {
         return {};
     },
-    created: function () {},
     computed: {
         resource: {
-            get: function () {
+            get: function() {
                 var resource = EcRepository.getBlocking(this.uri);
-                var count = 0;
-                while (count++ < 50 && resource.url != null && resource.url.indexOf(repo.selectedServer) != -1)
-                    resource = EcRepository.getBlocking(resource.url);
                 return resource;
             }
         },
         name: {
-            get: function () {
+            get: function() {
                 if (this.uri == null) return "Untitled Posting.";
                 var resource = this.resource;
                 if (resource != null && resource.title != null)
@@ -25,21 +37,26 @@ Vue.component('jobPostingSelect', {
             }
         },
         type: {
-            get: function () {
+            get: function() {
                 if (this.uri == null) return "Untitled Posting.";
                 var resource = this.resource;
                 if (resource != null && resource.additionalType != null)
-                    return resource.additionalType;
+                    return {
+                        "jobPostingType://gig": "Gig",
+                        "jobPostingType://job": "Job",
+                        "jobPostingType://position": "Position",
+                        "jobPostingType://temp": "Temporary Position"
+                    }[resource.additionalType];
                 else
                     return null;
             }
         },
         mine: {
-            get: function () {
+            get: function() {
                 if (this.uri == null) return null;
                 var resource = this.resource;
                 if (resource != null) {
-                    if (resource.owner == null || resource.owner.length == 0)
+                    if (resource.owner == null || resource.owner.length === 0)
                         return true;
                     return resource.hasOwner(EcIdentityManager.ids[0].ppk.toPk());
                 } else
@@ -47,7 +64,7 @@ Vue.component('jobPostingSelect', {
             }
         },
         count: {
-            get: function () {
+            get: function() {
                 if (this.uri == null) return null;
                 var resource = this.resource;
                 if (resource != null && resource.skills != null) {
@@ -57,7 +74,7 @@ Vue.component('jobPostingSelect', {
             }
         },
         description: {
-            get: function () {
+            get: function() {
                 if (this.uri == null) return null;
                 var resource = this.resource;
                 if (resource != null && resource.description != null)
@@ -66,33 +83,32 @@ Vue.component('jobPostingSelect', {
                     return null;
             }
         },
+        competencies: {
+            get: function() {
+                if (this.uri == null) return null;
+                var resource = this.resource;
+                if (resource != null && resource.skills != null)
+                    return resource.skills;
+                else
+                    return null;
+            }
+        }
     },
     methods: {
-        deleteMe: function () {
+        deleteMe: function() {
             var me = this;
             var resource = EcRepository.getBlocking(this.uri);
-            EcRepository._delete(resource, function () {
+            EcRepository._delete(resource, function() {
                 var c = app.selectedCompetency;
                 app.selectedCompetency = null;
-                me.$nextTick(function () {
+                me.$nextTick(function() {
                     app.selectedCompetency = c;
                     if (topicCompetencies[app.selectedCompetency.id] != null)
                         for (var i = 0; i < topicCompetencies[app.selectedCompetency.id].length; i++)
                             topicCompetencies[app.selectedCompetency.id][i].getResourceCount();
                 });
             }, console.error);
-        },
-        setJobPosting: function () {
-            app.selectedJobPosting = this.uri;
-            showPage('8');
         }
-    },
-    template: '<li class="jobPostingSelect">' +
-        '<div v-if="mine" v-on:click="deleteMe" style="float:right;cursor:pointer;">X</div>' +
-        '<i class="mdi mdi-briefcase-outline" aria-hidden="true"></i> ' +
-        '<a v-on:click="setJobPosting" href="#" style="cursor:pointer;">' +
-        '{{ name }}' +
-        ' <span v-if="count">({{count}} required skills)</span>' + '</a> ' +
-        '<small v-on:click="setJobPosting" v-if="description" class="block">{{ description }}</small>' +
-        '</li>'
-});
+    }
+};
+</script>

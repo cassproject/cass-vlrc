@@ -178,7 +178,6 @@ export default {
                 "@type:ChooseAction AND object:\"" + this.uri + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function(view) {
                     EcRepository._delete(view, me.getViews, console.error);
-                    viewHistory.removeView(view);
                 },
                 function(views) {
                     if (a != null) a();

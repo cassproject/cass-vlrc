@@ -16,17 +16,24 @@ export default {
     computed: {
         name: {
             get: function() {
-                if (this.uri == null) return "Invalid Framework";
-                return EcFramework.getBlocking(this.uri).getName();
+                if (this.uri == null)
+                    return "Invalid Framework";
+                var framework = EcFramework.getBlocking(this.uri);
+                if (framework == null)
+                    return "Invalid Framework";
+                return framework.getName();
             }
         },
         description: {
             get: function() {
-                if (this.uri == null) { return "Could not resolve URI."; }
-                var description = EcFramework.getBlocking(this.uri).getDescription();
-                if (description == null || description === "") {
+                if (this.uri == null)
+                    return "Could not resolve URI.";
+                var framework = EcFramework.getBlocking(this.uri);
+                if (framework == null)
+                    return "Invalid Framework";
+                var description = framework.getDescription();
+                if (description == null || description === "")
                     return "A collection of " + this.count + " topic" + (this.count > 1 ? "s" : "") + ".";
-                }
                 return "";
             }
         },

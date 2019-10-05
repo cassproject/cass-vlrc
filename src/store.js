@@ -17,7 +17,10 @@ export const store = new Vuex.Store({
         inputUrl: "",
         inputName: "",
         inputDescription: "",
+        frameworks: null,
+        frameworkSearch: null,
         jobPostings: null,
+        jobPostingsSearch: null,
         login: false,
         me: null,
         mePerson: null,
@@ -82,6 +85,10 @@ export const store = new Vuex.Store({
         login(state) { state.login = true; },
         me(state, pk) { state.me = pk; },
         badgePk(state, pk) { state.badgePk = pk; },
+        frameworks(state, frameworks) { state.frameworks = frameworks; },
+        frameworkSearch(state, search) { state.frameworkSearch = search; },
+        jobPostings(state, jobPostings) { state.jobPostings = jobPostings; },
+        jobPostingsSearch(state, jobPostingsSearch) { state.jobPostingsSearch = jobPostingsSearch; },
         people(state, people) { state.people = people; },
         mePerson(state, person) { state.mePerson = person; },
         processing(state, processing) { state.processing = processing; },
@@ -94,8 +101,20 @@ export const store = new Vuex.Store({
         },
         selectedCompetency(state, competency) {
             state.selectedCompetency = competency;
-            localStorage.selectedCompetency = competency.shortId();
+            if (competency != null) {
+                localStorage.selectedCompetency = competency.shortId();
+            } else {
+                localStorage.selectedCompetency = null;
+            }
             state.availableResources = null;
+        },
+        selectedJobPosting(state, jobPosting) {
+            state.selectedJobPosting = jobPosting;
+            if (jobPosting != null) {
+                localStorage.selectedJobPosting = jobPosting.shortId();
+            } else {
+                localStorage.selectedJobPosting = null;
+            }
         },
         collapseState(state, uri, b) { state.collapseState[uri] = b; },
         removeFromAll(state, uri) {

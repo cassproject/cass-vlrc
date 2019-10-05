@@ -99,11 +99,18 @@ export default {
                 this.personObj.email = newEmail;
             }
         },
+        me: function() { return this.$store.state.me; },
+        subject: function() { return this.$store.state.subject; },
+        subjectName: function() { return this.$store.state.subjectName; },
+        mePerson: function() { return this.$store.state.mePerson; },
+        profiles: function() { return this.$store.state.profiles; },
+        processing: {get: function() { return this.$store.state.mePerson; }},
+        processingMessage: {get: function() { return this.$store.state.mePerson; }},
         mine: {
             get: function() {
-                if (app.me == null) { return false; }
+                if (this.me == null) { return false; }
                 if (this.personObj == null) { return false; }
-                return this.personObj.hasOwner(EcPk.fromPem(app.me));
+                return this.personObj.hasOwner(EcPk.fromPem(this.me));
             }
         },
         fingerprint: {
@@ -124,22 +131,22 @@ export default {
         },
         isContact: {
             get: function() {
-                return EcIdentityManager.getContact(EcPk.fromPem(this.pk)) != null;
+                return this.profiles.indexOf(EcPk.fromPem(this.pk)) !== -1;
             }
         },
         shareStatement: {
             get: function() {
-                return "Share your claims about " + (app.subject === app.me ? "yourself" : app.subjectName) + " with " + this.name;
+                return "Share your claims about " + (this.subject === this.me ? "yourself" : this.subjectName) + " with " + this.name;
             }
         },
         unshareStatement: {
             get: function() {
-                return "Unshare your claims about " + (app.subject === app.me ? "yourself" : app.subjectName) + " with " + this.name;
+                return "Unshare your claims about " + (this.subject === this.me ? "yourself" : this.subjectName) + " with " + this.name;
             }
         },
         isSubject: {
             get: function() {
-                return app.subject === this.pk;
+                return this.subject === this.pk;
             }
         }
     },
@@ -236,34 +243,34 @@ export default {
             c.displayName = this.name;
             EcIdentityManager.addContact(c);
             this.inContactList = true;
-            app.mePerson.addReader(EcPk.fromPem(this.pk));
-            repo.saveTo(app.mePerson, console.log, console.error);
+            this.mePerson.addReader(EcPk.fromPem(this.pk));
+            repo.saveTo(this.mePerson, console.log, console.error);
         },
         uncontact: function() {
             for (var i = 0; i < EcIdentityManager.contacts.length; i++) {
                 if (EcIdentityManager.contacts[i].pk.toPem() === this.pk) { EcIdentityManager.contactChanged(EcIdentityManager.contacts.splice(i, 1)); }
             }
             this.inContactList = false;
-            app.mePerson.removeReader(EcPk.fromPem(this.pk));
-            repo.saveTo(app.mePerson, console.log, console.error);
+            this.mePerson.removeReader(EcPk.fromPem(this.pk));
+            repo.saveTo(this.mePerson, console.log, console.error);
         },
         shareAssertionsAboutSubjectWith: function() {
             var me = this;
             this.$store.commit("processing", true);
-            this.$store.commit("processingMessage", "Fetching assertions about " + app.subjectName);
+            this.$store.commit("processingMessage", "Fetching assertions about " + me.subjectName);
             var complete = 0;
             var count = 0;
             EcAssertion.search(repo,
-                "@owner:\"" + app.me + "\" AND \\*@reader:\"" + app.subject + "\"",
+                "@owner:\"" + me.me + "\" AND \\*@reader:\"" + me.subject + "\"",
                 function(assertions) {
                     count = assertions.length;
                     me.$store.commit("processingMessage", count + " claims found. Sharing with " + me.name + ".");
                     var eah = new EcAsyncHelper();
                     eah.each(assertions, function(assertion, after) {
                         assertion.getSubjectAsync(function(subject) {
-                            if (app.subject === subject.toPem()) {
+                            if (me.subject === subject.toPem()) {
                                 assertion.getAgentAsync(function(agent) {
-                                    if (app.me === agent.toPem()) {
+                                    if (me.me === agent.toPem()) {
                                         assertion.addReaderAsync(EcPk.fromPem(me.pk), function() {
                                             EcRepository.save(assertion, function() {
                                                 me.$store.commit("processingMessage", ++complete + " of " + count + " claims shared with " + me.name + ".");
@@ -283,24 +290,24 @@ export default {
         },
         unshareAssertionsAboutSubjectWith: function(evt, after) {
             var me = this;
-            app.processing = true;
-            app.processingMessage = "Fetching assertions about " + app.subjectName;
+            me.processing = true;
+            me.processingMessage = "Fetching assertions about " + me.subjectName;
             var complete = 0;
             var count = 0;
             EcAssertion.search(repo,
-                "@owner:\"" + app.me + "\" AND \\*@reader:\"" + app.subject + "\"",
+                "@owner:\"" + me.me + "\" AND \\*@reader:\"" + me.subject + "\"",
                 function(assertions) {
                     var eah = new EcAsyncHelper();
                     eah.each(assertions, function(assertion, after) {
                         count = assertions.length;
-                        app.processingMessage = count + " claims found. Unsharing with " + me.name + ".";
+                        me.processingMessage = count + " claims found. Unsharing with " + me.name + ".";
                         assertion.getSubjectAsync(function(subject) {
-                            if (app.subject === subject.toPem()) {
+                            if (me.subject === subject.toPem()) {
                                 assertion.getAgentAsync(function(agent) {
-                                    if (app.me === agent.toPem()) {
+                                    if (me.me === agent.toPem()) {
                                         assertion.removeReaderAsync(EcPk.fromPem(me.pk), function() {
                                             EcRepository.save(assertion, function() {
-                                                app.processingMessage = ++complete + " of " + count + " claims unshared with " + me.name + ".";
+                                                me.processingMessage = ++complete + " of " + count + " claims unshared with " + me.name + ".";
                                                 after();
                                             }, after);
                                         }, after);
@@ -309,7 +316,7 @@ export default {
                             } else { after(); }
                         }, console.error);
                     }, function(assertions) {
-                        app.processing = false;
+                        me.processing = false;
                     });
                 }, console.error, {
                     size: 5000

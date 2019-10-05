@@ -62,6 +62,3 @@ export default {
     }
 };
 </script>
-Vue.component('people', {,
-    template:
-});

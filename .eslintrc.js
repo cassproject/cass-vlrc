@@ -68,8 +68,8 @@ module.exports = {
          * 'class-methods-use-this': 0,
          * 'complexity': 0,
          * 'consistent-return': 0,
-         * 'curly': 2,  // eslint: recommended
          */
+        'curly': 0,  // eslint: recommended
         'default-case': 2,
         /*
          * 'dot-location': 2 // eslint: recommended

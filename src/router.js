@@ -51,12 +51,16 @@ export default new Router({
             path: '/people',
             name: 'people',
             component: () => import(/* webpackChunkName: "peoplePage" */ './pages/6PeoplePage.vue')
+        },
+        {
+            path: '/jobPostings',
+            name: 'jobPostings',
+            component: () => import(/* webpackChunkName: "jobPostingsPage" */ './pages/7JobPostingsPage.vue')
+        },
+        {
+            path: '/jobPosting',
+            name: 'jobPosting',
+            component: () => import(/* webpackChunkName: "jobPostingPage" */ './pages/8JobPostingPage.vue')
         }
-        // ,
-        // {
-        //     path: '/jobPostings',
-        //     name: 'jobPostings',
-        //     component: () => import(/* webpackChunkName: "frameworkPage" */ './pages/7JobPostingsPage.vue')
-        // }
     ]
 });
