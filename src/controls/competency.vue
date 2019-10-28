@@ -461,23 +461,25 @@ export default {
     watch: {
         uri: function(newUri, oldUri) {
             this.assertionsByOthers = [];
-            this.assertionCounter = -1;
             this.competentState = null;
             this.incompetentState = null;
             this.estimatedCompetenceValue = null;
             this.evidenceExplanation = null;
             this.evidenceInput = null;
             this.evidence = null;
+            this.recomputeAssertions = true;
+            this.computeAssertionState();
         },
         subject: function(newSubject, oldSubject) {
             this.assertionsByOthers = [];
-            this.assertionCounter = -1;
             this.competentState = null;
             this.incompetentState = null;
             this.estimatedCompetenceValue = null;
             this.evidenceExplanation = null;
             this.evidenceInput = null;
             this.evidence = null;
+            this.recomputeAssertions = true;
+            this.computeAssertionState();
         }
     },
     methods: {
@@ -734,7 +736,6 @@ export default {
             var me = this;
             this.incompetentState = null;
             EcCompetency.get(this.uri, function(c) {
-                me.competency = c;
                 if (me.assertions == null) { return; }
                 var eah = new EcAsyncHelper();
                 eah.each(me.assertions, function(assertion, callback) {

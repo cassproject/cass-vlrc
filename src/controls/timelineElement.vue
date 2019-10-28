@@ -201,13 +201,13 @@ export default {
         badged: {
             get: function() {
                 if (this.assertion == null) { return false; }
-                return this.assertion.hasReader(app.badgePk);
+                return this.assertion.hasReader(this.$store.state.badgePk);
             }
         },
         badgeUrl: {
             get: function() {
                 if (this.assertion != null) {
-                    if (this.assertion.hasReader(app.badgePk)) {
+                    if (this.assertion.hasReader(this.$store.state.badgePk)) {
                         return EcRemote.urlAppend(repo.selectedServer, "badge/assertion/") + this.assertion.getGuid();
                     }
                 }
@@ -245,7 +245,8 @@ export default {
                             me.subject = name;
                         }, console.error);
                         assertion.getSubjectAsync(function(pk) {
-                            me.subjectPk = pk.toPem();
+                            if (pk != null)
+                                me.subjectPk = pk.toPem();
                             me.getSubject();
                         }, console.error);
                     }
@@ -255,7 +256,8 @@ export default {
                         }, console.error);
                     }
                     assertion.getAgentAsync(function(pk) {
-                        me.agentPk = pk.toPem();
+                        if (pk != null)
+                            me.agentPk = pk.toPem();
                         me.getAgent();
                     }, console.error);
                     if (assertion.assertionDate != null) {

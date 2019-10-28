@@ -39,7 +39,7 @@ export default {
     },
     methods: {
         changeSelected: function(pk) {
-            app.subject = pk;
+            this.$store.commit("subject", pk);
             // $("#rad2").click();
         }
     }

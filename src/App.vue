@@ -61,6 +61,10 @@ export default {
 
         EcIdentityManager.readIdentities();
         EcIdentityManager.readContacts();
+        me.$store.commit("contacts", EcIdentityManager.contacts);
+        EcIdentityManager.onContactChanged = function() {
+            me.$store.commit("contacts", EcIdentityManager.contacts);
+        };
 
         function ready2() {
             me.$store.commit("login");

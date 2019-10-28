@@ -24,7 +24,7 @@ export const store = new Vuex.Store({
         login: false,
         me: null,
         mePerson: null,
-        profiles: EcIdentityManager.contacts,
+        profiles: [],
         processing: false,
         processingMessage: "",
         people: null,
@@ -94,6 +94,7 @@ export const store = new Vuex.Store({
         processing(state, processing) { state.processing = processing; },
         processingMessage(state, processingMessage) { state.processingMessage = processingMessage; },
         subject(state, pk) { state.subject = pk; },
+        contacts(state, contacts) { state.profiles = contacts; },
         subjectPerson(state, person) { state.subjectPerson = person; },
         selectedFramework(state, framework) {
             state.selectedFramework = framework;

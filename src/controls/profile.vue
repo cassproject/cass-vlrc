@@ -26,7 +26,7 @@
         <h2 v-else v-on:click="clickTitle" style="display:inline;">{{ name }}</h2>
         <div v-if="editing"><br><br>
         <input :id="pk" v-model="isPrivate" type="checkbox"><label :for="pk">Private</label></div>
-        </div>
+    </div>
 </template>
 <style scoped>
 .right {
@@ -47,7 +47,6 @@ export default {
     data: function() {
         return {
             editing: false,
-            isPrivate: false,
             personObj: null,
             inContactList: null
         };
@@ -63,9 +62,6 @@ export default {
             get: function() {
                 if (this.personObj != null) {
                     return this.personObj;
-                }
-                if (this.pk != null) {
-                    return this.getPerson();
                 }
                 return null;
             },
@@ -106,6 +102,17 @@ export default {
         profiles: function() { return this.$store.state.profiles; },
         processing: {get: function() { return this.$store.state.mePerson; }},
         processingMessage: {get: function() { return this.$store.state.mePerson; }},
+        isPrivate: {
+            get: function() {
+                if (EcEncryptedValue.encryptOnSaveMap == null)
+                    EcEncryptedValue.encryptOnSaveMap = {};
+                return EcEncryptedValue.encryptOnSaveMap[this.personObj.shortId()] === true;
+            },
+            set: function(newValue, oldValue) {
+                EcEncryptedValue.encryptOnSave(this.personObj.id, newValue);
+                EcEncryptedValue.encryptOnSave(this.personObj.shortId(), newValue);
+            }
+        },
         mine: {
             get: function() {
                 if (this.me == null) { return false; }
@@ -131,7 +138,8 @@ export default {
         },
         isContact: {
             get: function() {
-                return this.profiles.indexOf(EcPk.fromPem(this.pk)) !== -1;
+                this.profiles;
+                return EcIdentityManager.getContact(EcPk.fromPem(this.pk)) != null;
             }
         },
         shareStatement: {
@@ -151,6 +159,7 @@ export default {
         }
     },
     created: function() {
+        this.getPerson();
     },
     destroyed: function() {
     },
@@ -158,11 +167,8 @@ export default {
         pk: function() {
             this.personObj = null;
             this.editing = false;
-            this.isPrivate = false;
             this.inContactList = null;
             this.getPerson();
-        },
-        isPrivate: function() {
         }
     },
     methods: {
@@ -208,11 +214,9 @@ export default {
             EcRepository.get(repo.selectedServer + "data/schema.org.Person/" + pk.fingerprint(), function(person) {
                 var e = new EcEncryptedValue();
                 if (person.isAny(e.getTypes())) {
-                    me.isPrivate = true;
                     e.copyFrom(person);
                     e.decryptIntoObjectAsync(me.setPerson, console.error);
                 } else {
-                    me.isPrivate = false;
                     me.setPerson(person);
                 }
             }, function(failure) {
@@ -221,14 +225,12 @@ export default {
                 p.assignId(repo.selectedServer, pk.fingerprint());
                 p.addOwner(pk);
                 p.seeks = [];
-                if (me.displayName == null) { p.name = "Unknown Person."; } else { p.name = me.displayName; }
                 me.setPerson(p);
-                me.isPrivate = true;
-                if (me.pk === me.$store.state.subject) { this.$store.commit("subjectPerson", p); }
-                if (me.pk === me.$store.state.me) { this.$store.commit("mePerson", p); }
+                if (me.displayName == null) { p.name = "Unknown Person."; } else { p.name = me.displayName; }
+                if (me.pk === me.$store.state.subject) { me.$store.commit("subjectPerson", p); }
+                if (me.pk === me.$store.state.me) { me.$store.commit("mePerson", p); }
                 if (me.mine) { me.savePerson(); }
             });
-            return this.personObj;
         },
         cancelSave: function() {
             this.editing = false;

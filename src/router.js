@@ -18,17 +18,7 @@ export default new Router({
             component: () => import(/* webpackChunkName: "frameworksPage" */ './pages/1FrameworksPage.vue')
         },
         {
-            path: '/devlearn/frameworks',
-            name: 'frameworks',
-            component: () => import(/* webpackChunkName: "frameworksPage" */ './pages/1FrameworksPage.vue')
-        },
-        {
             path: '/framework',
-            name: 'framework',
-            component: () => import(/* webpackChunkName: "frameworkPage" */ './pages/2FrameworkPage.vue')
-        },
-        {
-            path: '/devlearn/framework',
             name: 'framework',
             component: () => import(/* webpackChunkName: "frameworkPage" */ './pages/2FrameworkPage.vue')
         },
