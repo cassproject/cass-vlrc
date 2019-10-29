@@ -1,33 +1,34 @@
 <template>
     <div class="timelineElement" v-observe-visibility="{callback: initialize}">
         <div v-if="competencyName">
-        <span v-if="ok"><div class="time" v-if="timestamp">{{ timeAgo }},</div>
-        <img style="vertical-align: sub;" v-if="fingerprintUrlAgent" :src="fingerprintUrlAgent" :title="agent"/>
-        <svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprintAgent" :title="fingerprintAgent"></svg>
-        <img style="vertical-align: sub;" v-if="fingerprintUrlSubject" :src="fingerprintUrlSubject" :title="subject"/>
-        <svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprintSubject" :title="fingerprintSubject"></svg>
-        <div class="content">
-        <div v-if="mine" v-on:click="deleteMe" title="Delete this claim." style="float:right;cursor:pointer;">X</div>
-        {{agent}} claimed {{subject}}
-        <span v-if="negative">could not</span><span v-else>could</span>
-         demonstrate
-        <a class="competencyText" href="#" v-on:click="gotoCompetency" :title="assertion.competency">
-        "{{ competencyName }}"
-        <span v-if="frameworkName"> in the subject area {{ frameworkName }}</span>
-        </a>
-        <span v-if="evidenceText"> because they
-        <span v-for="(evidence, index) in evidenceText" v-bind:key="evidence">
-            <span v-if="index != 0"> and they </span>
-            <a v-if="evidence.url" :href="evidence.url" target="_blank">{{evidence.text}}</a>
-            <span v-else >{{evidence.text}}</span>
-        </span>
-        </span>
-        <span v-if="badged"> and has issued a <a target="_blank" :href="badgeUrl">badge</a></span>.
-        <br>
-        <small>{{ competencyDescription }}</small>
-        </div>
-        </span>
-        <div class="time" v-else><i class="mdi mdi-spin mdi-loading"/></div>
+            <div v-if="mine" v-on:click="deleteMe" title="Delete this claim." style="float:right;cursor:pointer;">X</div>
+            <span v-if="ok">
+                <div class="time" v-if="timestamp">{{ timeAgo }},</div>
+                <img style="vertical-align: sub;" v-if="fingerprintUrlAgent" :src="fingerprintUrlAgent" :title="agent"/>
+                <svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprintAgent" :title="fingerprintAgent"></svg>
+                <img style="vertical-align: sub;" v-if="fingerprintUrlSubject" :src="fingerprintUrlSubject" :title="subject"/>
+                <svg v-else style="vertical-align: sub;" width="44" height="44" :data-jdenticon-value="fingerprintSubject" :title="fingerprintSubject"></svg>
+                <div class="content">
+                    {{agent}} claimed {{subject}}
+                    <span v-if="negative">could not</span><span v-else>could</span>
+                    demonstrate
+                    <a class="competencyText" href="#" v-on:click="gotoCompetency" :title="assertion.competency">
+                    "{{ competencyName }}"
+                    <span v-if="frameworkName"> in the subject area {{ frameworkName }}</span>
+                    </a>
+                    <span v-if="evidenceText"> because they
+                        <span v-for="(evidence, index) in evidenceText" v-bind:key="evidence">
+                            <span v-if="index != 0"> and they </span>
+                            <a v-if="evidence.url" :href="evidence.url" target="_blank">{{evidence.text}}</a>
+                            <span v-else >{{evidence.text}}</span>
+                        </span>
+                    </span>
+                    <span v-if="badged"> and has issued a <a target="_blank" :href="badgeUrl">badge</a></span>.
+                    <br>
+                    <small>{{ competencyDescription }}</small>
+                </div>
+            </span>
+            <div class="time" v-else><i class="mdi mdi-spin mdi-loading"/></div>
         </div>
     </div>
 </template>

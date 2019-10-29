@@ -74,7 +74,6 @@ export default {
                 if (this.person == null) { return "Loading..."; }
                 if (this.person.givenName != null && this.person.familyName != null) { return this.person.givenName + " " + this.person.familyName; }
                 if (this.person.name == null) { return "<Restricted>"; }
-                // EcIdentityManager.getIdentity(EcPk.fromPem(this.pk)).displayName = this.personObj.name;
                 return this.person.name;
             },
             set: function(newName) {
@@ -97,7 +96,13 @@ export default {
         },
         me: function() { return this.$store.state.me; },
         subject: function() { return this.$store.state.subject; },
-        subjectName: function() { return this.$store.state.subjectName; },
+        subjectPerson: function() { return this.$store.state.subjectPerson; },
+        subjectName: function() {
+            if (this.subjectPerson == null) { return "Loading..."; }
+            if (this.subjectPerson.givenName != null && this.subjectPerson.familyName != null) { return this.subjectPerson.givenName + " " + this.subjectPerson.familyName; }
+            if (this.subjectPerson.name == null) { return "<Restricted>"; }
+            return this.subjectPerson.name;
+        },
         mePerson: function() { return this.$store.state.mePerson; },
         profiles: function() { return this.$store.state.profiles; },
         processing: {get: function() { return this.$store.state.mePerson; }},
@@ -206,6 +211,8 @@ export default {
             this.person = p;
             if (this.pk === this.$store.state.subject) { this.$store.commit("subjectPerson", p); }
             if (this.pk === this.$store.state.me) { this.$store.commit("mePerson", p); }
+            if (this.pk === this.$store.state.subject) { this.$store.commit("subjectName", this.name); }
+            if (this.pk === this.$store.state.me) { this.$store.commit("meName", this.name); }
         },
         getPerson: function() {
             this.personObj = null;
@@ -262,67 +269,55 @@ export default {
             this.$store.commit("processingMessage", "Fetching assertions about " + me.subjectName);
             var complete = 0;
             var count = 0;
-            EcAssertion.search(repo,
-                "@owner:\"" + me.me + "\" AND \\*@reader:\"" + me.subject + "\"",
-                function(assertions) {
-                    count = assertions.length;
-                    me.$store.commit("processingMessage", count + " claims found. Sharing with " + me.name + ".");
-                    var eah = new EcAsyncHelper();
-                    eah.each(assertions, function(assertion, after) {
-                        assertion.getSubjectAsync(function(subject) {
-                            if (me.subject === subject.toPem()) {
-                                assertion.getAgentAsync(function(agent) {
-                                    if (me.me === agent.toPem()) {
-                                        assertion.addReaderAsync(EcPk.fromPem(me.pk), function() {
-                                            EcRepository.save(assertion, function() {
-                                                me.$store.commit("processingMessage", ++complete + " of " + count + " claims shared with " + me.name + ".");
-                                                after();
-                                            }, after);
-                                        }, after);
-                                    } else { after(); }
-                                }, console.error);
+            var assertions = this.$store.state.assertions;
+            var eah = new EcAsyncHelper();
+            eah.each(assertions, function(assertion, after) {
+                assertion.getSubjectAsync(function(subject) {
+                    if (me.subject === subject.toPem()) {
+                        assertion.getAgentAsync(function(agent) {
+                            if (me.me === agent.toPem()) {
+                                assertion.addReaderAsync(EcPk.fromPem(me.pk), function() {
+                                    me.$store.commit("processingMessage", complete + " of " + ++count + " claims shared with " + me.name + ".");
+                                    EcRepository.save(assertion, function() {
+                                        me.$store.commit("processingMessage", ++complete + " of " + count + " claims shared with " + me.name + ".");
+                                        after();
+                                    }, after);
+                                }, after);
                             } else { after(); }
                         }, console.error);
-                    }, function(assertions) {
-                        me.$store.commit("processing", false);
-                    });
-                }, console.error, {
-                    size: 5000
-                });
+                    } else { after(); }
+                }, console.error);
+            }, function(assertions) {
+                me.$store.commit("processing", false);
+            });
         },
         unshareAssertionsAboutSubjectWith: function(evt, after) {
             var me = this;
-            me.processing = true;
-            me.processingMessage = "Fetching assertions about " + me.subjectName;
+            this.$store.commit("processing", true);
+            this.$store.commit("processingMessage", "Fetching assertions about " + me.subjectName);
             var complete = 0;
             var count = 0;
-            EcAssertion.search(repo,
-                "@owner:\"" + me.me + "\" AND \\*@reader:\"" + me.subject + "\"",
-                function(assertions) {
-                    var eah = new EcAsyncHelper();
-                    eah.each(assertions, function(assertion, after) {
-                        count = assertions.length;
-                        me.processingMessage = count + " claims found. Unsharing with " + me.name + ".";
-                        assertion.getSubjectAsync(function(subject) {
-                            if (me.subject === subject.toPem()) {
-                                assertion.getAgentAsync(function(agent) {
-                                    if (me.me === agent.toPem()) {
-                                        assertion.removeReaderAsync(EcPk.fromPem(me.pk), function() {
-                                            EcRepository.save(assertion, function() {
-                                                me.processingMessage = ++complete + " of " + count + " claims unshared with " + me.name + ".";
-                                                after();
-                                            }, after);
-                                        }, after);
-                                    } else { after(); }
-                                }, console.error);
+            var assertions = this.$store.state.assertions;
+            var eah = new EcAsyncHelper();
+            eah.each(assertions, function(assertion, after) {
+                assertion.getSubjectAsync(function(subject) {
+                    if (me.subject === subject.toPem()) {
+                        assertion.getAgentAsync(function(agent) {
+                            if (me.me === agent.toPem()) {
+                                assertion.removeReaderAsync(EcPk.fromPem(me.pk), function() {
+                                    me.$store.commit("processingMessage", complete + " of " + ++count + " claims unshared with " + me.name + ".");
+                                    EcRepository.save(assertion, function() {
+                                        me.$store.commit("processingMessage", ++complete + " of " + count + " claims unshared with " + me.name + ".");
+                                        after();
+                                    }, after);
+                                }, after);
                             } else { after(); }
                         }, console.error);
-                    }, function(assertions) {
-                        me.processing = false;
-                    });
-                }, console.error, {
-                    size: 5000
-                });
+                    } else { after(); }
+                }, console.error);
+            }, function(assertions) {
+                me.$store.commit("processing", false);
+            });
         }
     }
 };

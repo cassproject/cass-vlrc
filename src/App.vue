@@ -57,7 +57,6 @@ export default {
         window.repo = repo;
         EcRepository.caching = true;
         EcCrypto.caching = true;
-        EcRepository.cachingSearch = true;
 
         EcIdentityManager.readIdentities();
         EcIdentityManager.readContacts();

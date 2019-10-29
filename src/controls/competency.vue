@@ -5,7 +5,7 @@
             <button class="inline transparent" v-else v-on:click="collapse = !collapse"><i class="mdi mdi-18px mdi-menu-down" aria-hidden="true"></i></button>
         </span>
         <div>
-                <div class="tile">
+            <div class="tile">
                 <div class="section pbottom">
                     <div v-observe-visibility="{callback: initialize,once: true}">{{ name }}</div>
                     <small v-if="description" class="block">{{ description }}</small>
@@ -156,7 +156,6 @@ export default {
     props: ['uri', 'hasChild', 'parentCompetent', 'subject', 'frameworkUri', 'subjectPerson', 'computedState'],
     data: function() {
         return {
-            resources: null,
             creativeWorkCounter: -1,
             badged: null,
             badgeLink: null,
@@ -166,6 +165,7 @@ export default {
             estimatedCompetenceValue: null,
             estimatedCompetenceTitle: null,
             visible: false,
+            hasEverBeenVisible: false,
             iconAssertion: true,
             hover: false,
             collapseState: null,
@@ -177,6 +177,20 @@ export default {
         };
     },
     computed: {
+        resources: function() {
+            var ary = [];
+            if (!this.visible) return ary;
+            for (var i = 0; i < this.$store.state.creativeWorks.length; i++) {
+                var c = this.$store.state.creativeWorks[i];
+                if (c.educationalAlignment == null) continue;
+                if (!EcArray.isArray(c.educationalAlignment))
+                    c.educationalAlignment = [c.educationalAlignment];
+                for (var j = 0; j < c.educationalAlignment.length; j++)
+                    if (EcRemoteLinkedData.trimVersionFromUrl(this.uri) === EcRemoteLinkedData.trimVersionFromUrl(c.educationalAlignment[j].targetUrl))
+                        ary.push(c);
+            }
+            return ary;
+        },
         queryParams: function() {
             return queryParams == null ? {} : queryParams;
         },
@@ -203,10 +217,6 @@ export default {
         },
         counter: {
             get: function() {
-                if (this.visible) {
-                    if (this.creativeWorkCounter !== this.$store.state.creativeWorksChanges) { this.getResourceCount(); }
-                    // this.creativeWorkCounter = me.creativeWorksChanges;
-                }
                 if (this.resources == null) return 0;
                 return this.resources.length;
             }
@@ -469,6 +479,7 @@ export default {
             this.evidence = null;
             this.recomputeAssertions = true;
             this.computeAssertionState();
+            this.getResourceCount();
         },
         subject: function(newSubject, oldSubject) {
             this.assertionsByOthers = [];
@@ -485,6 +496,10 @@ export default {
     methods: {
         initialize: function(isVisible, entry) {
             this.visible = isVisible;
+            if (this.visible && this.hasEverBeenVisible === false) {
+                this.hasEverBeenVisible = true;
+                this.getResourceCount();
+            }
         },
         computeAssertionState: function() {
             var me = this;
@@ -557,9 +572,10 @@ export default {
             repo.searchWithParams(search, {
                 size: 50
             },
-            null,
+            function(resource) {
+                me.$store.commit("addCreativeWork", resource);
+            },
             function(resources) {
-                me.resources = resources;
             }, console.error);
             EcRepository.unsigned = false;
         },

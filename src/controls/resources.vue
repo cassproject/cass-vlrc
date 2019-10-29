@@ -19,7 +19,17 @@ export default {
     },
     computed: {
         resources: function() {
-            return this.$store.state.creativeWorks[this.url];
+            var ary = [];
+            for (var i = 0; i < this.$store.state.creativeWorks.length; i++) {
+                var c = this.$store.state.creativeWorks[i];
+                if (c.educationalAlignment == null) continue;
+                if (!EcArray.isArray(c.educationalAlignment))
+                    c.educationalAlignment = [c.educationalAlignment];
+                for (var j = 0; j < c.educationalAlignment.length; j++)
+                    if (EcRemoteLinkedData.trimVersionFromUrl(this.url) === EcRemoteLinkedData.trimVersionFromUrl(c.educationalAlignment[j].targetUrl))
+                        ary.push(c);
+            }
+            return ary;
         },
         empty: function() {
             if (this.resources == null) { return true; }
@@ -42,9 +52,10 @@ export default {
             repo.searchWithParams(search, {
                 size: 50
             },
-            null,
+            function(resource) {
+                me.$store.commit("addCreativeWork", resource);
+            },
             function(resources) {
-                me.$store.commit("creativeWorks", {url: me.url, resources: resources});
             }, console.error);
         }
     }

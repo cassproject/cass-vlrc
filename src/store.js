@@ -11,7 +11,7 @@ export const store = new Vuex.Store({
         assertionsChanges: 0,
         badgePk: null,
         collapseState: {},
-        creativeWorks: {},
+        creativeWorks: [],
         creativeWorksChanges: 0,
         identities: EcIdentityManager.ids,
         inputUrl: "",
@@ -29,7 +29,6 @@ export const store = new Vuex.Store({
         processingMessage: "",
         people: null,
         subject: null,
-        subjectName: "Not loaded yet...",
         subjectPerson: null,
         status: 'loading...',
         selectedFramework: null,
@@ -61,26 +60,16 @@ export const store = new Vuex.Store({
             app.saveAssertionToIndexedDb(a);
             state.assertionsChanges++;
         },
-        creativeWorks(state, obj) {
-            if (state.creativeWorks == null) {
-                state.creativeWorks = {};
-            }
-            state.creativeWorks[obj.url] = obj.resources;
-            state.creativeWorksChanges++;
-        },
         addCreativeWork(state, a) {
             if (state.creativeWorks == null) {
-                state.creativeWorks = {};
+                state.creativeWorks = [];
             }
+            var beforeAdd = state.creativeWorks.length;
             if (a.educationalAlignment != null) {
-                if (a.educationalAlignment.targetUrl != null) {
-                    if (state.creativeWorks[a.educationalAlignment.targetUrl] == null) {
-                        state.creativeWorks[a.educationalAlignment.targetUrl] = [];
-                    }
-                    EcArray.setAdd(state.creativeWorks[a.educationalAlignment.targetUrl], a);
-                }
+                EcArray.setAdd(state.creativeWorks, a);
             }
-            state.creativeWorksChanges++;
+            if (beforeAdd !== state.creativeWorks.length)
+                state.creativeWorksChanges++;
         },
         login(state) { state.login = true; },
         me(state, pk) { state.me = pk; },
@@ -124,11 +113,9 @@ export const store = new Vuex.Store({
                     state.assertions.splice(i, 1);
                 }
             }
-            for (var key in state.creativeWorks) {
-                for (var i = 0; i < state.creativeWorks[key].length; i++) {
-                    if (state.creativeWorks[key][i].isId(uri)) {
-                        state.creativeWorks[key].splice(i, 1);
-                    }
+            for (var i = 0; i < state.creativeWorks.length; i++) {
+                if (state.creativeWorks[i].isId(uri)) {
+                    state.creativeWorks.splice(i, 1);
                 }
             }
         }
