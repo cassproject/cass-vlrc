@@ -211,8 +211,6 @@ export default {
             this.person = p;
             if (this.pk === this.$store.state.subject) { this.$store.commit("subjectPerson", p); }
             if (this.pk === this.$store.state.me) { this.$store.commit("mePerson", p); }
-            if (this.pk === this.$store.state.subject) { this.$store.commit("subjectName", this.name); }
-            if (this.pk === this.$store.state.me) { this.$store.commit("meName", this.name); }
         },
         getPerson: function() {
             this.personObj = null;
