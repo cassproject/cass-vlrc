@@ -462,7 +462,7 @@ Vue.component('competency', {
                                                     resources,
                                                     function (resource, resourceCallback) {
                                                         repo.searchWithParams(
-                                                            "@type:ChooseAction AND object:\"" + resource.shortId() + "\" AND @owner:\"" + me.subject + "\"",
+                                                            "@type:ChooseAction AND object:\"" + resource.shortId() + "\" AND \\*owner:\"" + me.subject + "\"",
                                                             {size: 5000},
                                                             null,
                                                             function (views) {

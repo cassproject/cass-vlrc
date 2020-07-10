@@ -170,7 +170,7 @@ Vue.component('resourceSelect', {
             var me = this;
             var a = after;
             repo.search(
-                "@type:ChooseAction AND object:\"" + this.uri + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                "@type:ChooseAction AND object:\"" + this.uri + "\" AND \\*owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function (view) {
                     EcRepository._delete(view, me.getViews, console.error);
                     viewHistory.removeView(view);
@@ -193,7 +193,7 @@ Vue.component('resourceSelect', {
             var me = this;
             var a = after;
             repo.search(
-                "@type:LikeAction AND object:\"" + this.uri + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                "@type:LikeAction AND object:\"" + this.uri + "\" AND \\*owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function (like) {
                     EcRepository._delete(like, me.getVotes, console.error);
                 },
@@ -215,7 +215,7 @@ Vue.component('resourceSelect', {
             var me = this;
             var a = after;
             repo.search(
-                "@type:DislikeAction AND object:\"" + this.uri + "\" AND @owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
+                "@type:DislikeAction AND object:\"" + this.uri + "\" AND \\*owner:\"" + EcIdentityManager.ids[0].ppk.toPk().toPem() + "\"",
                 function (dislike) {
                     EcRepository._delete(dislike, me.getVotes, console.error);
                 },

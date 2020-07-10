@@ -13,7 +13,7 @@ Vue.component('viewhistory', {
                 if (this.pk == null) return null;
                 if (this.viewResult != null)
                     return this.viewResult;
-                repo.searchWithParams("@type:ChooseAction AND @owner:\"" + this.pk + "\"", {
+                repo.searchWithParams("@type:ChooseAction AND \\*owner:\"" + this.pk + "\"", {
                     size: 5000
                 }, null, function (views) {
                     views = views.sort(function (a, b) {
