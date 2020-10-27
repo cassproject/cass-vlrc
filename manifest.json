@@ -12,11 +12,11 @@
         "query_params": [
           {
             "name": "user",
-            "value:": "wait"
+            "value": "wait"
           },
           {
             "name": "origin",
-            "value:": ":origin"
+            "value": ":origin"
           }
         ]
       }
