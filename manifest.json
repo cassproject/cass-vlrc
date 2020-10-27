@@ -5,11 +5,16 @@
     "theme_color": "#ffffff",
     "display": "standalone",
     "scope": "https://cassproject.github.io/cass-vlrc",
-    "cassPluginRequireOrigin": true,
     "shortcuts":[
       {
         "name": "CaSS VLRC",
-        "url": "/user=wait"
+        "url": "/user=wait",
+        "query_params": [
+          {
+            "name": "origin",
+            "value:": ":origin"
+          }
+        ]
       }
     ]
 }
