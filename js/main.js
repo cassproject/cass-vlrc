@@ -107,6 +107,8 @@ const INIT_IDENTITY_ACTION = "initIdentity";
 
 function performInitIdentityAction(data) {
     repo.selectedServer = data.serverParm;
+    EcIdentityManager.clearIdentities();
+    EcIdentityManager.clearContacts();
     var ident = new EcIdentity();
     ident.ppk = EcPpk.fromPem(data.pemParm);
     ident.displayName = data.nameParm;
